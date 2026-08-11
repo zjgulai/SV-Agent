@@ -1,0 +1,2 @@
+class InvalidJobTransition(Exception):
+    pass

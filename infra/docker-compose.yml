@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: reverse_engineer_mode
+      POSTGRES_USER: reverse_engineer_mode
+      POSTGRES_PASSWORD: local-development-only
+    ports:
+      - "55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reverse_engineer_mode -d reverse_engineer_mode"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "56379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: reverse-engineer-mode-api:local
+    command: ["alembic", "-c", "apps/api/alembic.ini", "upgrade", "head"]
+    environment:
+      REM_DATABASE_URL: postgresql+asyncpg://reverse_engineer_mode:local-development-only@postgres:5432/reverse_engineer_mode
+      REM_REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: reverse-engineer-mode-api:local
+    environment:
+      REM_DATABASE_URL: postgresql+asyncpg://reverse_engineer_mode:local-development-only@postgres:5432/reverse_engineer_mode
+      REM_REDIS_URL: redis://redis:6379/0
+      REM_SCRIPT_PROVIDER: ${REM_SCRIPT_PROVIDER:-deterministic}
+      REM_PROVIDER_BASE_URL: ${REM_PROVIDER_BASE_URL:-https://api.openai.com/v1}
+      REM_PROVIDER_MODEL: ${REM_PROVIDER_MODEL:-gpt-5-mini}
+      REM_PROVIDER_API_KEY: ${REM_PROVIDER_API_KEY:-}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: reverse-engineer-mode-api:local
+    command: ["celery", "-A", "app.worker.celery_app:celery_app", "worker", "--loglevel=INFO", "--concurrency=2"]
+    environment:
+      REM_DATABASE_URL: postgresql+asyncpg://reverse_engineer_mode:local-development-only@postgres:5432/reverse_engineer_mode
+      REM_REDIS_URL: redis://redis:6379/0
+      REM_SCRIPT_PROVIDER: ${REM_SCRIPT_PROVIDER:-deterministic}
+      REM_PROVIDER_BASE_URL: ${REM_PROVIDER_BASE_URL:-https://api.openai.com/v1}
+      REM_PROVIDER_MODEL: ${REM_PROVIDER_MODEL:-gpt-5-mini}
+      REM_PROVIDER_API_KEY: ${REM_PROVIDER_API_KEY:-}
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.worker.celery_app:celery_app inspect ping --timeout 5 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 8s
+      retries: 10
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+    image: reverse-engineer-mode-web:local
+    ports:
+      - "5173:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres-data:

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: reverse_engineer_mode
+          POSTGRES_USER: reverse_engineer_mode
+          POSTGRES_PASSWORD: local-development-only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U reverse_engineer_mode -d reverse_engineer_mode"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s
+          --health-timeout 3s --health-retries 20
+    env:
+      REM_DATABASE_URL: postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:5432/reverse_engineer_mode
+      REM_REDIS_URL: redis://localhost:6379/0
+      TEST_DATABASE_URL: postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:5432/reverse_engineer_mode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.14"
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.0"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Backend dependencies
+        run: uv sync --project apps/api --python 3.12 --all-extras --frozen
+      - name: Backend migration and checks
+        run: |
+          uv run --project apps/api alembic -c apps/api/alembic.ini upgrade head
+          uv run --project apps/api ruff check apps/api migrations
+          uv run --project apps/api mypy apps/api/app
+          uv run --project apps/api pytest apps/api/tests -q
+      - name: Frontend dependencies
+        run: npm --prefix apps/web ci
+      - name: Frontend checks
+        run: |
+          npm --prefix apps/web run lint
+          npm --prefix apps/web run typecheck
+          npm --prefix apps/web test -- --run
+          npm --prefix apps/web run build
+      - name: Install Chromium
+        run: npm --prefix apps/web exec -- playwright install --with-deps chromium
+      - name: Start E2E stack
+        run: docker compose -f infra/docker-compose.yml up -d --build
+      - name: Browser E2E
+        run: npm --prefix apps/web run e2e
+      - name: Compose logs on failure
+        if: failure()
+        run: docker compose -f infra/docker-compose.yml logs --no-color
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-artifacts
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
