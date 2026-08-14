@@ -47,7 +47,8 @@ class OpenAICompatibleScriptProvider:
                 "role": "system",
                 "content": (
                     "Return only a JSON script matching the supplied schema. "
-                    "Use only supplied facts and bind each product claim to fact IDs."
+                    "Use only supplied facts and bind each product claim to fact IDs. "
+                    "Never render excluded facts in any visible script field."
                 ),
             },
             {"role": "user", "content": request.model_dump_json()},

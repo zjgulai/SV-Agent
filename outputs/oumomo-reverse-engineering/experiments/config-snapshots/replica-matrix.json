@@ -1,0 +1,35 @@
+{
+  "status": "blocked",
+  "block_reason": "reference_preview_unstable",
+  "recorded_at": "2026-08-11T11:38:46Z",
+  "required_reference_stability": false,
+  "revalidation_attempts": [
+    {
+      "attempt_id": "R-REVAL-001",
+      "attempted_at": "2026-08-12T00:00:00Z",
+      "status": "blocked",
+      "evidence": "same summary still seen: 1 playable, 3 no-player or non-reproducible on refresh",
+      "credit_delta": 0,
+      "required_next_action": "hold paid replica reruns until 2 stable references remain stable across reload"
+    }
+  ],
+  "notes": [
+    "Z03 preview shows 1 playable, 3 no-player references and 1 non-reproducible refresh case",
+    "replica_paid_gate was false",
+    "file-upload and re-upload conditions changed during experiments, making same-reference reruns non-reproducible"
+  ],
+  "target_matrix": {
+    "baseline_repeats": ["R-B01", "R-B02", "R-B03"],
+    "angles": ["R-I03"],
+    "prompt_constraint": ["R-P01"],
+    "reference_swap": ["R-V02"]
+  },
+  "config_snapshot": {
+    "mode": "Mini",
+    "resolution": "480P",
+    "duration_seconds": 15,
+    "language": "English",
+    "count": 1
+  },
+  "required_next_action": "reconfirm two stable playable references with refresh-safe project state before paid rerun"
+}

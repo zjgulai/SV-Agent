@@ -1,0 +1,11 @@
+{
+  "fixtures": [
+    {
+      "id": "pulse-mix-product-front",
+      "path": "outputs/oumomo-reverse-engineering/evidence/fixtures/pulse-mix.png",
+      "purpose": "synthetic unbranded product-front input",
+      "sha256": "34c286145bd1d1875a52f2a7d673442099291cb06fa25fc22f1864a33f8c4974"
+    }
+  ],
+  "version": 1
+}

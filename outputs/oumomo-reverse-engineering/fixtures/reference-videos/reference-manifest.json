@@ -1,0 +1,27 @@
+{
+  "status": "blocked",
+  "block_reason": "no stable reusable playable references at this stage",
+  "recorded_at": "2026-08-11T11:38:46Z",
+  "z03_preview_summary": {
+    "playable": 1,
+    "no_player": 2,
+    "unreproducible_on_refresh": 1
+  },
+  "records": [
+    {
+      "attempt_id": "R-REVAL-001",
+      "attempted_at": "2026-08-12T00:00:00Z",
+      "status": "blocked",
+      "action": "reconfirm_stable_references_before_paid_rerun",
+      "observed": {
+        "playable": 1,
+        "no_player": 3,
+        "unreproducible_on_refresh": 1
+      },
+      "reason": "reference preview still unstable after re-open/refresh checks",
+      "blocked": true,
+      "credit_delta": 0,
+      "next_action": "pause_task5_until_two_repeatable_references_can_be_held"
+    }
+  ]
+}

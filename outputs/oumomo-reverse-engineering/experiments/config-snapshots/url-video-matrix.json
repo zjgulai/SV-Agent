@@ -1,0 +1,42 @@
+{
+  "gate": {
+    "continue_after_u_b01": false,
+    "reasons": [
+      "route-specific HTML response was parsed as JSON after submission",
+      "forced-stop rule prohibits retries or further runs after an ambiguous frontend response even though the queue later recovered"
+    ]
+  },
+  "planned_runs": [
+    "U-B01",
+    "U-B02",
+    "U-B03",
+    "U-A01",
+    "U-I01"
+  ],
+  "u_b01": {
+    "credit_after": 810,
+    "credit_before": 860,
+    "generation_count": 1,
+    "image_count": 1,
+    "language": "English",
+    "mode": "Mini",
+    "product_claim_count": 3,
+    "quote": 50,
+    "resolution": "720P",
+    "artifact": {
+      "bytes": 9389487,
+      "duration_seconds": 15.104,
+      "fps": 24,
+      "height": 1280,
+      "sha256": "f7fc1372002d4219c0c2d12aabce25b0560470eedf605af7f594f95405529095",
+      "video_codec": "h264",
+      "width": 720
+    },
+    "first_cutoff_state": "ongoing_95_percent",
+    "final_observed_state": "succeeded_after_queue_recovery",
+    "job_id_hash": "68ec3a11bdc6380436122388115c537afae604d249e8460e46c4e00817224b2c",
+    "submit_count": 1,
+    "video_duration_seconds": 15,
+    "video_type": "真人种草"
+  }
+}

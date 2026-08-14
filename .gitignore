@@ -29,3 +29,11 @@ work/
 outputs/*
 !outputs/oumomo-reverse-engineering/
 !outputs/oumomo-reverse-engineering/**
+
+# Clean-room evidence may retain local generated media for analysis, but raw
+# inputs/outputs are never repository artifacts. Commit only hashes, manifests
+# and written findings from this subtree.
+outputs/oumomo-reverse-engineering/artifacts/*
+!outputs/oumomo-reverse-engineering/artifacts/hashes.csv
+!outputs/oumomo-reverse-engineering/artifacts/scorecards.csv
+outputs/oumomo-reverse-engineering/fixtures/scoring-degradations/

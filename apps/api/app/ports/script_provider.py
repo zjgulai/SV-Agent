@@ -20,6 +20,7 @@ class ScriptGenerationRequest(BaseModel):
     snapshot_id: UUID
     title: str
     facts: list[SupportedFact] = Field(min_length=1)
+    excluded_facts: list[SupportedFact] = Field(default_factory=list)
     target_duration_seconds: int = Field(gt=0)
     language: str
     audience: str

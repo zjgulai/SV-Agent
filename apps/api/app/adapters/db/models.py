@@ -4,6 +4,7 @@ from typing import Any
 from uuid import UUID
 
 from sqlalchemy import (
+    BigInteger,
     CheckConstraint,
     DateTime,
     ForeignKey,
@@ -115,6 +116,7 @@ class ScriptGenerationRecord(Base):
         PGUUID(as_uuid=True), ForeignKey("product_snapshots.id", ondelete="RESTRICT"), nullable=False
     )
     selected_fact_ids: Mapped[list[str]] = mapped_column(JSONB, nullable=False)
+    excluded_fact_ids: Mapped[list[str]] = mapped_column(JSONB, nullable=False)
     configuration: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
     pattern_key: Mapped[str] = mapped_column(String(64), nullable=False)
     pattern_version: Mapped[str] = mapped_column(String(32), nullable=False)
@@ -139,6 +141,76 @@ class ScriptVersionRecord(Base):
     )
     draft: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
     validation_report: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class StoryboardVersionRecord(Base):
+    __tablename__ = "storyboard_versions"
+    __table_args__ = (
+        UniqueConstraint(
+            "script_version_id",
+            "operation_key",
+            name="uq_storyboard_version_operation",
+        ),
+    )
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
+    script_version_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("script_versions.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    snapshot_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("product_snapshots.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    selected_fact_ids: Mapped[list[str]] = mapped_column(JSONB, nullable=False)
+    excluded_fact_ids: Mapped[list[str]] = mapped_column(JSONB, nullable=False)
+    pattern_key: Mapped[str] = mapped_column(String(64), nullable=False)
+    pattern_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    phase_sequence: Mapped[list[str]] = mapped_column(JSONB, nullable=False)
+    draft: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    validation_report: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    preflight_digest: Mapped[str] = mapped_column(String(64), nullable=False)
+    storyboard_digest: Mapped[str] = mapped_column(String(64), nullable=False)
+    preview_contract_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    operation_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class StoryboardApprovalEventRecord(Base):
+    __tablename__ = "storyboard_approval_events"
+    __table_args__ = (
+        CheckConstraint(
+            "decision IN ('approved', 'rejected')",
+            name="ck_storyboard_approval_event_decision",
+        ),
+        UniqueConstraint(
+            "storyboard_id",
+            "operation_key",
+            name="uq_storyboard_approval_event_operation",
+        ),
+    )
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
+    storyboard_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("storyboard_versions.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    decision: Mapped[str] = mapped_column(String(16), nullable=False)
+    reason: Mapped[str | None] = mapped_column(Text)
+    storyboard_digest: Mapped[str] = mapped_column(String(64), nullable=False)
+    preflight_digest: Mapped[str] = mapped_column(String(64), nullable=False)
+    approval_digest: Mapped[str] = mapped_column(String(64), nullable=False)
+    validation_report: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    operation_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    event_sequence: Mapped[int] = mapped_column(BigInteger, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )

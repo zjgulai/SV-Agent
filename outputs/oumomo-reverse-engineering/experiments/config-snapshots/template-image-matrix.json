@@ -1,0 +1,112 @@
+{
+  "image_models": {
+    "controls": {
+      "count": 1,
+      "resolution": "1K",
+      "ratio": "1:1",
+      "reference_image": "supported"
+    },
+    "execution_blocker": null,
+    "execution_status": "completed",
+    "gate": true,
+    "models": [
+      "GPT Image 2",
+      "Nano Banana 2"
+    ],
+    "quotes": {
+      "GPT Image 2": 2,
+      "Nano Banana 2": 3
+    },
+    "prompt": "Create a 1:1 TikTok Shop product hero image. Preserve the uploaded package exactly: silver pouch, navy blue lower chevrons, blue lightning icon, text 'PULSE MIX'. Place on clean light gray studio background with soft shadow. Do not add health, energy, ingredient, price, certification, or promotional claims. Do not alter package text.",
+    "reason": "file-URL access was enabled and the approved two-model by two-repeat matrix completed with four terminal artifacts and a reconciled 10-credit debit",
+    "reference_image": {
+      "height": 1254,
+      "mime": "image/png",
+      "path": "outputs/oumomo-reverse-engineering/evidence/fixtures/pulse-mix.png",
+      "sha256": "34c286145bd1d1875a52f2a7d673442099291cb06fa25fc22f1864a33f8c4974",
+      "width": 1254
+    },
+    "runs": [
+      {
+        "artifact_path": "outputs/oumomo-reverse-engineering/artifacts/images/I-GPT-01.png",
+        "bytes": 1769014,
+        "credit_after": 808,
+        "credit_before": 810,
+        "detected_mime": "image/png",
+        "experiment_id": "I-GPT-01",
+        "height": 1254,
+        "model": "GPT Image 2",
+        "quote": 2,
+        "sha256": "5d68c8dd6c1c022873aa4edbea313345e96de2d44f720177c81abfb3b0d92e53",
+        "terminal_state": "succeeded",
+        "verdict": "pass",
+        "width": 1254
+      },
+      {
+        "artifact_path": "outputs/oumomo-reverse-engineering/artifacts/images/I-GPT-02.png",
+        "bytes": 1763405,
+        "credit_after": 806,
+        "credit_before": 808,
+        "detected_mime": "image/png",
+        "experiment_id": "I-GPT-02",
+        "height": 1254,
+        "model": "GPT Image 2",
+        "quote": 2,
+        "sha256": "f3df69f49ea34eff1363628086df524761a09f8504c171e50acb3726d349d50d",
+        "terminal_state": "succeeded",
+        "verdict": "pass",
+        "width": 1254
+      },
+      {
+        "artifact_path": "outputs/oumomo-reverse-engineering/artifacts/images/I-NANO-01.png",
+        "bytes": 413123,
+        "credit_after": 803,
+        "credit_before": 806,
+        "detected_mime": "image/jpeg",
+        "experiment_id": "I-NANO-01",
+        "height": 1024,
+        "model": "Nano Banana 2",
+        "quote": 3,
+        "remote_declared_content_type": "image/png",
+        "remote_filename_extension": ".png",
+        "sha256": "badc8da639bced2a41e0ac508ae910ff86ca855124c7a113dd35bd6435a86f90",
+        "terminal_state": "succeeded",
+        "verdict": "fail",
+        "width": 1024
+      },
+      {
+        "artifact_path": "outputs/oumomo-reverse-engineering/artifacts/images/I-NANO-02.png",
+        "bytes": 359211,
+        "credit_after": 800,
+        "credit_before": 803,
+        "detected_mime": "image/jpeg",
+        "experiment_id": "I-NANO-02",
+        "height": 1024,
+        "model": "Nano Banana 2",
+        "quote": 3,
+        "remote_declared_content_type": "image/png",
+        "remote_filename_extension": ".png",
+        "sha256": "de450bfc16775d7ee6e8d2b87e889e431814b97d9dd35c98fd126d386fe40706",
+        "terminal_state": "succeeded",
+        "verdict": "fail",
+        "width": 1024
+      }
+    ],
+    "ssim": {
+      "I-GPT-01_vs_reference": 0.909862,
+      "I-GPT-02_vs_reference": 0.796853,
+      "I-NANO-01_vs_reference_after_resize": 0.966479,
+      "I-NANO-02_vs_reference_after_resize": 0.970017,
+      "gpt_repeat_pair": 0.807526,
+      "nano_repeat_pair": 0.989005
+    },
+    "total_debit": 10,
+    "two_model_two_repeat_total": 10
+  },
+  "template": {
+    "gate": false,
+    "preview": "available",
+    "quote_visibility": "hidden-until-upload",
+    "reason": "no pre-submission quote and no approved same-product template pair under the 30-credit per-run cap"
+  }
+}

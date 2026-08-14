@@ -30,7 +30,7 @@ rtk uv run --project apps/api mypy apps/api/app
 rtk env TEST_DATABASE_URL="$TEST_DATABASE_URL" uv run --project apps/api pytest apps/api/tests -q
 ```
 
-Tests use a real PostgreSQL transaction and dependency overrides; API tests do not mock repositories. Provider tests use HTTPX `MockTransport`, while worker tests prove broker-failure persistence, queued replay publication, duplicate-delivery suppression, execution fencing, generating/validating redelivery recovery, transient-database retryability, terminal replay, fact-state TOCTOU closure and Redis-result loss. Database tests also exercise append-only triggers and concurrent URL-source convergence.
+Tests use a real PostgreSQL transaction and dependency overrides; API tests do not mock repositories. Provider tests use HTTPX `MockTransport`, while worker tests prove broker-failure persistence, queued replay publication, duplicate-delivery suppression, execution fencing, generating/validating redelivery recovery, transient-database retryability, terminal replay, fact-state TOCTOU closure, ordered fact selection, excluded-fact deny-set enforcement and Redis-result loss. Database tests also exercise append-only triggers and concurrent URL-source convergence.
 
 Migration rollback is destructive. Verify it only against a newly created disposable database, never against the application database:
 
@@ -63,7 +63,20 @@ rtk npm --prefix apps/web exec -- playwright install chromium
 rtk npm --prefix apps/web run e2e
 ```
 
-The success E2E creates and locks a fact, generates an acceptable script, appends a derived version, compares it and verifies both downloads. The failure E2E uses an ordinary locked guarantee claim to exercise the real prohibited-claim validator; no test-only production behavior is enabled.
+The success E2E creates and locks a fact, generates an acceptable script, opens the storyboard preflight, appends and approves an immutable zero-cost storyboard preview, appends a derived version, compares it and verifies both downloads. The failure E2E uses an ordinary locked guarantee claim to exercise the real prohibited-claim validator; no test-only production behavior is enabled.
+
+## Clean-room experiment evidence gates
+
+The Oumomo clean-room outputs use standalone deterministic tools; they do not call the live site:
+
+```bash
+rtk uv run --project apps/api python -m unittest discover -s tools/oumomo_experiments/tests -v
+rtk uv run --project apps/api ruff check tools
+rtk uv run --project apps/api mypy --explicit-package-bases tools/oumomo_experiments
+rtk uv run --project apps/api python outputs/oumomo-reverse-engineering/skills/oumomo-clean-room-experiment-runner/scripts/validate_evidence.py outputs/oumomo-reverse-engineering --max-spend 980
+```
+
+The evidence validator checks manifest fields, closed confidence/verdict enums, hash-only task identity, forbidden sensitive fields, credit arithmetic/continuity and the approved spend cap. It does not prove website availability, provider quality, deployment or production publication.
 
 ## Troubleshooting
 

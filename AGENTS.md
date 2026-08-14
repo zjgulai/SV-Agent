@@ -5,8 +5,11 @@
 Read these sources in order:
 
 1. `docs/superpowers/specs/2026-08-10-product-facts-viral-script-p0-design.md`
-2. `docs/architecture/p0-architecture.md`
-3. `docs/development/testing.md`
+2. `docs/superpowers/specs/2026-08-11-oumomo-credit-experiment-system-design.md`
+3. `docs/architecture/p0-architecture.md`
+4. `docs/development/testing.md`
+5. `outputs/oumomo-reverse-engineering/knowledge-base.md` for clean-room experiment work
+6. `docs/superpowers/specs/2026-08-14-storyboard-approval-preview-p2-design.md` when P2.0 is explicitly approved
 
 Inspect `git status --short --branch` before writes. Preserve unrelated changes. Work on `main`; do not create worktrees. Prefix every local shell command with `rtk`.
 

@@ -1,0 +1,45 @@
+{
+  "avatar": {
+    "available_site_avatars": [
+      "Maya",
+      "Ben",
+      "Simone",
+      "Talia",
+      "Roy"
+    ],
+    "gate": false,
+    "lowest_visible_config": {
+      "count": 1,
+      "duration_seconds": 15,
+      "mode": "快速模式",
+      "ratio": "9:16",
+      "resolution": "720p"
+    },
+    "per_run_cap": 30,
+    "quote": 75,
+    "reason": "quote exceeds the approved per-run cap"
+  },
+  "video_models": {
+    "default_config": {
+      "duration_seconds": 10,
+      "mode": "快速模式",
+      "model": "Seedance 2.0",
+      "ratio": "9:16",
+      "resolution": "480P"
+    },
+    "execution_blocker": "Chrome extension file-URL access disabled",
+    "models": [
+      "Seedance 2.0",
+      "Seedance 2.0 Mini",
+      "Seedance 2.5",
+      "Gemini Omni",
+      "MiniMax H3",
+      "Kling V3",
+      "Veo 3.1",
+      "Sora2"
+    ],
+    "price_gate": true,
+    "quote": 30,
+    "reason": "the approved same-reference-image comparison cannot run until browser file upload is enabled"
+  }
+}

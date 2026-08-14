@@ -7,6 +7,8 @@ import { JobPage } from "./routes/JobPage";
 import { ProductDetailPage } from "./routes/ProductDetailPage";
 import { ProductsPage } from "./routes/ProductsPage";
 import { ScriptPage } from "./routes/ScriptPage";
+import { StoryboardPreflightPage } from "./routes/StoryboardPreflightPage";
+import { StoryboardReviewPage } from "./routes/StoryboardReviewPage";
 
 export function AppRoutes() {
   return (
@@ -29,6 +31,8 @@ export function AppRoutes() {
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/products/:id/generate" element={<GenerateScriptPage />} />
           <Route path="/jobs/:id" element={<JobPage />} />
+          <Route path="/scripts/:id/versions/:versionId/storyboard-preflight" element={<StoryboardPreflightPage />} />
+          <Route path="/storyboards/:id" element={<StoryboardReviewPage />} />
           <Route path="/scripts/:id" element={<ScriptPage />} />
           <Route path="/scripts/:id/compare" element={<CompareVersionsPage />} />
         </Routes>

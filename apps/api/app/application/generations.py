@@ -32,6 +32,10 @@ class FactsNotReadyError(Exception):
     pass
 
 
+class FactSelectionInvalidError(Exception):
+    pass
+
+
 class CreativePatternNotFoundError(Exception):
     pass
 
@@ -50,6 +54,8 @@ class GenerationCommand:
     language: str
     audience: str
     creative_pattern_key: str
+    selected_fact_ids: tuple[UUID, ...] = ()
+    excluded_fact_ids: tuple[UUID, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,13 +88,6 @@ class GenerationService:
         snapshot = await self.products.get_latest_snapshot(product_id)
         if snapshot is None:
             raise GenerationProductNotFoundError(str(product_id))
-        facts = [
-            item
-            for item in await self.products.list_facts(snapshot.id)
-            if item.status in {FactStatus.CONFIRMED, FactStatus.LOCKED}
-        ]
-        if not facts:
-            raise FactsNotReadyError(str(product_id))
         pattern = next(
             (item for item in CREATIVE_PATTERNS if item.key == command.creative_pattern_key), None
         )
@@ -97,7 +96,31 @@ class GenerationService:
         if command.target_duration_seconds not in pattern.supported_durations:
             raise DurationNotSupportedError(str(command.target_duration_seconds))
 
-        fact_ids = sorted(str(item.id) for item in facts)
+        selected_fact_ids = list(command.selected_fact_ids)
+        excluded_fact_ids = list(command.excluded_fact_ids)
+        if not selected_fact_ids:
+            raise FactsNotReadyError(str(product_id))
+        if (
+            len(set(selected_fact_ids)) != len(selected_fact_ids)
+            or len(set(excluded_fact_ids)) != len(excluded_fact_ids)
+            or set(selected_fact_ids) & set(excluded_fact_ids)
+        ):
+            raise FactSelectionInvalidError("fact IDs must be unique and disjoint")
+
+        facts_by_id = {
+            item.id: item for item in await self.products.list_facts(snapshot.id)
+        }
+        for fact_id in [*selected_fact_ids, *excluded_fact_ids]:
+            if fact_id not in facts_by_id:
+                raise FactSelectionInvalidError("fact must belong to the current snapshot")
+        if any(
+            facts_by_id[fact_id].status not in {FactStatus.CONFIRMED, FactStatus.LOCKED}
+            for fact_id in selected_fact_ids
+        ):
+            raise FactsNotReadyError(str(product_id))
+
+        serialized_selected_fact_ids = [str(item) for item in selected_fact_ids]
+        serialized_excluded_fact_ids = [str(item) for item in excluded_fact_ids]
         configuration: dict[str, Any] = {
             "target_duration_seconds": command.target_duration_seconds,
             "language": command.language,
@@ -112,13 +135,14 @@ class GenerationService:
         input_digest = canonical_digest(
             {
                 "snapshot_digest": snapshot.canonical_digest,
-                "fact_ids": fact_ids,
+                "selected_fact_ids": serialized_selected_fact_ids,
+                "excluded_fact_ids": serialized_excluded_fact_ids,
                 "configuration": configuration,
                 "pattern_key": pattern.key,
                 "pattern_version": pattern.version,
                 "provider": provider,
                 "model": model,
-                "prompt_contract_version": "1.0",
+                "prompt_contract_version": "1.1",
             }
         )
         generation_id = uuid4()
@@ -142,13 +166,14 @@ class GenerationService:
                 ScriptGenerationRecord(
                     id=generation_id,
                     snapshot_id=snapshot.id,
-                    selected_fact_ids=fact_ids,
+                    selected_fact_ids=serialized_selected_fact_ids,
+                    excluded_fact_ids=serialized_excluded_fact_ids,
                     configuration=configuration,
                     pattern_key=pattern.key,
                     pattern_version=pattern.version,
                     provider=provider,
                     model=model,
-                    prompt_contract_version="1.0",
+                    prompt_contract_version="1.1",
                     input_digest=input_digest,
                 )
             )
@@ -286,21 +311,31 @@ class GenerationWorker:
             snapshot = await products.get_snapshot(generation.snapshot_id)
             if snapshot is None:
                 raise LookupError(f"snapshot {generation.snapshot_id} does not exist")
-            facts: dict[UUID, ProductFact] = {}
+            facts: list[ProductFact] = []
             for raw_id in generation.selected_fact_ids:
                 fact = await products.get_fact(UUID(raw_id))
                 if fact is None or fact.status not in {
                     FactStatus.CONFIRMED,
                     FactStatus.LOCKED,
-                }:
+                } or fact.snapshot_id != snapshot.id:
                     raise FactsNotReadyError(str(raw_id))
-                facts[fact.id] = fact
+                facts.append(fact)
+            excluded_facts: list[ProductFact] = []
+            for raw_id in generation.excluded_fact_ids:
+                fact = await products.get_fact(UUID(raw_id))
+                if fact is None or fact.snapshot_id != snapshot.id:
+                    raise FactsNotReadyError(str(raw_id))
+                excluded_facts.append(fact)
             request = ScriptGenerationRequest(
                 snapshot_id=snapshot.id,
                 title=snapshot.title,
                 facts=[
                     SupportedFact(id=item.id, claim=item.claim, claim_type=item.claim_type)
-                    for item in facts.values()
+                    for item in facts
+                ],
+                excluded_facts=[
+                    SupportedFact(id=item.id, claim=item.claim, claim_type=item.claim_type)
+                    for item in excluded_facts
                 ],
                 target_duration_seconds=int(
                     generation.configuration["target_duration_seconds"]
@@ -370,11 +405,19 @@ class GenerationWorker:
             facts: dict[UUID, ProductFact] = {}
             for raw_id in generation.selected_fact_ids:
                 fact = await products.get_fact(UUID(raw_id), for_update=True)
-                if fact is not None:
-                    facts[fact.id] = fact
+                if fact is None or fact.snapshot_id != generation.snapshot_id:
+                    raise FactsNotReadyError(str(raw_id))
+                facts[fact.id] = fact
+            excluded_facts: dict[UUID, ProductFact] = {}
+            for raw_id in generation.excluded_fact_ids:
+                fact = await products.get_fact(UUID(raw_id), for_update=True)
+                if fact is None or fact.snapshot_id != generation.snapshot_id:
+                    raise FactsNotReadyError(str(raw_id))
+                excluded_facts[fact.id] = fact
             report = validate_script(
                 draft,
                 facts,
+                excluded_facts=excluded_facts,
                 creative_pattern_key=generation.pattern_key,
                 phase_sequence=tuple(
                     str(item)

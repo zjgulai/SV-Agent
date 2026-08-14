@@ -184,6 +184,52 @@ def _validate_prohibited_claims(draft: ScriptDraft) -> list[ValidationFinding]:
     return findings
 
 
+def _visible_text_fields(draft: ScriptDraft) -> list[tuple[str, str]]:
+    fields: list[tuple[str, str]] = []
+    fields.extend((f"phases[{index}].purpose", phase.purpose) for index, phase in enumerate(draft.phases))
+    for shot_index, shot in enumerate(draft.shots):
+        fields.extend(
+            (f"shots[{shot_index}].{field}", getattr(shot, field))
+            for field in ("voiceover", "visual", "action", "caption", "acceptance_shot")
+        )
+        fields.extend(
+            (f"shots[{shot_index}].product_claims[{claim_index}]", claim)
+            for claim_index, claim in enumerate(shot.product_claims)
+        )
+    for field in ("titles", "tags", "shooting_list"):
+        fields.extend(
+            (f"{field}[{index}]", value)
+            for index, value in enumerate(getattr(draft, field))
+        )
+    return fields
+
+
+def _validate_excluded_facts(
+    draft: ScriptDraft, excluded_facts: Mapping[UUID, ProductFact]
+) -> list[ValidationFinding]:
+    findings: list[ValidationFinding] = []
+    normalized_claims = {
+        _normalize_claim(fact.claim): fact.claim
+        for fact in excluded_facts.values()
+        if _normalize_claim(fact.claim)
+    }
+    if not normalized_claims:
+        return findings
+    for path, value in _visible_text_fields(draft):
+        normalized_value = _normalize_claim(value)
+        for normalized_claim, claim in normalized_claims.items():
+            if normalized_claim in normalized_value:
+                findings.append(
+                    _finding(
+                        "FACT_EXCLUDED",
+                        path,
+                        "visible script text must not render an excluded fact",
+                        claim,
+                    )
+                )
+    return findings
+
+
 def _validate_creative_contract(
     draft: ScriptDraft,
     *,
@@ -289,6 +335,7 @@ def validate_script(
     draft: ScriptDraft,
     facts: Mapping[UUID, ProductFact],
     *,
+    excluded_facts: Mapping[UUID, ProductFact] | None = None,
     creative_pattern_key: str | None = None,
     phase_sequence: tuple[str, ...] | None = None,
 ) -> ValidationReport:
@@ -296,6 +343,7 @@ def validate_script(
         *_validate_structure(draft),
         *_validate_timeline(draft),
         *_validate_factuality(draft, facts),
+        *_validate_excluded_facts(draft, excluded_facts or {}),
         *_validate_creative_contract(
             draft,
             creative_pattern_key=creative_pattern_key,

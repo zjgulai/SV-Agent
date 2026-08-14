@@ -1,0 +1,13 @@
+{
+  "category": "食品饮料 > 饮料 > 冲调饮品",
+  "evidence_kind": "vendor_claim/ui-parser",
+  "independently_verified": false,
+  "product_title": "Loaded Tea – Single Packet | 32oz Caffeinated Flavored Hydration Powder Beverage Mix | Made in USA | Easy to Mix",
+  "selling_points": [
+    "200mg强力咖啡因，瞬间唤醒",
+    "便携速溶设计，随时随地充电",
+    "超高颜值，清爽冰蓝视觉体验"
+  ],
+  "source": "Oumomo built-in public example",
+  "usage_boundary": "Input contract for reverse-engineering only; not accepted as real-world product fact"
+}

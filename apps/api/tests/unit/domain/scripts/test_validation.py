@@ -13,6 +13,7 @@ from app.domain.scripts.models import ScriptDraft, ScriptPhase, ScriptShot
 from app.domain.scripts.validation import validate_script
 
 FACT_ID = UUID("00000000-0000-0000-0000-000000000010")
+EXCLUDED_FACT_ID = UUID("00000000-0000-0000-0000-000000000011")
 SNAPSHOT_ID = UUID("00000000-0000-0000-0000-000000000020")
 OTHER_SNAPSHOT_ID = UUID("00000000-0000-0000-0000-000000000021")
 
@@ -66,6 +67,21 @@ def _confirmed_fact(*, snapshot_id: UUID = SNAPSHOT_ID) -> ProductFact:
     )
 
 
+def _excluded_fact() -> ProductFact:
+    return ProductFact.create(
+        id=EXCLUDED_FACT_ID,
+        snapshot_id=SNAPSHOT_ID,
+        claim_type="feature",
+        claim="The drink is blue",
+        value={"color": "blue"},
+        evidence_kind="source_field",
+        evidence_locator="color",
+        evidence_excerpt="Blue drink",
+        confidence=1,
+        status=FactStatus.CONFIRMED,
+    )
+
+
 def _valid_draft(*, shots: list[ScriptShot] | None = None) -> ScriptDraft:
     return ScriptDraft(
         target_duration_seconds=15,
@@ -99,6 +115,58 @@ def test_validator_accepts_complete_supported_script() -> None:
 
     assert report.acceptable is True
     assert report.findings == []
+
+
+def test_validator_blocks_an_excluded_fact_in_every_visible_script_field() -> None:
+    excluded_claim = _excluded_fact().claim
+    shot = _valid_draft().shots[0].model_copy(
+        update={
+            "voiceover": excluded_claim,
+            "visual": excluded_claim,
+            "action": excluded_claim,
+            "caption": excluded_claim,
+            "acceptance_shot": excluded_claim,
+            "product_claims": [excluded_claim],
+        }
+    )
+    draft = _valid_draft(shots=[shot]).model_copy(
+        update={
+            "phases": [
+                ScriptPhase(
+                    key="demo",
+                    purpose=excluded_claim,
+                    start_seconds=0,
+                    end_seconds=15,
+                )
+            ],
+            "titles": [excluded_claim],
+            "tags": [excluded_claim],
+            "shooting_list": [excluded_claim],
+        }
+    )
+
+    report = validate_script(
+        draft,
+        facts={FACT_ID: _confirmed_fact()},
+        excluded_facts={EXCLUDED_FACT_ID: _excluded_fact()},
+    )
+
+    assert {
+        finding.path
+        for finding in report.blocking
+        if finding.rule_id == "FACT_EXCLUDED"
+    } == {
+        "phases[0].purpose",
+        "shots[0].voiceover",
+        "shots[0].visual",
+        "shots[0].action",
+        "shots[0].caption",
+        "shots[0].acceptance_shot",
+        "shots[0].product_claims[0]",
+        "titles[0]",
+        "tags[0]",
+        "shooting_list[0]",
+    }
 
 
 def test_validator_uses_persisted_pattern_definition() -> None:

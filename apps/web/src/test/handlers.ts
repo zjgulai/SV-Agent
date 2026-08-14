@@ -82,12 +82,27 @@ export const handlers = [
   ),
   http.get("/api/v1/scripts/script-1", () =>
     HttpResponse.json({
-      generation: { id: "script-1", snapshot_id: "snapshot-1", selected_fact_ids: ["fact-1"], configuration: { target_duration_seconds: 15, language: "en", audience: "buyers" }, pattern_key: "problem_solution", pattern_version: "1.0", provider: "deterministic", model: "deterministic-v1", prompt_contract_version: "1.0", input_digest: "a".repeat(64), created_at: now },
+      generation: { id: "script-1", snapshot_id: "snapshot-1", selected_fact_ids: ["fact-1"], excluded_fact_ids: [], configuration: { target_duration_seconds: 15, language: "en", audience: "buyers" }, pattern_key: "problem_solution", pattern_version: "1.0", provider: "deterministic", model: "deterministic-v1", prompt_contract_version: "1.0", input_digest: "a".repeat(64), created_at: now },
       versions: [{
         id: "version-1", generation_id: "script-1", parent_version_id: null, created_at: now,
         draft: { target_duration_seconds: 15, language: "en", audience: "buyers", snapshot_id: "snapshot-1", phases: [{ key: "hook", purpose: "Hook", start_seconds: 0, end_seconds: 15 }], shots: [{ start_seconds: 0, end_seconds: 15, phase_key: "hook", voiceover: "This guarantees results.", visual: "Show product", action: "Hold product", caption: "", acceptance_shot: "Product visible", supported_fact_ids: ["fact-1"], product_claims: ["Resealable pouch"] }], titles: ["Blocked draft"], tags: ["demo"], shooting_list: ["product"] },
         validation_report: { acceptable: false, findings: [{ rule_id: "CLAIM_GUARANTEE", path: "shots[0].voiceover", message: "prohibited claim detected", severity: "blocking", evidence: "guarantees" }], blocking: [{ rule_id: "CLAIM_GUARANTEE", path: "shots[0].voiceover", message: "prohibited claim detected", severity: "blocking", evidence: "guarantees" }] },
       }],
+    }),
+  ),
+  http.get("/api/v1/scripts/:scriptId/versions/:versionId/storyboard-preflight", ({ params }) =>
+    HttpResponse.json({
+      status: "blocked",
+      script_id: params.scriptId,
+      version_id: params.versionId,
+      snapshot_id: "snapshot-1",
+      pattern_key: "problem_solution",
+      input_digest: "a".repeat(64),
+      selected_facts: [{ id: "fact-1", claim_type: "description", claim: "Resealable drink mix pouch", evidence_kind: "user_assertion", evidence_excerpt: "Resealable drink mix pouch", status: "locked" }],
+      excluded_facts: [],
+      phases: [{ key: "hook", purpose: "Hook", start_seconds: 0, end_seconds: 15 }],
+      shots: [{ start_seconds: 0, end_seconds: 15, phase_key: "hook", voiceover: "This guarantees results.", visual: "Show product", action: "Hold product", caption: "", acceptance_shot: "Product visible", supported_fact_ids: ["fact-1"], product_claims: ["Resealable pouch"] }],
+      validation_report: { acceptable: false, findings: [{ rule_id: "CLAIM_GUARANTEE", path: "shots[0].voiceover", message: "prohibited claim detected", severity: "blocking", evidence: "guarantees" }], blocking: [{ rule_id: "CLAIM_GUARANTEE", path: "shots[0].voiceover", message: "prohibited claim detected", severity: "blocking", evidence: "guarantees" }] },
     }),
   ),
   http.get("/api/v1/scripts/script-1/compare", () =>

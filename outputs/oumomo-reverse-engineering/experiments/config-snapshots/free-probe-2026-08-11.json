@@ -1,0 +1,35 @@
+{
+  "account": {
+    "balance_readings": [980, 980, 980, 980],
+    "completed_projects": 3,
+    "ongoing_tasks": 0,
+    "refresh_ms": [4570, 1468, 1323]
+  },
+  "observed_at": "2026-08-11T09:40:30Z",
+  "quotes": {
+    "multi_angle_white_background": 4,
+    "seedance_landing": 50,
+    "tiktok_image_generator": 28,
+    "tiktok_slideshow": 16,
+    "url_to_video": 50,
+    "video_replica": 75,
+    "viral_script": 10,
+    "viral_template": null
+  },
+  "ranking_filters": {
+    "categories": 31,
+    "date_windows": ["all", "7d", "14d", "28d", "60d", "90d", "180d"],
+    "gmv_bands": ["all", "under-1000", "1000-10000", "10000-50000", "over-50000"],
+    "regions": 17,
+    "sort": ["sales"],
+    "video_types": ["all", "ai-generated", "user-created"]
+  },
+  "zero_credit_findings": [
+    "script empty input is a silent no-op",
+    "replica preview availability is not stable across reloads",
+    "template quote is hidden before product upload",
+    "dedup existing-project selection navigated to slideshow",
+    "legacy url-to-video HTML/JSON error was not reproduced in the primary flow",
+    "HTML returned to JSON consumers recurred across project and utility pages"
+  ]
+}

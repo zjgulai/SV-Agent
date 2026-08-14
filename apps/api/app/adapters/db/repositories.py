@@ -12,6 +12,8 @@ from app.adapters.db.models import (
     ProductSourceRecord,
     ScriptGenerationRecord,
     ScriptVersionRecord,
+    StoryboardApprovalEventRecord,
+    StoryboardVersionRecord,
 )
 from app.domain.jobs.entities import Job, JobState, JobType
 from app.domain.products.entities import (
@@ -169,14 +171,17 @@ class ProductRepository:
         record = await self.session.scalar(statement)
         return _fact_from_record(record) if record is not None else None
 
-    async def list_facts(self, snapshot_id: UUID) -> Sequence[ProductFact]:
-        records = (
-            await self.session.scalars(
-                select(ProductFactRecord)
-                .where(ProductFactRecord.snapshot_id == snapshot_id)
-                .order_by(ProductFactRecord.updated_at, ProductFactRecord.id)
-            )
-        ).all()
+    async def list_facts(
+        self, snapshot_id: UUID, *, for_update: bool = False
+    ) -> Sequence[ProductFact]:
+        statement = (
+            select(ProductFactRecord)
+            .where(ProductFactRecord.snapshot_id == snapshot_id)
+            .order_by(ProductFactRecord.updated_at, ProductFactRecord.id)
+        )
+        if for_update:
+            statement = statement.with_for_update()
+        records = (await self.session.scalars(statement)).all()
         return [_fact_from_record(item) for item in records]
 
     async def save_fact(self, fact: ProductFact) -> ProductFact:
@@ -247,6 +252,117 @@ class ScriptRepository:
 
     async def get_version(self, version_id: UUID) -> ScriptVersionRecord | None:
         return await self.session.get(ScriptVersionRecord, version_id)
+
+    async def get_storyboard(
+        self, storyboard_id: UUID, *, for_update: bool = False
+    ) -> StoryboardVersionRecord | None:
+        statement = select(StoryboardVersionRecord).where(
+            StoryboardVersionRecord.id == storyboard_id
+        )
+        if for_update:
+            statement = statement.with_for_update()
+        return await self.session.scalar(statement)
+
+    async def get_storyboard_by_operation(
+        self, *, script_version_id: UUID, operation_key: str
+    ) -> StoryboardVersionRecord | None:
+        return await self.session.scalar(
+            select(StoryboardVersionRecord).where(
+                StoryboardVersionRecord.script_version_id == script_version_id,
+                StoryboardVersionRecord.operation_key == operation_key,
+            )
+        )
+
+    async def insert_storyboard(
+        self, storyboard: StoryboardVersionRecord
+    ) -> tuple[StoryboardVersionRecord, bool]:
+        inserted_id = await self.session.scalar(
+            insert(StoryboardVersionRecord)
+            .values(
+                id=storyboard.id,
+                script_version_id=storyboard.script_version_id,
+                snapshot_id=storyboard.snapshot_id,
+                selected_fact_ids=storyboard.selected_fact_ids,
+                excluded_fact_ids=storyboard.excluded_fact_ids,
+                pattern_key=storyboard.pattern_key,
+                pattern_version=storyboard.pattern_version,
+                phase_sequence=storyboard.phase_sequence,
+                draft=storyboard.draft,
+                validation_report=storyboard.validation_report,
+                preflight_digest=storyboard.preflight_digest,
+                storyboard_digest=storyboard.storyboard_digest,
+                preview_contract_version=storyboard.preview_contract_version,
+                operation_key=storyboard.operation_key,
+            )
+            .on_conflict_do_nothing(constraint="uq_storyboard_version_operation")
+            .returning(StoryboardVersionRecord.id)
+        )
+        if inserted_id is None:
+            existing = await self.get_storyboard_by_operation(
+                script_version_id=storyboard.script_version_id,
+                operation_key=storyboard.operation_key,
+            )
+            if existing is None:
+                raise RuntimeError("storyboard idempotency conflict returned no record")
+            return existing, False
+        created = await self.get_storyboard(inserted_id)
+        if created is None:
+            raise RuntimeError("created storyboard cannot be loaded")
+        return created, True
+
+    async def get_approval_event_by_operation(
+        self, *, storyboard_id: UUID, operation_key: str
+    ) -> StoryboardApprovalEventRecord | None:
+        return await self.session.scalar(
+            select(StoryboardApprovalEventRecord).where(
+                StoryboardApprovalEventRecord.storyboard_id == storyboard_id,
+                StoryboardApprovalEventRecord.operation_key == operation_key,
+            )
+        )
+
+    async def get_latest_approval_event(
+        self, storyboard_id: UUID
+    ) -> StoryboardApprovalEventRecord | None:
+        return await self.session.scalar(
+            select(StoryboardApprovalEventRecord)
+            .where(StoryboardApprovalEventRecord.storyboard_id == storyboard_id)
+            .order_by(
+                StoryboardApprovalEventRecord.event_sequence.desc(),
+            )
+            .limit(1)
+        )
+
+    async def insert_approval_event(
+        self, event: StoryboardApprovalEventRecord
+    ) -> tuple[StoryboardApprovalEventRecord, bool]:
+        inserted_id = await self.session.scalar(
+            insert(StoryboardApprovalEventRecord)
+            .values(
+                id=event.id,
+                storyboard_id=event.storyboard_id,
+                decision=event.decision,
+                reason=event.reason,
+                storyboard_digest=event.storyboard_digest,
+                preflight_digest=event.preflight_digest,
+                approval_digest=event.approval_digest,
+                validation_report=event.validation_report,
+                operation_key=event.operation_key,
+            )
+            .on_conflict_do_nothing(constraint="uq_storyboard_approval_event_operation")
+            .returning(StoryboardApprovalEventRecord.id)
+        )
+        if inserted_id is None:
+            existing = await self.get_approval_event_by_operation(
+                storyboard_id=event.storyboard_id,
+                operation_key=event.operation_key,
+            )
+            if existing is None:
+                raise RuntimeError("approval idempotency conflict returned no record")
+            return existing, False
+        created = await self.session.get(StoryboardApprovalEventRecord, inserted_id)
+        if created is None:
+            raise RuntimeError("created approval event cannot be loaded")
+        return created, True
 
 def _source_from_record(record: ProductSourceRecord) -> ProductSource:
     return ProductSource(

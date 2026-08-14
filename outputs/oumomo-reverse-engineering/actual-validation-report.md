@@ -39,6 +39,27 @@
 
 余额从 1,030 变为 980：两次脚本生成各扣 10 积分，单次爆款复刻扣 30 积分，合计 50 积分。链接生视频失败未扣分。
 
+### 2026-08-11 阶段追加执行（当前主路径）
+
+累计扣分：180，页面余额 800（初始 980）；与 `credit-ledger.csv` 对账一致。
+
+- 已完成的追加付费实验：
+  - 脚本矩阵复刻 12 次（S-B01…S-F01）
+  - URL-to-video 回归 1 次（U-B01）
+  - 图片模型 4 次（I-GPT-01/I-GPT-02/I-NANO-01/I-NANO-02）
+- 阻断状态：
+  - 复刻参考视频未形成 2 条稳定可复现样本，R-* 未执行。
+  - Avatar 视频单价 75>30 cap，视频模型在图片参考输入侧仍有门禁。
+- 质量评分/去重路由仍存在跨页选择器重定向缺陷，未形成有效前后对照。
+- 发布路径在 dry-run 前可验收字段与授权边界，但不进入 OAuth/最终发布。
+
+### 2026-08-12 复验（延续）
+
+- 本轮继续执行了本地工具验证链路：18/18 工具测试、evidence validator、敏感字段扫描、`apps/api/tests` 全量 81/81、前端 lint/typecheck/build、Playwright e2e 2/2，均通过。
+- 页面层面复验 `video-replica` 列表后，仍未拿到 2 条稳定可重复参考视频，因此 R-* 仍 blocked，U-* 条件实验按门禁继续暂停。
+
+> 该加条目是对原 4 功能结论的延展，不替换历史 2026-08-10 阶段基线。
+
 ## 1. 证据等级
 
 - **F（Fact）**：本轮页面、可见输出、任务状态或余额直接证实。
@@ -525,3 +546,40 @@ DRAFT
 - [Creatify URL-to-video API](https://docs.creatify.ai/use-case/url-to-video)
 - [Creatify URL-to-video workflow](https://creatify.ai/blog/how-to-create-video-ads-with-ai)
 - [Creatify Features](https://creatify.ai/features)
+
+## 13. 2026-08-11 扩展实验复盘
+
+本节替代“剩余验证边界”中已被后续实验关闭的项目；早期记录保留为当时观察，不覆盖历史。
+
+### 实际付费与终态
+
+- 12 个脚本实验 S-B01…S-F01 均只提交一次、任务成功、各扣 10 分；但 12/12 因无证据声明、删除/排序不受约束或 promotion 扩写而判定 feature verdict=`fail`。
+- U-B01 链接生视频只提交一次、扣 50 分。页面先报 HTML/JSON 解析错误，Job 在 95% 超过五分钟，随后从完成队列恢复为 `succeeded`。
+- U-B01 成片已下载：15.104s、720×1280、24fps、H.264/AAC、9,389,487 bytes。人物/厨房/饮料连续性较好，包装文字严重乱码；编译 prompt 发明包装、200mg caffeine、instant awake 和 no-clump 功效，因此 factual/media acceptance=`fail`。
+- 新阶段累计净扣 180 分，余额 980→800；账本连续且无重复扣费。
+- 图片模型 2×2 矩阵四次任务均成功：GPT Image 2 两次均通过严格包装身份门，Nano Banana 2 两次均因包装结构或标记漂移未通过严格身份门。
+- 同一 `1K` 档位下，GPT Image 2 输出为 1254×1254 PNG，Nano Banana 2 输出为 1024×1024 JPEG；Nano 的远端文件名和页面媒体类型仍声称 PNG，存在真实字节格式与声明不一致的输出合同缺陷。
+- R-B01 爆款复刻以 `Mini / 15s / 9:16 / English / 720P / 1` 单次提交，实际扣 25 分（695→670），在短窗口曾停在 95%，后由项目管理的持久完成态恢复为 `succeeded`。本地 MP4 已完成 ffprobe、五点抽帧和 ASR；技术链路闭环，但无品牌输入图不能支持生成口播的保温、防漏、密封和质量主张，媒体事实门为 `fail`。
+
+### 条件实验
+
+- 图片模型报价已验证并完成：GPT Image 2=2、Nano Banana 2=3，2×2 矩阵总计 10；四次只提交一次、四次成功、实际余额 810→800。
+- GPT Image 2 是严格商品主图复刻的首选：两次均保留 `PULSE MIX`、蓝色闪电、深蓝底部图形和底部白线。Nano Banana 2 的像素相似度与模型内重复性更高，但仍会改变包装比例/标签布局，并在一次输出中删除真实标记，因此不能用 SSIM 替代语义身份检查。
+- Avatar 最低可见配置报价 75，超过单次 30 分上限。
+- 默认 Seedance 2.0/480P/10s/9:16 报价 30；浏览器本地文件权限阻断已经解除，但同参考图视频模型矩阵尚未执行，付费前仍需重新冻结输入与报价。
+- 视频去重和质量检测在选择 U-B01 后均错误跳到 TK 图文带货；零提交、零扣分。
+- 发布 dry-run 成功选择项目并识别 video/cover/account/title/tags/product/precheck/AI label/schedule 字段；在 OAuth、账号/商品绑定和最终发布前停止。
+
+### 新增工程资产
+
+- 六类同源受控降质语料 D-00…D-05 与可重复生成工具。
+- 当前工程 12 节点复盘和 P1/P1.5/P2 路线。
+- 9 份八段式 SOP。
+- `oumomo-clean-room-experiment-runner` Skill、证据校验器和前向测试结果。
+
+最推荐复刻仍为“商品事实＋可编辑爆款脚本＋项目/版本工作区”，而不是先接大模型市场。P1 应先解决 fact 选择/排序/排除、候选版本、实时校验和 unknown-response 恢复；P1.5 补 outbox、ImportAttempt、JobEvent 与租户权限；P2 采用 storyboard/关键帧低成本预览后再付费渲染。
+
+## 14. 2026-08-14 P1 分镜预检与复刻门禁复核
+
+- 本地 P1 已将事实选择/排除合同接到只读 storyboard preflight：预检在读取既有版本时重查事实状态、事实选择和所有可见创意字段；不调用模型、不创建任务、不渲染媒体。后端全量 93/93、前端 lint/typecheck/unit/build 与 Playwright 2/2 均通过。
+- R3-P01 在不上传、不生成的条件下重开当前榜单卡，最低配置和 25 分报价一致，余额仍为 670；但参考预览是无法读取播放状态的跨域 iframe。该证据只能判定“配置/报价可重开”，不能判定“参考可播放/可复现”，所以新的付费复刻保持 blocked。

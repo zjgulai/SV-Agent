@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oumomo Clean-room Experiment Runner"
+  short_description: "运行可对账、可恢复、可复现的 Oumomo 黑盒功能实验"
+  default_prompt: "Use $oumomo-clean-room-experiment-runner to design and validate a safe Oumomo capability experiment."

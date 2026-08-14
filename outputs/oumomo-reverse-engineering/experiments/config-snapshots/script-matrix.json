@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "audience": "",
+    "discount": "",
+    "duration_seconds": 30,
+    "language": "英语",
+    "product_input": "site-sample-input-claims",
+    "script_type": "场景实测型"
+  },
+  "experiments": [
+    {"experiment_id": "S-B01", "single_changed_variable": "baseline-repeat-1"},
+    {"experiment_id": "S-B02", "single_changed_variable": "baseline-repeat-2"},
+    {"experiment_id": "S-B03", "single_changed_variable": "baseline-repeat-3"},
+    {"duration_seconds": 15, "experiment_id": "S-D15", "single_changed_variable": "duration"},
+    {"duration_seconds": 45, "experiment_id": "S-D45", "single_changed_variable": "duration"},
+    {"experiment_id": "S-T01", "script_type": "口播种草型", "single_changed_variable": "script_type"},
+    {"experiment_id": "S-T02", "script_type": "反常识避坑型", "single_changed_variable": "script_type"},
+    {"experiment_id": "S-L01", "language": "普通话", "single_changed_variable": "language"},
+    {"audience": "大学生", "experiment_id": "S-A01", "single_changed_variable": "audience"},
+    {"discount": "[EXPERIMENT ONLY] 10% test discount", "experiment_id": "S-P01", "single_changed_variable": "discount"},
+    {"experiment_id": "S-O01", "selling_point_order": [3, 1, 2], "single_changed_variable": "selling_point_order"},
+    {"experiment_id": "S-F01", "remove_selling_point": 3, "single_changed_variable": "selling_point_presence"}
+  ],
+  "execution_deviation": "The script page has no manual-fact input. Paid runs use the built-in public example and treat parsed claims as vendor input claims, not verified facts.",
+  "expected_quote": 10,
+  "planned_total_debit": 120
+}

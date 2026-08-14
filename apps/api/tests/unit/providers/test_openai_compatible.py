@@ -16,6 +16,7 @@ from app.ports.script_provider import (
 
 SNAPSHOT_ID = UUID("00000000-0000-0000-0000-000000000020")
 FACT_ID = UUID("00000000-0000-0000-0000-000000000021")
+EXCLUDED_FACT_ID = UUID("00000000-0000-0000-0000-000000000022")
 
 
 def _request() -> ScriptGenerationRequest:
@@ -23,6 +24,13 @@ def _request() -> ScriptGenerationRequest:
         snapshot_id=SNAPSHOT_ID,
         title="Pulse Mix",
         facts=[SupportedFact(id=FACT_ID, claim="The pouch is resealable", claim_type="feature")],
+        excluded_facts=[
+            SupportedFact(
+                id=EXCLUDED_FACT_ID,
+                claim="The drink is blue",
+                claim_type="appearance",
+            )
+        ],
         target_duration_seconds=15,
         language="en",
         audience="busy professionals",
@@ -72,10 +80,12 @@ def _provider(transport: httpx.AsyncBaseTransport) -> OpenAICompatibleScriptProv
 
 async def test_openai_compatible_provider_parses_structured_draft() -> None:
     captured_schema: dict[str, object] = {}
+    captured_messages: list[dict[str, str]] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
         payload = json.loads(request.content)
         captured_schema.update(payload["response_format"]["json_schema"]["schema"])
+        captured_messages.extend(payload["messages"])
         return httpx.Response(
             200,
             json={
@@ -104,6 +114,10 @@ async def test_openai_compatible_provider_parses_structured_draft() -> None:
                 assert_strict_objects(item)
 
     assert_strict_objects(captured_schema)
+    assert "Never render excluded facts" in captured_messages[0]["content"]
+    assert json.loads(captured_messages[1]["content"])["excluded_facts"] == [
+        {"id": str(EXCLUDED_FACT_ID), "claim": "The drink is blue", "claim_type": "appearance"}
+    ]
 
 
 async def test_openai_compatible_provider_maps_rate_limit() -> None:

@@ -12,6 +12,8 @@ def export_payload(
             "script_id": str(generation.id),
             "version_id": str(version.id),
             "snapshot_id": str(generation.snapshot_id),
+            "selected_fact_ids": generation.selected_fact_ids,
+            "excluded_fact_ids": generation.excluded_fact_ids,
             "pattern": f"{generation.pattern_key}@{generation.pattern_version}",
             "provider": generation.provider,
             "model": generation.model,

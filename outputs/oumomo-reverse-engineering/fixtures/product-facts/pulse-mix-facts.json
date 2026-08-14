@@ -1,0 +1,18 @@
+{
+  "fixture_id": "pulse-mix-product-front",
+  "facts": [
+    {"fact_id": "pf-name", "claim": "Product name is PULSE MIX", "evidence": "visible package text"},
+    {"fact_id": "pf-color", "claim": "Package is white and blue", "evidence": "visible package colors"},
+    {"fact_id": "pf-form", "claim": "Product uses a resealable stand-up mix pouch", "evidence": "visible package form"}
+  ],
+  "forbidden_inferences": [
+    "energy benefit",
+    "flavor",
+    "ingredients",
+    "dose",
+    "health effect",
+    "certification",
+    "price"
+  ],
+  "image_sha256": "34c286145bd1d1875a52f2a7d673442099291cb06fa25fc22f1864a33f8c4974"
+}

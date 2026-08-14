@@ -1,11 +1,16 @@
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, Header, Query, Response, status
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.adapters.db.models import ScriptGenerationRecord, ScriptVersionRecord
+from app.adapters.db.models import (
+    ScriptGenerationRecord,
+    ScriptVersionRecord,
+    StoryboardApprovalEventRecord,
+    StoryboardVersionRecord,
+)
 from app.adapters.db.repositories import ProductRepository, ScriptRepository
 from app.adapters.db.session import get_db_session
 from app.api.problems import ApiProblem
@@ -17,6 +22,10 @@ from app.api.schemas.scripts import (
     ScriptGenerationOutput,
     ScriptOutput,
     ScriptVersionOutput,
+    StoryboardApprovalEventOutput,
+    StoryboardApprovalInput,
+    StoryboardApprovalOutput,
+    StoryboardVersionOutput,
     VersionDiffOutput,
 )
 from app.application.dispatch import mark_dispatch_failed
@@ -24,16 +33,29 @@ from app.application.exports import export_json, export_markdown
 from app.application.generations import (
     CreativePatternNotFoundError,
     DurationNotSupportedError,
+    FactSelectionInvalidError,
     FactsNotReadyError,
     GenerationCommand,
     GenerationIdempotencyConflictError,
     GenerationProductNotFoundError,
     GenerationService,
 )
+from app.application.storyboard_reviews import (
+    StoryboardApprovalStaleError,
+    StoryboardIdempotencyConflictError,
+    StoryboardNotFoundError,
+    StoryboardNotReadyError,
+    StoryboardReviewService,
+)
+from app.application.storyboards import (
+    StoryboardPreflightNotFoundError,
+    StoryboardPreflightService,
+)
 from app.application.version_diff import diff_versions
 from app.domain.jobs.entities import JobState
 from app.domain.scripts.models import ScriptDraft, ValidationReport
 from app.domain.scripts.patterns import CREATIVE_PATTERNS
+from app.domain.scripts.storyboard import StoryboardPreflight, StoryboardPreview
 from app.domain.scripts.validation import validate_script
 from app.settings import provider_api_key_is_configured, settings
 from app.worker.tasks import generate_script
@@ -46,6 +68,7 @@ def _generation_output(record: ScriptGenerationRecord) -> ScriptGenerationOutput
         id=record.id,
         snapshot_id=record.snapshot_id,
         selected_fact_ids=[UUID(item) for item in record.selected_fact_ids],
+        excluded_fact_ids=[UUID(item) for item in record.excluded_fact_ids],
         configuration=record.configuration,
         pattern_key=record.pattern_key,
         pattern_version=record.pattern_version,
@@ -64,6 +87,42 @@ def _version_output(record: ScriptVersionRecord) -> ScriptVersionOutput:
         parent_version_id=record.parent_version_id,
         draft=ScriptDraft.model_validate(record.draft),
         validation_report=ValidationReport.model_validate(record.validation_report),
+        created_at=record.created_at,
+    )
+
+
+def _storyboard_output(record: StoryboardVersionRecord) -> StoryboardVersionOutput:
+    return StoryboardVersionOutput(
+        id=record.id,
+        script_version_id=record.script_version_id,
+        snapshot_id=record.snapshot_id,
+        selected_fact_ids=[UUID(item) for item in record.selected_fact_ids],
+        excluded_fact_ids=[UUID(item) for item in record.excluded_fact_ids],
+        pattern_key=record.pattern_key,
+        pattern_version=record.pattern_version,
+        phase_sequence=record.phase_sequence,
+        draft=ScriptDraft.model_validate(record.draft),
+        validation_report=ValidationReport.model_validate(record.validation_report),
+        preflight_digest=record.preflight_digest,
+        storyboard_digest=record.storyboard_digest,
+        preview_contract_version=record.preview_contract_version,
+        created_at=record.created_at,
+    )
+
+
+def _storyboard_approval_event_output(
+    record: StoryboardApprovalEventRecord,
+) -> StoryboardApprovalEventOutput:
+    return StoryboardApprovalEventOutput(
+        id=record.id,
+        storyboard_id=record.storyboard_id,
+        decision=cast(Literal["approved", "rejected"], record.decision),
+        reason=record.reason,
+        storyboard_digest=record.storyboard_digest,
+        preflight_digest=record.preflight_digest,
+        approval_digest=record.approval_digest,
+        validation_report=ValidationReport.model_validate(record.validation_report),
+        event_sequence=record.event_sequence,
         created_at=record.created_at,
     )
 
@@ -119,6 +178,8 @@ async def create_script_generation(
                     language=payload.language,
                     audience=payload.audience,
                     creative_pattern_key=payload.creative_pattern_key,
+                    selected_fact_ids=tuple(payload.selected_fact_ids),
+                    excluded_fact_ids=tuple(payload.excluded_fact_ids),
                 ),
                 provider=settings.script_provider,
                 model=(
@@ -140,6 +201,13 @@ async def create_script_generation(
             code="FACTS_NOT_READY",
             title="Facts are not ready",
             detail="Confirm or lock at least one product fact before generation.",
+        ) from exc
+    except FactSelectionInvalidError as exc:
+        raise ApiProblem(
+            status=422,
+            code="FACT_SELECTION_INVALID",
+            title="Fact selection invalid",
+            detail="Selected and excluded facts must be unique, disjoint, and belong to the current snapshot.",
         ) from exc
     except CreativePatternNotFoundError as exc:
         raise ApiProblem(
@@ -214,6 +282,187 @@ async def get_script_version(
     return _version_output(version)
 
 
+@router.get(
+    "/api/v1/scripts/{script_id}/versions/{version_id}/storyboard-preflight",
+    response_model=StoryboardPreflight,
+)
+async def get_storyboard_preflight(
+    script_id: UUID,
+    version_id: UUID,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> StoryboardPreflight:
+    try:
+        return await StoryboardPreflightService(session).load(
+            script_id=script_id, version_id=version_id
+        )
+    except StoryboardPreflightNotFoundError as exc:
+        raise ApiProblem(
+            status=404,
+            code="SCRIPT_VERSION_NOT_FOUND",
+            title="Script version not found",
+            detail="The requested script version does not exist.",
+        ) from exc
+
+
+@router.post(
+    "/api/v1/scripts/{script_id}/versions/{version_id}/storyboards",
+    response_model=StoryboardVersionOutput,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_storyboard(
+    script_id: UUID,
+    version_id: UUID,
+    response: Response,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    idempotency_key: Annotated[
+        str,
+        Header(alias="Idempotency-Key", min_length=1, max_length=255),
+    ],
+) -> StoryboardVersionOutput:
+    try:
+        async with session.begin():
+            stored = await StoryboardReviewService(session).create(
+                script_id=script_id,
+                version_id=version_id,
+                operation_key=idempotency_key,
+            )
+    except StoryboardNotFoundError as exc:
+        raise ApiProblem(
+            status=404,
+            code="STORYBOARD_NOT_FOUND",
+            title="Storyboard not found",
+            detail="The requested script version does not exist.",
+        ) from exc
+    except StoryboardNotReadyError as exc:
+        raise ApiProblem(
+            status=409,
+            code="STORYBOARD_NOT_READY",
+            title="Storyboard not ready",
+            detail="The current fact and script contract must pass preflight first.",
+        ) from exc
+    except StoryboardIdempotencyConflictError as exc:
+        raise ApiProblem(
+            status=409,
+            code="IDEMPOTENCY_CONFLICT",
+            title="Idempotency conflict",
+            detail="This key was already used with different storyboard input.",
+        ) from exc
+    if not stored.created:
+        response.status_code = status.HTTP_200_OK
+    return _storyboard_output(stored.record)
+
+
+@router.get("/api/v1/storyboards/{storyboard_id}", response_model=StoryboardVersionOutput)
+async def get_storyboard(
+    storyboard_id: UUID,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> StoryboardVersionOutput:
+    try:
+        return _storyboard_output(await StoryboardReviewService(session).get(storyboard_id))
+    except StoryboardNotFoundError as exc:
+        raise ApiProblem(
+            status=404,
+            code="STORYBOARD_NOT_FOUND",
+            title="Storyboard not found",
+            detail="The requested storyboard does not exist.",
+        ) from exc
+
+
+@router.get(
+    "/api/v1/storyboards/{storyboard_id}/preview",
+    response_model=StoryboardPreview,
+)
+async def get_storyboard_preview(
+    storyboard_id: UUID,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> StoryboardPreview:
+    try:
+        return await StoryboardReviewService(session).preview(storyboard_id)
+    except StoryboardNotFoundError as exc:
+        raise ApiProblem(
+            status=404,
+            code="STORYBOARD_NOT_FOUND",
+            title="Storyboard not found",
+            detail="The requested storyboard does not exist.",
+        ) from exc
+
+
+@router.post(
+    "/api/v1/storyboards/{storyboard_id}/approval-events",
+    response_model=StoryboardApprovalEventOutput,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_storyboard_approval_event(
+    storyboard_id: UUID,
+    payload: StoryboardApprovalInput,
+    response: Response,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    idempotency_key: Annotated[
+        str,
+        Header(alias="Idempotency-Key", min_length=1, max_length=255),
+    ],
+) -> StoryboardApprovalEventOutput:
+    try:
+        async with session.begin():
+            stored = await StoryboardReviewService(session).approve(
+                storyboard_id=storyboard_id,
+                decision=payload.decision,
+                reason=payload.reason,
+                operation_key=idempotency_key,
+            )
+    except StoryboardNotFoundError as exc:
+        raise ApiProblem(
+            status=404,
+            code="STORYBOARD_NOT_FOUND",
+            title="Storyboard not found",
+            detail="The requested storyboard does not exist.",
+        ) from exc
+    except StoryboardApprovalStaleError as exc:
+        raise ApiProblem(
+            status=409,
+            code="STORYBOARD_APPROVAL_STALE",
+            title="Storyboard approval stale",
+            detail="The current fact and script contract no longer supports approval.",
+        ) from exc
+    except StoryboardIdempotencyConflictError as exc:
+        raise ApiProblem(
+            status=409,
+            code="IDEMPOTENCY_CONFLICT",
+            title="Idempotency conflict",
+            detail="This key was already used with different approval input.",
+        ) from exc
+    if not stored.created:
+        response.status_code = status.HTTP_200_OK
+    return _storyboard_approval_event_output(stored.record)
+
+
+@router.get(
+    "/api/v1/storyboards/{storyboard_id}/approval",
+    response_model=StoryboardApprovalOutput,
+)
+async def get_storyboard_approval(
+    storyboard_id: UUID,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> StoryboardApprovalOutput:
+    try:
+        state = await StoryboardReviewService(session).approval_state(storyboard_id)
+    except StoryboardNotFoundError as exc:
+        raise ApiProblem(
+            status=404,
+            code="STORYBOARD_NOT_FOUND",
+            title="Storyboard not found",
+            detail="The requested storyboard does not exist.",
+        ) from exc
+    return StoryboardApprovalOutput(
+        status=state.status,
+        latest_event=(
+            _storyboard_approval_event_output(state.latest_event)
+            if state.latest_event is not None
+            else None
+        ),
+    )
+
+
 @router.post(
     "/api/v1/scripts/{script_id}/versions/{version_id}/derive",
     response_model=ScriptVersionOutput,
@@ -243,9 +492,21 @@ async def derive_script_version(
             fact = await products.get_fact(UUID(raw_id), for_update=True)
             if fact is not None:
                 facts[fact.id] = fact
+        excluded_facts = {}
+        for raw_id in generation.excluded_fact_ids:
+            fact = await products.get_fact(UUID(raw_id), for_update=True)
+            if fact is None or fact.snapshot_id != generation.snapshot_id:
+                raise ApiProblem(
+                    status=409,
+                    code="FACTS_NOT_READY",
+                    title="Facts are not ready",
+                    detail="The generation fact contract is no longer available.",
+                )
+            excluded_facts[fact.id] = fact
         report = validate_script(
             draft,
             facts,
+            excluded_facts=excluded_facts,
             creative_pattern_key=generation.pattern_key,
             phase_sequence=tuple(
                 str(item)

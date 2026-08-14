@@ -11,6 +11,7 @@ FactFrame is an evidence-first script workspace. It captures immutable product s
 - Deterministic local provider and optional OpenAI-compatible strict JSON provider
 - Structure, timeline, strict fact binding, server-owned creative-copy and prohibited-claim validation
 - Database-enforced append-only snapshots/versions, field-level comparison and JSON/Markdown export
+- Immutable storyboard review, deterministic zero-cost animatic preview and local approval events
 - React Web, FastAPI OpenAPI, Docker Compose, CI and Playwright E2E
 
 ## Quick start
@@ -62,4 +63,4 @@ Use the complete commands and test architecture in [`docs/development/testing.md
 
 ## Safety and scope
 
-This P0 does not include accounts, billing, sales rankings, video generation or social publishing. URL import handles public structured product data only and deliberately rejects credentials, query strings, fragments and non-standard ports; blocked or incomplete pages fall back to manual entry. PostgreSQL, not Redis or model prose, determines visible execution state.
+This P0/P2.0 slice does not include accounts, billing, sales rankings, video generation or social publishing. A local storyboard approval is only a future quote gate, never permission to render or publish. URL import handles public structured product data only and deliberately rejects credentials, query strings, fragments and non-standard ports; blocked or incomplete pages fall back to manual entry. PostgreSQL, not Redis or model prose, determines visible execution state.

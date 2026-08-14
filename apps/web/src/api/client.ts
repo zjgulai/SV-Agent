@@ -129,6 +129,7 @@ export interface ScriptResource {
     id: string;
     snapshot_id: string;
     selected_fact_ids: string[];
+    excluded_fact_ids: string[];
     configuration: Record<string, unknown>;
     pattern_key: string;
     pattern_version: string;
@@ -139,6 +140,73 @@ export interface ScriptResource {
     created_at: string;
   };
   versions: ScriptVersion[];
+}
+
+export interface StoryboardFact {
+  id: string;
+  claim_type: string;
+  claim: string;
+  evidence_kind: string;
+  evidence_excerpt: string;
+  status: FactStatus;
+}
+
+export interface StoryboardPreflight {
+  status: "ready" | "blocked";
+  script_id: string;
+  version_id: string;
+  snapshot_id: string;
+  pattern_key: string;
+  input_digest: string;
+  selected_facts: StoryboardFact[];
+  excluded_facts: StoryboardFact[];
+  phases: ScriptPhase[];
+  shots: ScriptShot[];
+  validation_report: ScriptVersion["validation_report"];
+}
+
+export interface StoryboardVersion {
+  id: string;
+  script_version_id: string;
+  snapshot_id: string;
+  selected_fact_ids: string[];
+  excluded_fact_ids: string[];
+  pattern_key: string;
+  pattern_version: string;
+  phase_sequence: string[];
+  draft: ScriptVersion["draft"];
+  validation_report: ScriptVersion["validation_report"];
+  preflight_digest: string;
+  storyboard_digest: string;
+  preview_contract_version: string;
+  created_at: string;
+}
+
+export interface StoryboardPreview {
+  storyboard_id: string;
+  storyboard_digest: string;
+  preview_digest: string;
+  preview_contract_version: string;
+  image_indexes: number[];
+  shots: Array<ScriptShot & { index: number }>;
+}
+
+export interface StoryboardApprovalEvent {
+  id: string;
+  storyboard_id: string;
+  decision: "approved" | "rejected";
+  reason: string | null;
+  storyboard_digest: string;
+  preflight_digest: string;
+  approval_digest: string;
+  validation_report: ScriptVersion["validation_report"];
+  event_sequence: number;
+  created_at: string;
+}
+
+export interface StoryboardApproval {
+  status: "unreviewed" | "approved" | "rejected" | "stale";
+  latest_event: StoryboardApprovalEvent | null;
 }
 
 export interface VersionDiff {
@@ -208,6 +276,8 @@ export const api = {
       language: string;
       audience: string;
       creative_pattern_key: string;
+      selected_fact_ids: string[];
+      excluded_fact_ids: string[];
     },
     idempotencyKey: string,
   ) =>
@@ -218,6 +288,34 @@ export const api = {
     }),
   getJob: (id: string) => request<Job>(`/api/v1/jobs/${id}`),
   getPatterns: () => request<CreativePattern[]>("/api/v1/creative-patterns"),
+  getStoryboardPreflight: (scriptId: string, versionId: string) =>
+    request<StoryboardPreflight>(
+      "/api/v1/scripts/" + scriptId + "/versions/" + versionId + "/storyboard-preflight",
+    ),
+  createStoryboard: (scriptId: string, versionId: string, idempotencyKey: string) =>
+    request<StoryboardVersion>(
+      `/api/v1/scripts/${scriptId}/versions/${versionId}/storyboards`,
+      { method: "POST", headers: { "Idempotency-Key": idempotencyKey } },
+    ),
+  getStoryboard: (storyboardId: string) =>
+    request<StoryboardVersion>(`/api/v1/storyboards/${storyboardId}`),
+  getStoryboardPreview: (storyboardId: string) =>
+    request<StoryboardPreview>(`/api/v1/storyboards/${storyboardId}/preview`),
+  getStoryboardApproval: (storyboardId: string) =>
+    request<StoryboardApproval>(`/api/v1/storyboards/${storyboardId}/approval`),
+  createStoryboardApproval: (
+    storyboardId: string,
+    input: { decision: "approved" | "rejected"; reason?: string },
+    idempotencyKey: string,
+  ) =>
+    request<StoryboardApprovalEvent>(
+      `/api/v1/storyboards/${storyboardId}/approval-events`,
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+        body: JSON.stringify(input),
+      },
+    ),
   getScript: (id: string) => request<ScriptResource>(`/api/v1/scripts/${id}`),
   deriveVersion: (scriptId: string, versionId: string, title: string) =>
     request<ScriptVersion>(`/api/v1/scripts/${scriptId}/versions/${versionId}/derive`, {

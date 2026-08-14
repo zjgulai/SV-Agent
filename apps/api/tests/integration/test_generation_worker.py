@@ -65,6 +65,7 @@ async def test_repeated_generation_delivery_creates_one_version_and_db_survives_
                 language="en",
                 audience="busy professionals",
                 creative_pattern_key="problem_solution",
+                selected_fact_ids=(FACT_ID,),
             ),
         )
         job = queued.job

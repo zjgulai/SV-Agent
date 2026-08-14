@@ -1,0 +1,28 @@
+experiment_id,observed_at,feature,quote,credit_before,credit_after,delta,terminal_state,notes
+Z00,2026-08-11T09:40:30Z,zero-credit-baseline,0,980,980,0,completed,no paid submissions
+S-B01,2026-08-11T10:06:30Z,viral-script,10,980,970,-10,succeeded,one click and post-completion reload reconciled
+S-B02,2026-08-11T10:35:01Z,viral-script,10,970,960,-10,succeeded,one click and post-completion reload reconciled
+S-B03,2026-08-11T10:36:52Z,viral-script,10,960,950,-10,succeeded,one click and post-completion reload reconciled
+S-D15,2026-08-11T10:38:27Z,viral-script,10,950,940,-10,succeeded,one click and post-completion reload reconciled
+S-D45,2026-08-11T10:39:57Z,viral-script,10,940,930,-10,succeeded,one click and post-completion reload reconciled
+S-T01,2026-08-11T10:41:42Z,viral-script,10,930,920,-10,succeeded,one click and post-completion reload reconciled
+S-T02,2026-08-11T10:43:07Z,viral-script,10,920,910,-10,succeeded,one click and post-completion reload reconciled
+S-L01,2026-08-11T10:45:04Z,viral-script,10,910,900,-10,succeeded,one click and post-completion reload reconciled
+S-A01,2026-08-11T10:47:34Z,viral-script,10,900,890,-10,succeeded,one click and post-completion reload reconciled
+S-P01,2026-08-11T10:49:33Z,viral-script,10,890,880,-10,succeeded,one click and post-completion reload reconciled
+S-O01,2026-08-11T10:51:31Z,viral-script,10,880,870,-10,succeeded,one click and post-completion reload reconciled
+S-F01,2026-08-11T10:53:12Z,viral-script,10,870,860,-10,succeeded,one click and post-completion reload reconciled
+U-B01,2026-08-11T11:00:23Z,url-to-video,50,860,810,-50,succeeded,job created despite frontend JSON parse error; later recovered from completed queue without resubmission
+Q-GATE,2026-08-11T11:15:51Z,quality-score-gate,0,810,810,0,blocked,recorded after existing-project selection rerouted to tiktok-slide-show; no submission
+D-GATE,2026-08-11T11:15:51Z,video-dedup-gate,0,810,810,0,blocked,recorded after existing-project selection rerouted to tiktok-slide-show; no submission
+P-DRY,2026-08-11T11:15:51Z,publish-dry-run,0,810,810,0,completed,recorded after project selection; stopped before OAuth authorization or publish
+I-GPT-01,2026-08-11T11:36:33Z,image-model-generation,2,810,808,-2,succeeded,one click; identical reference prompt and 1:1 1K count-1 config
+I-GPT-02,2026-08-11T11:37:41Z,image-model-generation,2,808,806,-2,succeeded,one click; identical repeat of I-GPT-01
+I-NANO-01,2026-08-11T11:38:37Z,image-model-generation,3,806,803,-3,succeeded,one click; identical cross-model config
+I-NANO-02,2026-08-11T11:38:46Z,image-model-generation,3,803,800,-3,succeeded,one click; identical repeat of I-NANO-01
+AV-B01,2026-08-12T03:50:12Z,avatar-video,75,800,725,-75,succeeded,one click; Maya and one user-uploaded reference image; initially stalled at 95 percent, then appeared in completed projects without a second submission
+S2-B01,2026-08-12T11:10:37Z,viral-script,10,725,715,-10,succeeded,one click; default 30-second English scenario-test configuration; balance reconciled from projects page
+S2-B02,2026-08-12T11:13:41Z,viral-script,10,715,705,-10,succeeded,one click; identical repeat of S2-B01; balance reconciled from projects page
+S2-F01,2026-08-12T11:17:30Z,viral-script,10,705,695,-10,succeeded,one click; deleted the third auto-extracted selling point before generation; balance reconciled from projects page
+R-B01,2026-08-14T02:31:58Z,video-replica,25,695,670,-25,succeeded,one click; persistent completed project and locally exported media reconciled without a second submission
+R3-P01,2026-08-14T02:57:28Z,video-replica-paid-contract-preflight,0,670,670,0,not_submitted,Mini 15-second quote observed; no upload or submit; cross-origin preview had no observable playback state

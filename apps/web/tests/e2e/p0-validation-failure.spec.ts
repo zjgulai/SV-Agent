@@ -8,6 +8,7 @@ test("unsupported guarantee remains visible as a validation-failed version", asy
   await page.getByRole("button", { name: "锁定" }).click();
   await expect(page.getByText("已锁定")).toBeVisible();
   await page.getByRole("link", { name: "生成脚本" }).click();
+  await page.getByRole("button", { name: "纳入" }).click();
   await page.getByRole("button", { name: "创建生成任务" }).click();
 
   await expect(page.getByRole("status")).toHaveText("校验未通过", { timeout: 20_000 });
