@@ -2,19 +2,37 @@ import { useMutation, useQueries } from "@tanstack/react-query";
 import { FormEvent, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { ApiProblem, api } from "../api/client";
+import { ApiResponseParseError, api, type ProductFact } from "../api/client";
+import {
+  beginOperation,
+  findUnknownOperation,
+  markOperationAccepted,
+  markOperationRecovering,
+  markOperationUnknown,
+  type OperationRecord,
+} from "../features/operationRecovery";
 
-function idempotencyKey(productId: string, signature: string) {
-  const storageKey = generationStorageKey(productId, signature);
-  const existing = sessionStorage.getItem(storageKey);
-  if (existing) return existing;
-  const created = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
-  sessionStorage.setItem(storageKey, created);
-  return created;
+type GenerationInput = {
+  target_duration_seconds: number;
+  language: string;
+  audience: "general" | "study_routine" | "work_routine" | "home_routine" | "on_the_go";
+  creative_pattern_key: string;
+  selected_fact_ids: string[];
+  excluded_fact_ids: string[];
+  promotion_fact_id: string | null;
+};
+
+function generationRoute(productId: string) {
+  return `/api/v1/products/${productId}/script-generations`;
 }
 
-function generationStorageKey(productId: string, signature: string) {
-  return `generation:${productId}:${signature}`;
+function promotionIsActive(fact: ProductFact, now = Date.now()) {
+  const effectiveFrom = fact.value.effective_from;
+  const effectiveTo = fact.value.effective_to;
+  if (typeof effectiveFrom !== "string" || typeof effectiveTo !== "string") return false;
+  const startsAt = Date.parse(effectiveFrom);
+  const endsAt = Date.parse(effectiveTo);
+  return Number.isFinite(startsAt) && Number.isFinite(endsAt) && startsAt <= now && now < endsAt;
 }
 
 export function GenerateScriptPage() {
@@ -22,10 +40,14 @@ export function GenerateScriptPage() {
   const navigate = useNavigate();
   const [duration, setDuration] = useState(15);
   const [language, setLanguage] = useState("en");
-  const [audience, setAudience] = useState("busy professionals");
+  const [audience, setAudience] = useState<GenerationInput["audience"]>("general");
   const [pattern, setPattern] = useState("problem_solution");
   const [selectedFactIds, setSelectedFactIds] = useState<string[]>([]);
   const [excludedFactIds, setExcludedFactIds] = useState<string[]>([]);
+  const [promotionFactId, setPromotionFactId] = useState<string | null>(null);
+  const [recoverableGeneration, setRecoverableGeneration] = useState(() =>
+    findUnknownOperation("script_generation", generationRoute(id)),
+  );
   const [productQuery, patternsQuery] = useQueries({
     queries: [
       { queryKey: ["product", id], queryFn: () => api.getProduct(id), enabled: Boolean(id) },
@@ -33,13 +55,29 @@ export function GenerateScriptPage() {
     ],
   });
   const readyFacts = useMemo(
-    () => productQuery.data?.facts.filter((fact) => fact.status === "confirmed" || fact.status === "locked") ?? [],
+    () => productQuery.data?.facts.filter((fact) => (fact.status === "confirmed" || fact.status === "locked") && fact.claim_type !== "promotion") ?? [],
+    [productQuery.data],
+  );
+  const promotionFacts = useMemo(
+    () => (productQuery.data?.facts ?? [])
+      .filter((fact) => (fact.status === "confirmed" || fact.status === "locked") && fact.claim_type === "promotion")
+      .map((fact) => ({ fact, active: promotionIsActive(fact) })),
     [productQuery.data],
   );
   const selectedFacts = useMemo(
     () => selectedFactIds.map((id) => readyFacts.find((fact) => fact.id === id)).filter(Boolean),
     [readyFacts, selectedFactIds],
   );
+  const patternDefinition = useMemo(
+    () => patternsQuery.data
+      ?.find((item) => item.key === pattern)
+      ?.contracts.find((item) => item.duration_seconds === duration && item.language === language),
+    [duration, language, pattern, patternsQuery.data],
+  );
+  const patternBudgetWeight = patternDefinition?.shots.reduce(
+    (total, shot) => total + shot.budget_weight,
+    0,
+  ) ?? 0;
   function setFactMode(factId: string, mode: "selected" | "excluded" | "unused") {
     setSelectedFactIds((current) => {
       const without = current.filter((id) => id !== factId);
@@ -60,24 +98,57 @@ export function GenerateScriptPage() {
       return next;
     });
   }
-  const generationInput = {
+  const generationInput: GenerationInput = {
     target_duration_seconds: duration,
     language,
     audience,
     creative_pattern_key: pattern,
     selected_fact_ids: selectedFactIds,
     excluded_fact_ids: excludedFactIds,
+    promotion_fact_id: promotionFactId,
   };
-  const inputSignature = JSON.stringify(generationInput);
   const generation = useMutation({
-    mutationFn: () => api.createGeneration(id, generationInput, idempotencyKey(id, inputSignature)),
-    onSuccess: (job) => {
-      sessionStorage.removeItem(generationStorageKey(id, inputSignature));
-      navigate(`/jobs/${job.id}`);
+    mutationFn: async (operation: OperationRecord) => {
+      const input = operation.request.body as GenerationInput;
+      try {
+        const job = await api.createGeneration(id, input, operation.idempotency_key);
+        const jobPath = `/jobs/${job.id}`;
+        markOperationAccepted(operation.idempotency_key, jobPath);
+        return jobPath;
+      } catch (error) {
+        const jobPath = error instanceof ApiResponseParseError ? error.jobPath : null;
+        if (jobPath) {
+          markOperationAccepted(operation.idempotency_key, jobPath);
+          return jobPath;
+        }
+        markOperationUnknown(operation.idempotency_key);
+        throw error;
+      }
+    },
+    onSuccess: (jobPath) => {
+      setRecoverableGeneration(null);
+      navigate(jobPath);
+    },
+    onError: (_error, operation) => {
+      setRecoverableGeneration(findUnknownOperation("script_generation", operation.request.route) ?? operation);
     },
   });
-  const error = generation.error as ApiProblem | null;
-  function submit(event: FormEvent) { event.preventDefault(); generation.mutate(); }
+  const error = generation.error;
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    const operation = beginOperation("script_generation", {
+      route: generationRoute(id),
+      body: generationInput,
+    });
+    setRecoverableGeneration(null);
+    generation.mutate(operation);
+  }
+  function recoverGeneration() {
+    if (!recoverableGeneration) return;
+    const operation = markOperationRecovering(recoverableGeneration.idempotency_key) ?? recoverableGeneration;
+    setRecoverableGeneration(operation);
+    generation.mutate(operation);
+  }
 
   if (productQuery.isPending || patternsQuery.isPending) return <section className="page"><div className="state-card">正在准备生成合同…</div></section>;
   return (
@@ -91,7 +162,22 @@ export function GenerateScriptPage() {
           <label>语言<select value={language} onChange={(event) => setLanguage(event.target.value)}><option value="en">English</option><option value="zh-CN">简体中文</option></select></label>
           <label>创意结构<select value={pattern} onChange={(event) => setPattern(event.target.value)}>{patternsQuery.data?.map((item) => <option key={item.key} value={item.key}>{item.name}</option>)}</select></label>
         </div>
-        <label>目标受众<input required value={audience} onChange={(event) => setAudience(event.target.value)} /></label>
+        <label>受众创意槽<select value={audience} onChange={(event) => setAudience(event.target.value as GenerationInput["audience"])}><option value="general">通用日常</option><option value="study_routine">学习日常</option><option value="work_routine">工作日常</option><option value="home_routine">居家日常</option><option value="on_the_go">出行日常</option></select></label>
+        {patternDefinition ? <section className="pattern-contract-preview" aria-label="冻结 Pattern 合同">
+          <div className="pattern-contract-heading"><div><p className="eyebrow">FROZEN PATTERN · {patternDefinition.version}</p><h2>冻结 Pattern 合同</h2></div><span>{patternDefinition.hook_type}</span></div>
+          <p>阶段、镜头角色、事实绑定和时长预算均已固定，创建后会随 generation 一同保存。</p>
+          <div className="pattern-contract-plan">
+            {patternDefinition.phases.map((phase, index) => {
+              const phaseShots = patternDefinition.shots.filter((shot) => shot.phase_key === phase.key);
+              return <div key={`${phase.key}-${index}`}><strong>{index + 1}. {phase.key}</strong><span className="pattern-contract-shots">{phaseShots.map((shot, shotIndex) => {
+                const budget = patternBudgetWeight ? Math.round(shot.budget_weight / patternBudgetWeight * 100) : 0;
+                return <span key={`${phase.key}-${shotIndex}`}>镜头 {shotIndex + 1} · {shot.role} · 必须绑定已选事实 · {budget}%</span>;
+              })}</span></div>;
+            })}
+          </div>
+          <div className="pattern-contract-boundaries"><span>受众仅影响服务端场景、道具与拍摄槽</span><span>{patternDefinition.cta_policy.mode === "server_promotion_final_cta" ? "可选优惠只进入最终 CTA" : "CTA 不含优惠"}</span><span>口播上限 {patternDefinition.speaking_rate.max} {patternDefinition.speaking_rate.unit === "words_per_second" ? "词/秒" : "汉字/秒"}</span></div>
+        </section> : <div className="inline-error">当前 Pattern 没有可用的冻结合同，无法创建生成任务。</div>}
+        {patternDefinition?.cta_policy.mode === "server_promotion_final_cta" && <label>Promotion Fact（仅最终 CTA）<select value={promotionFactId ?? ""} onChange={(event) => setPromotionFactId(event.target.value || null)}><option value="">不使用优惠</option>{promotionFacts.map(({ fact, active }) => <option key={fact.id} value={fact.id} disabled={!active}>{fact.claim}{active ? "" : "（当前不可用）"}</option>)}</select><small>仅限已确认或锁定、仍在有效期内的 TikTok Shop US 优惠；当前不可用的优惠不可选择，且不会进入口播或商品声明。</small></label>}
         <div className="fact-selection">
           <div className="fact-selection-heading">
             <div><p className="eyebrow">FACT SELECTION · {readyFacts.length}</p><h2>本次生成事实</h2></div>
@@ -117,8 +203,9 @@ export function GenerateScriptPage() {
         </div>
         {readyFacts.length === 0 && <div className="inline-error">没有可用事实。请先确认或锁定至少一条事实。</div>}
         {readyFacts.length > 0 && selectedFactIds.length === 0 && <div className="inline-error">请至少纳入一条事实后再创建生成任务。</div>}
-        {error && <div className="inline-error" role="alert">{error.message}</div>}
-        <div className="form-actions"><button className="button button-primary" disabled={!selectedFactIds.length || generation.isPending}>创建生成任务</button></div>
+        {error instanceof Error && <div className="inline-error" role="alert">{error.message}</div>}
+        {recoverableGeneration && <div className="state-card recovery-card" role="status"><strong>请求状态未知</strong><p>恢复会使用原始生成合同与同一幂等键，不会创建新脚本任务。</p><button className="button button-secondary" type="button" disabled={generation.isPending} onClick={recoverGeneration}>恢复原请求</button></div>}
+        <div className="form-actions"><button className="button button-primary" disabled={!patternDefinition || !selectedFactIds.length || generation.isPending}>创建生成任务</button></div>
       </form>
     </section>
   );

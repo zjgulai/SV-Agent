@@ -2,20 +2,21 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ApiProblem, api } from "../api/client";
+import { ApiResponseParseError, api } from "../api/client";
+import {
+  beginOperation,
+  findUnknownOperation,
+  markOperationAccepted,
+  markOperationRecovering,
+  markOperationUnknown,
+  type OperationRecord,
+} from "../features/operationRecovery";
 
-const IMPORT_RETRY_KEY = "product-import:pending";
+const IMPORT_ROUTE = "/api/v1/product-imports";
 
-function importKey(url: string) {
-  const normalizedUrl = url.trim();
-  const stored = sessionStorage.getItem(IMPORT_RETRY_KEY);
-  if (stored) {
-    const pending = JSON.parse(stored) as { url: string; key: string };
-    if (pending.url === normalizedUrl) return pending.key;
-  }
-  const key = crypto.randomUUID();
-  sessionStorage.setItem(IMPORT_RETRY_KEY, JSON.stringify({ url: normalizedUrl, key }));
-  return key;
+function importUrl(record: OperationRecord) {
+  const body = record.request.body as { url?: unknown };
+  return typeof body.url === "string" ? body.url : null;
 }
 
 export function NewProductPage() {
@@ -28,6 +29,9 @@ export function NewProductPage() {
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("USD");
   const [url, setUrl] = useState("");
+  const [recoverableImport, setRecoverableImport] = useState(() =>
+    findUnknownOperation("product_import", IMPORT_ROUTE),
+  );
 
   const manual = useMutation({
     mutationFn: () =>
@@ -54,18 +58,52 @@ export function NewProductPage() {
     },
   });
   const productImport = useMutation({
-    mutationFn: () => api.importProduct(url, importKey(url)),
-    onSuccess: (job) => {
-      sessionStorage.removeItem(IMPORT_RETRY_KEY);
-      navigate(`/jobs/${job.id}`);
+    mutationFn: async (operation: OperationRecord) => {
+      const operationUrl = importUrl(operation);
+      if (!operationUrl) throw new Error("恢复记录无效，请重新开始安全导入。");
+      try {
+        const job = await api.importProduct(operationUrl, operation.idempotency_key);
+        const jobPath = `/jobs/${job.id}`;
+        markOperationAccepted(operation.idempotency_key, jobPath);
+        return jobPath;
+      } catch (error) {
+        const jobPath = error instanceof ApiResponseParseError ? error.jobPath : null;
+        if (jobPath) {
+          markOperationAccepted(operation.idempotency_key, jobPath);
+          return jobPath;
+        }
+        markOperationUnknown(operation.idempotency_key);
+        throw error;
+      }
+    },
+    onSuccess: (jobPath) => {
+      setRecoverableImport(null);
+      navigate(jobPath);
+    },
+    onError: (_error, operation) => {
+      setRecoverableImport(findUnknownOperation("product_import", operation.request.route) ?? operation);
     },
   });
-  const error = (manual.error || productImport.error) as ApiProblem | null;
+  const error = manual.error || productImport.error;
 
   function submit(event: FormEvent) {
     event.preventDefault();
     if (mode === "manual") manual.mutate();
-    else productImport.mutate();
+    else {
+      const operation = beginOperation("product_import", {
+        route: IMPORT_ROUTE,
+        body: { url: url.trim() },
+      });
+      setRecoverableImport(null);
+      productImport.mutate(operation);
+    }
+  }
+
+  function recoverImport() {
+    if (!recoverableImport) return;
+    const operation = markOperationRecovering(recoverableImport.idempotency_key) ?? recoverableImport;
+    setRecoverableImport(operation);
+    productImport.mutate(operation);
   }
 
   return (
@@ -91,7 +129,14 @@ export function NewProductPage() {
         ) : (
           <label>公开商品 URL<input required type="url" value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://example.com/product" /><small>仅支持公开 HTTP/HTTPS 页面中的 Schema.org Product，不执行 JavaScript。</small></label>
         )}
-        {error && <div className="inline-error" role="alert">{error.message}</div>}
+        {error instanceof Error && <div className="inline-error" role="alert">{error.message}</div>}
+        {mode === "url" && recoverableImport && (
+          <div className="state-card recovery-card" role="status">
+            <strong>请求状态未知</strong>
+            <p>网络未确认本次安全导入的受理结果。恢复会使用原始请求与同一幂等键，不会创建新任务。</p>
+            <button className="button button-secondary" type="button" disabled={productImport.isPending} onClick={recoverImport}>恢复原请求</button>
+          </div>
+        )}
         <div className="form-actions">
           <button className="button button-primary" disabled={manual.isPending || productImport.isPending} type="submit">
             {mode === "manual" ? "保存商品" : "开始安全导入"}

@@ -6,6 +6,25 @@ import { describe, expect, it } from "vitest";
 import { TestApp } from "../../test/TestApp";
 import { server } from "../../test/server";
 
+function rebindableScript() {
+  const draft = {
+    target_duration_seconds: 15,
+    language: "en",
+    audience: "buyers",
+    snapshot_id: "snapshot-1",
+    phases: [{ key: "hook", purpose: "Hook", start_seconds: 0, end_seconds: 15 }],
+    shots: [{ start_seconds: 0, end_seconds: 15, phase_key: "hook", voiceover: "Resealable drink mix pouch", visual: "Show the pouch", action: "Hold the pouch", caption: "Resealable drink mix pouch", acceptance_shot: "Product visible", supported_fact_ids: ["fact-1"], product_claims: ["Resealable drink mix pouch"] }],
+    titles: ["Fact-led draft"],
+    tags: ["demo"],
+    shooting_list: ["Product visible"],
+  };
+  return {
+    generation: { id: "script-1", snapshot_id: "snapshot-1", selected_fact_ids: ["fact-1", "fact-2"], excluded_fact_ids: [], configuration: {}, pattern_key: "problem_solution", pattern_version: "1.0", provider: "deterministic", model: "deterministic-v1", prompt_contract_version: "1.0", input_digest: "a".repeat(64), created_at: "2026-08-10T12:00:00Z" },
+    versions: [{ id: "version-1", generation_id: "script-1", parent_version_id: null, revision_kind: null, actor_kind: null, reason_code: null, operation_input_digest: null, created_at: "2026-08-10T12:00:00Z", draft, validation_report: { acceptable: true, findings: [], blocking: [] } }],
+    fact_contract: { selected: [{ id: "fact-1", claim: "Resealable drink mix pouch", status: "locked", snapshot_id: "snapshot-1" }, { id: "fact-2", claim: "Single-serve packet", status: "confirmed", snapshot_id: "snapshot-1" }], excluded: [] },
+  };
+}
+
 describe("script versions", () => {
   it("renders after a pending script request resolves", async () => {
     server.use(
@@ -14,10 +33,11 @@ describe("script versions", () => {
         return HttpResponse.json({
           generation: { id: "script-1", snapshot_id: "snapshot-1", selected_fact_ids: ["fact-1"], excluded_fact_ids: [], configuration: {}, pattern_key: "problem_solution", pattern_version: "1.0", provider: "deterministic", model: "deterministic-v1", prompt_contract_version: "1.0", input_digest: "a".repeat(64), created_at: "2026-08-10T12:00:00Z" },
           versions: [{
-            id: "version-1", generation_id: "script-1", parent_version_id: null, created_at: "2026-08-10T12:00:00Z",
+            id: "version-1", generation_id: "script-1", parent_version_id: null, revision_kind: null, actor_kind: null, reason_code: null, operation_input_digest: null, created_at: "2026-08-10T12:00:00Z",
             draft: { target_duration_seconds: 15, language: "en", audience: "buyers", snapshot_id: "snapshot-1", phases: [], shots: [], titles: ["Fact-led draft"], tags: [], shooting_list: [] },
             validation_report: { acceptable: true, findings: [], blocking: [] },
           }],
+          fact_contract: { selected: [{ id: "fact-1", claim: "Resealable drink mix pouch", status: "locked", snapshot_id: "snapshot-1" }], excluded: [] },
         });
       }),
     );
@@ -102,8 +122,28 @@ describe("script versions", () => {
     expect(await screen.findByText("已批准用于未来报价门禁")).toBeVisible();
   });
 
-  it("shows a recoverable error when deriving a version fails", async () => {
+  it("sends only frozen fact bindings when creating a rebind version", async () => {
+    let received: { body: unknown; key: string | null } | null = null;
+    const script = rebindableScript();
     server.use(
+      http.get("/api/v1/scripts/script-1", () => HttpResponse.json(script)),
+      http.post("/api/v1/scripts/script-1/versions/version-1/derive", async ({ request }) => {
+        received = { body: await request.json(), key: request.headers.get("Idempotency-Key") };
+        return HttpResponse.json({ ...script.versions[0], id: "version-2", parent_version_id: "version-1", revision_kind: "fact_rebind", actor_kind: "local_operator", reason_code: "fact_rebind", operation_input_digest: "b".repeat(64) }, { status: 201 });
+      }),
+    );
+    const user = userEvent.setup();
+    render(<TestApp initialEntries={["/scripts/script-1"]} />);
+
+    await user.selectOptions(await screen.findByLabelText("分镜 1 绑定事实"), "fact-2");
+    await user.click(screen.getByRole("button", { name: "保存事实重绑版本" }));
+
+    expect(received).toEqual({ body: { fact_bindings: [{ shot_index: 0, fact_id: "fact-2" }] }, key: expect.any(String) });
+  });
+
+  it("shows a recoverable error when fact-bound version creation fails", async () => {
+    server.use(
+      http.get("/api/v1/scripts/script-1", () => HttpResponse.json(rebindableScript())),
       http.post("/api/v1/scripts/script-1/versions/version-1/derive", () =>
         HttpResponse.json(
           { detail: "Version could not be created", code: "VERSION_FAILED" },
@@ -114,7 +154,7 @@ describe("script versions", () => {
     const user = userEvent.setup();
     render(<TestApp initialEntries={["/scripts/script-1"]} />);
 
-    await user.click(await screen.findByRole("button", { name: "创建版本二" }));
+    await user.click(await screen.findByRole("button", { name: "保存事实重绑版本" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Version could not be created");
   });

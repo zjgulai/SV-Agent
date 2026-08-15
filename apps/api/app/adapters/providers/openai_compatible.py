@@ -51,7 +51,7 @@ class OpenAICompatibleScriptProvider:
                     "Never render excluded facts in any visible script field."
                 ),
             },
-            {"role": "user", "content": request.model_dump_json()},
+            {"role": "user", "content": self._provider_input(request)},
         ]
         invalid_content = ""
         for attempt in range(2):
@@ -79,6 +79,18 @@ class OpenAICompatibleScriptProvider:
             "Provider output did not match ScriptDraft",
             attempt_count=self.last_attempt_count,
         )
+
+    @staticmethod
+    def _provider_input(request: ScriptGenerationRequest) -> str:
+        payload = request.model_dump(mode="json")
+        payload.pop("audience", None)
+        payload.pop("promotion", None)
+        pattern = payload.get("pattern_definition")
+        if isinstance(pattern, dict):
+            pattern.pop("audience_policy", None)
+            pattern.pop("server_owned_copy", None)
+            pattern.pop("cta_policy", None)
+        return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
     async def _request_completion(self, messages: list[dict[str, str]]) -> str:
         payload: dict[str, Any] = {

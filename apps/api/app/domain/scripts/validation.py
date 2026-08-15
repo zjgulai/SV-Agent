@@ -3,6 +3,7 @@ from collections.abc import Mapping
 from uuid import UUID
 
 from app.domain.products.entities import FactStatus, ProductFact
+from app.domain.products.promotion import PromotionRender
 from app.domain.scripts.creative_contract import (
     SAFE_ACCEPTANCE_SHOT,
     SAFE_ACTION,
@@ -15,6 +16,7 @@ from app.domain.scripts.creative_contract import (
     safe_phase_purpose,
 )
 from app.domain.scripts.models import ScriptDraft, ValidationFinding, ValidationReport
+from app.domain.scripts.patterns import CompiledPatternDefinition
 
 _PROHIBITED_RULES: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("CLAIM_GUARANTEE", re.compile(r"\bguarantee(?:d|s)?\b|保证|百分之百", re.IGNORECASE)),
@@ -69,7 +71,11 @@ def _normalize_claim(value: str) -> str:
     return " ".join(value.casefold().split())
 
 
-def _validate_timeline(draft: ScriptDraft) -> list[ValidationFinding]:
+def _validate_timeline(
+    draft: ScriptDraft,
+    *,
+    speaking_rate_max: float | None = None,
+) -> list[ValidationFinding]:
     if not draft.shots:
         return []
 
@@ -91,9 +97,15 @@ def _validate_timeline(draft: ScriptDraft) -> list[ValidationFinding]:
                 findings.append(_finding("TIMELINE_GAP", f"shots[{index}].start_seconds", "shot gap must not exceed 0.1 seconds"))
 
         units = _spoken_units(shot.voiceover, draft.language)
-        rate = 4.0 if draft.language.lower().startswith("zh") else 2.5
+        rate = speaking_rate_max or (4.0 if draft.language.lower().startswith("zh") else 2.5)
         if units / rate > shot.end_seconds - shot.start_seconds:
-            findings.append(_finding("VOICEOVER_TOO_LONG", f"shots[{index}].voiceover", "voiceover exceeds conservative speaking rate"))
+            findings.append(
+                _finding(
+                    "VOICEOVER_RATE_EXCEEDED" if speaking_rate_max is not None else "VOICEOVER_TOO_LONG",
+                    f"shots[{index}].voiceover",
+                    "voiceover exceeds the pattern speaking-rate budget",
+                )
+            )
 
     if abs(draft.shots[-1].end_seconds - draft.target_duration_seconds) > 0.5:
         findings.append(_finding("TIMELINE_END", f"shots[{len(draft.shots) - 1}].end_seconds", "timeline must end within 0.5 seconds of target"))
@@ -192,6 +204,8 @@ def _visible_text_fields(draft: ScriptDraft) -> list[tuple[str, str]]:
             (f"shots[{shot_index}].{field}", getattr(shot, field))
             for field in ("voiceover", "visual", "action", "caption", "acceptance_shot")
         )
+        if shot.promotion is not None:
+            fields.append((f"shots[{shot_index}].promotion.text", shot.promotion.text))
         fields.extend(
             (f"shots[{shot_index}].product_claims[{claim_index}]", claim)
             for claim_index, claim in enumerate(shot.product_claims)
@@ -202,6 +216,38 @@ def _visible_text_fields(draft: ScriptDraft) -> list[tuple[str, str]]:
             for index, value in enumerate(getattr(draft, field))
         )
     return fields
+
+
+def _validate_promotion_slot(
+    draft: ScriptDraft,
+    *,
+    promotion: PromotionRender | None,
+    pattern_definition: CompiledPatternDefinition | None,
+) -> list[ValidationFinding]:
+    findings: list[ValidationFinding] = []
+    expected_index = len(draft.shots) - 1
+    allows_promotion = (
+        pattern_definition is not None
+        and pattern_definition.cta_policy.mode == "server_promotion_final_cta"
+    )
+    for index, shot in enumerate(draft.shots):
+        if promotion is None:
+            if shot.promotion is not None:
+                findings.append(
+                    _finding("PROMOTION_UNAUTHORIZED", f"shots[{index}].promotion", "no promotion is authorized")
+                )
+            continue
+        if not allows_promotion or index != expected_index or shot.role != "cta":
+            if shot.promotion is not None or (allows_promotion and index == expected_index):
+                findings.append(
+                    _finding("PROMOTION_SLOT_INVALID", f"shots[{index}].promotion", "promotion is permitted only in the final CTA shot")
+                )
+            continue
+        if shot.promotion != promotion:
+            findings.append(
+                _finding("PROMOTION_RENDER_MISMATCH", f"shots[{index}].promotion", "promotion must match the server-rendered fact")
+            )
+    return findings
 
 
 def _validate_excluded_facts(
@@ -235,10 +281,81 @@ def _validate_creative_contract(
     *,
     creative_pattern_key: str | None,
     phase_sequence: tuple[str, ...] | None,
+    pattern_definition: CompiledPatternDefinition | None,
 ) -> list[ValidationFinding]:
     findings: list[ValidationFinding] = []
-    allowed_phase_keys = set(phase_sequence) if phase_sequence else SAFE_PHASE_KEYS
-    if phase_sequence is not None:
+    if pattern_definition is not None:
+        expected_phase_sequence = list(pattern_definition.phase_sequence)
+        expected_shot_phase_sequence = [
+            shot.phase_key for shot in pattern_definition.shots
+        ]
+        expected_shot_roles = list(pattern_definition.shot_roles)
+        if [phase.key for phase in draft.phases] != expected_phase_sequence:
+            findings.append(
+                _finding(
+                    "CREATIVE_PATTERN_MISMATCH",
+                    "phases",
+                    "phase sequence must exactly match the persisted creative pattern",
+                )
+            )
+        if [shot.phase_key for shot in draft.shots] != expected_shot_phase_sequence:
+            findings.append(
+                _finding(
+                    "CREATIVE_SHOT_PLAN_MISMATCH",
+                    "shots",
+                    "shot phase order must exactly match the compiled pattern plan",
+                )
+            )
+        if [shot.role for shot in draft.shots] != expected_shot_roles:
+            findings.append(
+                _finding(
+                    "CREATIVE_SHOT_PLAN_MISMATCH",
+                    "shots",
+                    "shot roles must exactly match the compiled pattern plan",
+                )
+            )
+        total_weight = sum(item.budget_weight for item in pattern_definition.shots)
+        for index, shot in enumerate(draft.shots):
+            if index >= len(pattern_definition.shots):
+                break
+            expected_duration = (
+                draft.target_duration_seconds
+                * pattern_definition.shots[index].budget_weight
+                / total_weight
+            )
+            if abs((shot.end_seconds - shot.start_seconds) - expected_duration) > 0.5:
+                findings.append(
+                    _finding(
+                        "TIMELINE_BUDGET_MISMATCH",
+                        f"shots[{index}]",
+                        "shot duration must match the compiled pattern budget",
+                    )
+                )
+        expected_purposes = [phase.purpose for phase in pattern_definition.phases]
+        allowed_phase_keys: set[str] | frozenset[str] = set(expected_phase_sequence)
+        copy = pattern_definition.server_owned_copy
+        expected_shot_fields = {
+            "visual": copy.visual,
+            "action": copy.action,
+            "acceptance_shot": copy.acceptance_shot,
+        }
+        allowed_tags: set[str] | frozenset[str] = {pattern_definition.key, copy.tag_suffix}
+        allowed_shooting_list = set(copy.shooting_list)
+    else:
+        expected_purposes = []
+        allowed_phase_keys = set(phase_sequence) if phase_sequence else SAFE_PHASE_KEYS
+        expected_shot_fields = {
+            "visual": SAFE_VISUAL,
+            "action": SAFE_ACTION,
+            "acceptance_shot": SAFE_ACCEPTANCE_SHOT,
+        }
+        allowed_tags = (
+            {creative_pattern_key, SAFE_TAG}
+            if creative_pattern_key is not None
+            else SAFE_PATTERN_KEYS | {SAFE_TAG}
+        )
+        allowed_shooting_list = set(SAFE_SHOOTING_LIST)
+    if pattern_definition is None and phase_sequence is not None:
         if [phase.key for phase in draft.phases] != list(phase_sequence):
             findings.append(
                 _finding(
@@ -265,7 +382,11 @@ def _validate_creative_contract(
                     phase.key,
                 )
             )
-        elif phase.purpose != safe_phase_purpose(phase.key):
+        elif phase.purpose != (
+            expected_purposes[index]
+            if pattern_definition is not None and index < len(expected_purposes)
+            else safe_phase_purpose(phase.key)
+        ):
             findings.append(
                 _finding(
                     "CREATIVE_FIELD_UNTRUSTED",
@@ -275,11 +396,6 @@ def _validate_creative_contract(
                 )
             )
 
-    expected_shot_fields = {
-        "visual": SAFE_VISUAL,
-        "action": SAFE_ACTION,
-        "acceptance_shot": SAFE_ACCEPTANCE_SHOT,
-    }
     for index, shot in enumerate(draft.shots):
         for field, expected in expected_shot_fields.items():
             value = getattr(shot, field)
@@ -294,7 +410,12 @@ def _validate_creative_contract(
                 )
 
     for index, title in enumerate(draft.titles):
-        if SAFE_TITLE_PATTERN.fullmatch(title) is None:
+        title_is_server_owned = (
+            title == pattern_definition.server_owned_copy.title
+            if pattern_definition is not None
+            else SAFE_TITLE_PATTERN.fullmatch(title) is not None
+        )
+        if not title_is_server_owned:
             findings.append(
                 _finding(
                     "CREATIVE_FIELD_UNTRUSTED",
@@ -303,11 +424,6 @@ def _validate_creative_contract(
                     title,
                 )
             )
-    allowed_tags = (
-        {creative_pattern_key, SAFE_TAG}
-        if creative_pattern_key is not None
-        else SAFE_PATTERN_KEYS | {SAFE_TAG}
-    )
     for index, tag in enumerate(draft.tags):
         if tag not in allowed_tags:
             findings.append(
@@ -319,7 +435,7 @@ def _validate_creative_contract(
                 )
             )
     for index, item in enumerate(draft.shooting_list):
-        if item not in SAFE_SHOOTING_LIST:
+        if item not in allowed_shooting_list:
             findings.append(
                 _finding(
                     "CREATIVE_FIELD_UNTRUSTED",
@@ -338,16 +454,46 @@ def validate_script(
     excluded_facts: Mapping[UUID, ProductFact] | None = None,
     creative_pattern_key: str | None = None,
     phase_sequence: tuple[str, ...] | None = None,
+    pattern_definition: CompiledPatternDefinition | None = None,
+    promotion: PromotionRender | None = None,
 ) -> ValidationReport:
+    compiled_pattern = (
+        pattern_definition
+        if pattern_definition is not None and pattern_definition.is_compiled_contract
+        else None
+    )
+    legacy_phase_sequence = (
+        pattern_definition.phase_sequence
+        if pattern_definition is not None and not pattern_definition.is_compiled_contract
+        else phase_sequence
+    )
+    legacy_pattern_key = (
+        pattern_definition.key
+        if pattern_definition is not None and not pattern_definition.is_compiled_contract
+        else creative_pattern_key
+    )
     findings = [
         *_validate_structure(draft),
-        *_validate_timeline(draft),
+        *_validate_timeline(
+            draft,
+            speaking_rate_max=(
+                compiled_pattern.speaking_rate.max
+                if compiled_pattern is not None
+                else None
+            ),
+        ),
         *_validate_factuality(draft, facts),
         *_validate_excluded_facts(draft, excluded_facts or {}),
         *_validate_creative_contract(
             draft,
-            creative_pattern_key=creative_pattern_key,
-            phase_sequence=phase_sequence,
+            creative_pattern_key=legacy_pattern_key,
+            phase_sequence=legacy_phase_sequence,
+            pattern_definition=compiled_pattern,
+        ),
+        *_validate_promotion_slot(
+            draft,
+            promotion=promotion,
+            pattern_definition=compiled_pattern,
         ),
         *_validate_prohibited_claims(draft),
     ]

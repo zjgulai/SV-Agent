@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from fastapi import Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -47,6 +48,6 @@ async def validation_problem_handler(
             "detail": "The request body or parameters are invalid.",
             "code": "REQUEST_VALIDATION_FAILED",
             "request_id": _request_id(request),
-            "errors": exc.errors(),
+            "errors": jsonable_encoder(exc.errors()),
         },
     )

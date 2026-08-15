@@ -70,13 +70,13 @@
 - 非 locked Fact 的状态迁移没有状态图限制，rejected 可直接回 confirmed/locked；需要审计事件而不只是最后状态。
 - `selected_fact_ids` 是 JSON 字符串数组，无数据库外键与同 Snapshot 约束；正确性依赖 Worker 重读。
 - Web 没有“新增事实”“替代旧事实”“查看快照历史”“查看证据来源原文”的完整流程。
-- 当前自动选择所有 confirmed/locked facts；用户不能明确选择、排序、排除或声明“禁止再生”的事实。
+- 已实现 generation 前的明确事实选择、顺序和 excluded deny-set；仍缺少“新增事实”“替代旧事实”与完整证据历史的工作流。
 
 ## 4. 生成命令与 CreativePattern
 
 **实现路径**：`application/generations.py`、`domain/scripts/patterns.py`、`ports/script_provider.py`。
 
-**输入 → 输出**：snapshot digest、全部就绪事实、时长、语言、受众、pattern、provider/model → immutable ScriptGeneration 与 Job。
+**输入 → 输出**：snapshot digest、有序 selected/excluded facts、时长、语言、受众、pattern、provider/model → immutable ScriptGeneration 与 Job。
 
 **实际价值**：★★★★★；**技术壁垒**：★★★★☆；**复杂度**：★★★★☆。
 
@@ -173,8 +173,8 @@
 
 **开放缺口**：
 
-- 派生只修改标题，且前端固定生成 `Version 2`；从 Version 2 再派生会构造不符合 safe-title pattern 的标题。
-- 派生版本没有 author、reason、operation idempotency 或 optimistic concurrency。
+- 已实现 P1.2a 的逐镜头事实重绑：客户端只能提交冻结 selected Fact 的绑定，服务端重建事实字段、重跑校验并附加可幂等重放的 child。它不开放标题、自由文案或时间线修改。
+- 重绑版本有固定 `local_operator/fact_rebind` provenance 和 operation idempotency；真实用户身份、自由 reason 与 optimistic concurrency 仍需 P1.5.3 tenant/approval 合同。
 - diff 对数组按索引扁平化；镜头插入会造成大量噪声，缺少稳定 shot ID/语义 diff。
 - 导出缺少 source/fact evidence bundle、完整 pattern definition 和校验器版本。
 

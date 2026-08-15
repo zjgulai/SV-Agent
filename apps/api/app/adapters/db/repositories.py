@@ -1,12 +1,16 @@
 from collections.abc import Sequence
-from uuid import UUID
+from datetime import datetime, timedelta
+from uuid import UUID, uuid4
 
-from sqlalchemy import select, text
+from sqlalchemy import and_, func, or_, select, text, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.db.models import (
+    ImportAttemptRecord,
+    JobEventRecord,
     JobRecord,
+    OutboxEventRecord,
     ProductFactRecord,
     ProductSnapshotRecord,
     ProductSourceRecord,
@@ -15,6 +19,7 @@ from app.adapters.db.models import (
     StoryboardApprovalEventRecord,
     StoryboardVersionRecord,
 )
+from app.domain.common.canonical import canonical_digest
 from app.domain.jobs.entities import Job, JobState, JobType
 from app.domain.products.entities import (
     FactStatus,
@@ -159,10 +164,50 @@ class ProductRepository:
                 confidence=fact.confidence,
                 status=fact.status.value,
                 updated_at=fact.updated_at,
+                operation_key=fact.operation_key,
+                operation_input_digest=fact.operation_input_digest,
             )
         )
         await self.session.flush()
         return fact
+
+    async def add_fact_idempotent(self, fact: ProductFact) -> tuple[ProductFact, bool]:
+        if fact.operation_key is None or fact.operation_input_digest is None:
+            raise ValueError("idempotent fact creation requires operation metadata")
+        inserted_id = await self.session.scalar(
+            insert(ProductFactRecord)
+            .values(
+                id=fact.id,
+                snapshot_id=fact.snapshot_id,
+                claim_type=fact.claim_type,
+                claim=fact.claim,
+                value=fact.value,
+                evidence_kind=fact.evidence_kind,
+                evidence_locator=fact.evidence_locator,
+                evidence_excerpt=fact.evidence_excerpt,
+                confidence=fact.confidence,
+                status=fact.status.value,
+                updated_at=fact.updated_at,
+                operation_key=fact.operation_key,
+                operation_input_digest=fact.operation_input_digest,
+            )
+            .on_conflict_do_nothing(
+                index_elements=[ProductFactRecord.snapshot_id, ProductFactRecord.operation_key],
+                index_where=ProductFactRecord.operation_key.is_not(None),
+            )
+            .returning(ProductFactRecord.id)
+        )
+        if inserted_id is not None:
+            return fact, True
+        record = await self.session.scalar(
+            select(ProductFactRecord).where(
+                ProductFactRecord.snapshot_id == fact.snapshot_id,
+                ProductFactRecord.operation_key == fact.operation_key,
+            )
+        )
+        if record is None:
+            raise RuntimeError("fact idempotency conflict returned no fact")
+        return _fact_from_record(record), False
 
     async def get_fact(self, fact_id: UUID, *, for_update: bool = False) -> ProductFact | None:
         statement = select(ProductFactRecord).where(ProductFactRecord.id == fact_id)
@@ -218,6 +263,14 @@ class JobRepository:
         record = await self.session.get(JobRecord, job.id)
         if record is None:
             raise LookupError(f"job {job.id} does not exist")
+        from_state = JobState(record.state)
+        state_changed = record.state != job.state.value
+        attempt_changed = record.attempt_count != job.attempt_count
+        error_changed = (
+            record.error_code != job.error_code or record.error_detail != job.error_detail
+        )
+        if not (state_changed or attempt_changed or error_changed):
+            return job
         record.state = job.state.value
         record.attempt_count = job.attempt_count
         record.error_code = job.error_code
@@ -225,8 +278,302 @@ class JobRepository:
         record.result_id = job.result_id
         record.started_at = job.started_at
         record.finished_at = job.finished_at
+        await self.append_event(
+            job,
+            event_type="state_transition" if state_changed else "execution_reclaimed",
+            from_state=from_state,
+        )
         await self.session.flush()
         return job
+
+    async def append_event(
+        self,
+        job: Job,
+        *,
+        event_type: str,
+        from_state: JobState | None = None,
+        error_code: str | None = None,
+        error_detail: str | None = None,
+    ) -> JobEventRecord:
+        event = JobEventRecord(
+            id=uuid4(),
+            job_id=job.id,
+            event_type=event_type,
+            from_state=from_state.value if from_state is not None else None,
+            to_state=job.state.value,
+            attempt_count=job.attempt_count,
+            error_code=error_code if error_code is not None else job.error_code,
+            error_detail=(error_detail if error_detail is not None else job.error_detail),
+        )
+        self.session.add(event)
+        await self.session.flush()
+        return event
+
+    async def list_events(self, job_id: UUID) -> Sequence[JobEventRecord]:
+        return (
+            await self.session.scalars(
+                select(JobEventRecord)
+                .where(JobEventRecord.job_id == job_id)
+                .order_by(JobEventRecord.event_sequence)
+            )
+        ).all()
+
+
+class OutboxRepository:
+    EVENT_TYPE = "job.dispatch.v1"
+
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+
+    async def add_dispatch(self, job: Job, *, task_name: str) -> OutboxEventRecord:
+        now = await self._database_now()
+        payload = {
+            "contract_version": "1.0",
+            "job_id": str(job.id),
+            "job_type": job.job_type.value,
+            "task_name": task_name,
+        }
+        record = OutboxEventRecord(
+            id=uuid4(),
+            event_type=self.EVENT_TYPE,
+            job_id=job.id,
+            task_name=task_name,
+            payload=payload,
+            payload_digest=canonical_digest(payload),
+            delivery_state="pending",
+            delivery_attempt_count=0,
+            delivery_cycle_started_at=now,
+            manual_retry_count=0,
+            available_at=now,
+        )
+        self.session.add(record)
+        await self.session.flush()
+        return record
+
+    async def get_by_job_id(
+        self, job_id: UUID, *, for_update: bool = False
+    ) -> OutboxEventRecord | None:
+        statement = select(OutboxEventRecord).where(OutboxEventRecord.job_id == job_id)
+        if for_update:
+            statement = statement.with_for_update()
+        return await self.session.scalar(statement)
+
+    async def _database_now(self) -> datetime:
+        now = await self.session.scalar(select(func.statement_timestamp()))
+        if now is None:
+            raise RuntimeError("PostgreSQL did not return statement_timestamp")
+        return now
+
+    async def dead_letter_due(
+        self,
+        *,
+        max_delivery_attempts: int,
+        max_delivery_age_seconds: int,
+        job_id: UUID | None = None,
+    ) -> OutboxEventRecord | None:
+        now = await self._database_now()
+        expired_cycle = OutboxEventRecord.delivery_cycle_started_at <= now - timedelta(
+            seconds=max_delivery_age_seconds
+        )
+        eligible_delivery = or_(
+            OutboxEventRecord.delivery_state == "pending",
+            and_(
+                OutboxEventRecord.delivery_state == "leased",
+                OutboxEventRecord.lease_expires_at <= now,
+            ),
+        )
+        exhausted = or_(
+            OutboxEventRecord.delivery_attempt_count >= max_delivery_attempts,
+            expired_cycle,
+        )
+        conditions = [eligible_delivery, exhausted, JobRecord.state == JobState.QUEUED.value]
+        if job_id is not None:
+            conditions.append(OutboxEventRecord.job_id == job_id)
+        record = await self.session.scalar(
+            select(OutboxEventRecord)
+            .join(JobRecord, JobRecord.id == OutboxEventRecord.job_id)
+            .where(*conditions)
+            .order_by(OutboxEventRecord.delivery_cycle_started_at, OutboxEventRecord.id)
+            .with_for_update(skip_locked=True)
+            .limit(1)
+        )
+        if record is None:
+            return None
+        record.delivery_state = "dead"
+        record.lease_token = None
+        record.lease_expires_at = None
+        record.available_at = now
+        record.dead_letter_code = (
+            "OUTBOX_MAX_DELIVERY_ATTEMPTS"
+            if record.delivery_attempt_count >= max_delivery_attempts
+            else "OUTBOX_MAX_DELIVERY_AGE"
+        )
+        record.dead_lettered_at = now
+        record.last_error_code = record.dead_letter_code
+        record.last_error_detail = "Task broker delivery requires operator recovery."
+        await self.session.flush()
+        return record
+
+    async def claim_due(
+        self, *, lease_seconds: int, job_id: UUID | None = None
+    ) -> OutboxEventRecord | None:
+        now = await self._database_now()
+        conditions = [
+            or_(
+                and_(
+                    OutboxEventRecord.delivery_state == "pending",
+                    OutboxEventRecord.available_at <= now,
+                ),
+                and_(
+                    OutboxEventRecord.delivery_state == "leased",
+                    OutboxEventRecord.lease_expires_at <= now,
+                ),
+            )
+        ]
+        if job_id is not None:
+            conditions.append(OutboxEventRecord.job_id == job_id)
+        record = await self.session.scalar(
+            select(OutboxEventRecord)
+            .join(JobRecord, JobRecord.id == OutboxEventRecord.job_id)
+            .where(*conditions)
+            .where(JobRecord.state == JobState.QUEUED.value)
+            .order_by(OutboxEventRecord.available_at, OutboxEventRecord.id)
+            .with_for_update(skip_locked=True)
+            .limit(1)
+        )
+        if record is None:
+            return None
+        record.delivery_state = "leased"
+        record.delivery_attempt_count += 1
+        record.lease_token = uuid4()
+        record.lease_expires_at = now + timedelta(seconds=lease_seconds)
+        record.dead_letter_code = None
+        record.dead_lettered_at = None
+        record.last_error_code = None
+        record.last_error_detail = None
+        await self.session.flush()
+        return record
+
+    async def mark_published(self, *, event_id: UUID, lease_token: UUID) -> bool:
+        now = await self._database_now()
+        published_id = await self.session.scalar(
+            update(OutboxEventRecord)
+            .where(
+                OutboxEventRecord.id == event_id,
+                OutboxEventRecord.delivery_state == "leased",
+                OutboxEventRecord.lease_token == lease_token,
+                OutboxEventRecord.lease_expires_at > now,
+            )
+            .values(
+                delivery_state="published",
+                published_at=now,
+                lease_token=None,
+                lease_expires_at=None,
+            )
+            .returning(OutboxEventRecord.id)
+        )
+        return published_id is not None
+
+    async def release(
+        self,
+        *,
+        event_id: UUID,
+        lease_token: UUID,
+        error_code: str,
+        error_detail: str,
+        backoff_seconds: int,
+    ) -> bool:
+        now = await self._database_now()
+        released_id = await self.session.scalar(
+            update(OutboxEventRecord)
+            .where(
+                OutboxEventRecord.id == event_id,
+                OutboxEventRecord.delivery_state == "leased",
+                OutboxEventRecord.lease_token == lease_token,
+            )
+            .values(
+                delivery_state="pending",
+                available_at=now + timedelta(seconds=backoff_seconds),
+                lease_token=None,
+                lease_expires_at=None,
+                last_error_code=error_code,
+                last_error_detail=error_detail[:500],
+            )
+            .returning(OutboxEventRecord.id)
+        )
+        return released_id is not None
+
+    async def retry_dead(self, *, job_id: UUID) -> OutboxEventRecord | None:
+        now = await self._database_now()
+        record = await self.session.scalar(
+            select(OutboxEventRecord)
+            .join(JobRecord, JobRecord.id == OutboxEventRecord.job_id)
+            .where(
+                OutboxEventRecord.job_id == job_id,
+                OutboxEventRecord.delivery_state == "dead",
+                JobRecord.state == JobState.QUEUED.value,
+            )
+            .with_for_update()
+        )
+        if record is None:
+            return None
+        record.delivery_state = "pending"
+        record.delivery_attempt_count = 0
+        record.delivery_cycle_started_at = now
+        record.manual_retry_count += 1
+        record.last_manual_retry_at = now
+        record.available_at = now
+        record.lease_token = None
+        record.lease_expires_at = None
+        record.dead_letter_code = None
+        record.dead_lettered_at = None
+        record.last_error_code = None
+        record.last_error_detail = None
+        await self.session.flush()
+        return record
+
+
+class ImportAttemptRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+
+    async def append(
+        self,
+        *,
+        job_id: UUID,
+        source_id: UUID,
+        attempt_token: int,
+        stage: str,
+        source_url_digest: str,
+        resolution_digest: str | None = None,
+        response_digest: str | None = None,
+        snapshot_id: UUID | None = None,
+        error_code: str | None = None,
+    ) -> ImportAttemptRecord:
+        record = ImportAttemptRecord(
+            id=uuid4(),
+            job_id=job_id,
+            source_id=source_id,
+            attempt_token=attempt_token,
+            stage=stage,
+            source_url_digest=source_url_digest,
+            resolution_digest=resolution_digest,
+            response_digest=response_digest,
+            snapshot_id=snapshot_id,
+            error_code=error_code,
+        )
+        self.session.add(record)
+        await self.session.flush()
+        return record
+
+    async def list_by_job_id(self, job_id: UUID) -> Sequence[ImportAttemptRecord]:
+        return (
+            await self.session.scalars(
+                select(ImportAttemptRecord)
+                .where(ImportAttemptRecord.job_id == job_id)
+                .order_by(ImportAttemptRecord.attempt_sequence)
+            )
+        ).all()
 
 
 class ScriptRepository:
@@ -252,6 +599,51 @@ class ScriptRepository:
 
     async def get_version(self, version_id: UUID) -> ScriptVersionRecord | None:
         return await self.session.get(ScriptVersionRecord, version_id)
+
+    async def get_version_by_operation(
+        self, *, parent_version_id: UUID, operation_key: str
+    ) -> ScriptVersionRecord | None:
+        return await self.session.scalar(
+            select(ScriptVersionRecord).where(
+                ScriptVersionRecord.parent_version_id == parent_version_id,
+                ScriptVersionRecord.operation_key == operation_key,
+            )
+        )
+
+    async def insert_fact_rebind_version(
+        self, version: ScriptVersionRecord
+    ) -> tuple[ScriptVersionRecord, bool]:
+        inserted_id = await self.session.scalar(
+            insert(ScriptVersionRecord)
+            .values(
+                id=version.id,
+                generation_id=version.generation_id,
+                parent_version_id=version.parent_version_id,
+                draft=version.draft,
+                validation_report=version.validation_report,
+                revision_kind=version.revision_kind,
+                actor_kind=version.actor_kind,
+                reason_code=version.reason_code,
+                operation_key=version.operation_key,
+                operation_input_digest=version.operation_input_digest,
+            )
+            .on_conflict_do_nothing(constraint="uq_script_versions_parent_operation")
+            .returning(ScriptVersionRecord.id)
+        )
+        if inserted_id is None:
+            if version.parent_version_id is None or version.operation_key is None:
+                raise RuntimeError("fact rebind requires parent and operation key")
+            existing = await self.get_version_by_operation(
+                parent_version_id=version.parent_version_id,
+                operation_key=version.operation_key,
+            )
+            if existing is None:
+                raise RuntimeError("script version conflict returned no record")
+            return existing, False
+        created = await self.get_version(inserted_id)
+        if created is None:
+            raise RuntimeError("created script version cannot be loaded")
+        return created, True
 
     async def get_storyboard(
         self, storyboard_id: UUID, *, for_update: bool = False
@@ -405,6 +797,8 @@ def _fact_from_record(record: ProductFactRecord) -> ProductFact:
         confidence=record.confidence,
         status=FactStatus(record.status),
         updated_at=record.updated_at,
+        operation_key=record.operation_key,
+        operation_input_digest=record.operation_input_digest,
     )
 
 

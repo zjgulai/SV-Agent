@@ -2,19 +2,32 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.adapters.db.models import JobRecord, ScriptGenerationRecord, ScriptVersionRecord
-from app.adapters.db.repositories import JobRepository, ProductRepository, ScriptRepository
+from app.adapters.db.repositories import (
+    JobRepository,
+    OutboxRepository,
+    ProductRepository,
+    ScriptRepository,
+)
+from app.application.outbox import task_name_for
 from app.domain.common.canonical import canonical_digest
 from app.domain.jobs.entities import TERMINAL_STATES, Job, JobState, JobType
 from app.domain.products.entities import FactStatus, ProductFact
+from app.domain.products.promotion import PromotionRender, promotion_is_active, render_promotion
+from app.domain.scripts.audience import audience_context
 from app.domain.scripts.creative_contract import enforce_creative_contract
 from app.domain.scripts.models import ScriptDraft
-from app.domain.scripts.patterns import CREATIVE_PATTERNS
+from app.domain.scripts.patterns import (
+    CREATIVE_PATTERNS,
+    PatternCompileError,
+    compile_pattern,
+    load_persisted_pattern_definition,
+)
 from app.domain.scripts.validation import validate_script
 from app.ports.script_provider import (
     ProviderError,
@@ -44,7 +57,23 @@ class DurationNotSupportedError(Exception):
     pass
 
 
+class LanguageNotSupportedError(Exception):
+    pass
+
+
 class GenerationIdempotencyConflictError(Exception):
+    pass
+
+
+class PromotionSelectionInvalidError(Exception):
+    pass
+
+
+class PromotionNotActiveError(Exception):
+    pass
+
+
+class AudienceProfileUnsupportedError(Exception):
     pass
 
 
@@ -56,6 +85,7 @@ class GenerationCommand:
     creative_pattern_key: str
     selected_fact_ids: tuple[UUID, ...] = ()
     excluded_fact_ids: tuple[UUID, ...] = ()
+    promotion_fact_id: UUID | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,6 +125,18 @@ class GenerationService:
             raise CreativePatternNotFoundError(command.creative_pattern_key)
         if command.target_duration_seconds not in pattern.supported_durations:
             raise DurationNotSupportedError(str(command.target_duration_seconds))
+        try:
+            audience = audience_context(command.audience)
+            compiled_pattern = compile_pattern(
+                pattern.key,
+                duration_seconds=command.target_duration_seconds,
+                language=command.language,
+                audience_profile_key=audience.profile_key,
+            )
+        except PatternCompileError as exc:
+            raise LanguageNotSupportedError(command.language) from exc
+        except ValueError as exc:
+            raise AudienceProfileUnsupportedError(command.audience) from exc
 
         selected_fact_ids = list(command.selected_fact_ids)
         excluded_fact_ids = list(command.excluded_fact_ids)
@@ -118,19 +160,45 @@ class GenerationService:
             for fact_id in selected_fact_ids
         ):
             raise FactsNotReadyError(str(product_id))
+        if any(
+            facts_by_id[fact_id].claim_type == "promotion"
+            for fact_id in [*selected_fact_ids, *excluded_fact_ids]
+        ):
+            raise FactSelectionInvalidError(
+                "promotion facts must use the separate promotion_fact_id field"
+            )
+
+        promotion: PromotionRender | None = None
+        promotion_configuration: dict[str, str] | None = None
+        if command.promotion_fact_id is not None:
+            if compiled_pattern.cta_policy.mode != "server_promotion_final_cta":
+                raise PromotionSelectionInvalidError(
+                    "the selected pattern does not have a promotion CTA slot"
+                )
+            if command.promotion_fact_id in {*selected_fact_ids, *excluded_fact_ids}:
+                raise PromotionSelectionInvalidError("promotion fact must not be selected or excluded")
+            promotion_fact = facts_by_id.get(command.promotion_fact_id)
+            if promotion_fact is None or promotion_fact.claim_type != "promotion":
+                raise PromotionSelectionInvalidError("promotion fact must belong to the current snapshot")
+            observed_at = await self.session.scalar(select(func.statement_timestamp()))
+            if not promotion_is_active(promotion_fact, now=observed_at):
+                raise PromotionNotActiveError(str(command.promotion_fact_id))
+            promotion = render_promotion(promotion_fact, language=command.language)
+            promotion_configuration = {
+                "fact_id": str(promotion.fact_id),
+                "value_digest": canonical_digest(promotion_fact.value),
+                "rendered_text": promotion.text,
+            }
 
         serialized_selected_fact_ids = [str(item) for item in selected_fact_ids]
         serialized_excluded_fact_ids = [str(item) for item in excluded_fact_ids]
         configuration: dict[str, Any] = {
             "target_duration_seconds": command.target_duration_seconds,
             "language": command.language,
-            "audience": command.audience,
-            "pattern_definition": {
-                "hook_type": pattern.hook_type,
-                "phase_sequence": list(pattern.phase_sequence),
-                "shot_roles": list(pattern.shot_roles),
-                "supported_durations": list(pattern.supported_durations),
-            },
+            "audience": audience.label,
+            "audience_profile": audience.model_dump(mode="json"),
+            "promotion": promotion_configuration,
+            "pattern_definition": compiled_pattern.model_dump(mode="json"),
         }
         input_digest = canonical_digest(
             {
@@ -142,7 +210,7 @@ class GenerationService:
                 "pattern_version": pattern.version,
                 "provider": provider,
                 "model": model,
-                "prompt_contract_version": "1.1",
+                "prompt_contract_version": "1.3",
             }
         )
         generation_id = uuid4()
@@ -173,14 +241,19 @@ class GenerationService:
                     pattern_version=pattern.version,
                     provider=provider,
                     model=model,
-                    prompt_contract_version="1.1",
+                    prompt_contract_version="1.3",
                     input_digest=input_digest,
                 )
             )
             await self.session.flush()
-            created = await JobRepository(self.session).get(inserted_id)
+            jobs = JobRepository(self.session)
+            created = await jobs.get(inserted_id)
             if created is None:
                 raise RuntimeError("created generation job cannot be loaded")
+            await jobs.append_event(created, event_type="job_created")
+            await OutboxRepository(self.session).add_dispatch(
+                created, task_name=task_name_for(JobType.SCRIPT_GENERATION)
+            )
             return QueuedGeneration(job=created, created=True)
 
         existing = await JobRepository(self.session).get_by_idempotency(
@@ -222,8 +295,8 @@ class GenerationWorker:
             )
             draft = enforce_creative_contract(
                 draft,
-                pattern_key=request.creative_pattern_key,
-                phase_sequence=request.phase_sequence,
+                pattern=request.pattern_definition,
+                promotion=request.promotion,
             )
             additional_attempts = max(
                 0, int(getattr(self.provider, "last_attempt_count", 1)) - 1
@@ -244,6 +317,14 @@ class GenerationWorker:
                 job_id,
                 "FACTS_NOT_READY",
                 "Selected product facts are no longer confirmed or locked.",
+                attempt_token=attempt_token,
+            )
+            return None
+        except PromotionNotActiveError:
+            await self._mark_failed(
+                job_id,
+                "PROMOTION_NOT_ACTIVE",
+                "The selected promotion is no longer active.",
                 attempt_token=attempt_token,
             )
             return None
@@ -326,6 +407,13 @@ class GenerationWorker:
                 if fact is None or fact.snapshot_id != snapshot.id:
                     raise FactsNotReadyError(str(raw_id))
                 excluded_facts.append(fact)
+            pattern_definition = load_persisted_pattern_definition(
+                generation.configuration["pattern_definition"],
+                pattern_key=generation.pattern_key,
+                pattern_version=generation.pattern_version,
+                duration_seconds=int(generation.configuration["target_duration_seconds"]),
+                language=str(generation.configuration["language"]),
+            )
             request = ScriptGenerationRequest(
                 snapshot_id=snapshot.id,
                 title=snapshot.title,
@@ -342,18 +430,9 @@ class GenerationWorker:
                 ),
                 language=str(generation.configuration["language"]),
                 audience=str(generation.configuration["audience"]),
-                creative_pattern_key=generation.pattern_key,
-                creative_pattern_version=generation.pattern_version,
-                hook_type=str(generation.configuration["pattern_definition"]["hook_type"]),
-                phase_sequence=tuple(
-                    str(item)
-                    for item in generation.configuration["pattern_definition"][
-                        "phase_sequence"
-                    ]
-                ),
-                shot_roles=tuple(
-                    str(item)
-                    for item in generation.configuration["pattern_definition"]["shot_roles"]
+                pattern_definition=pattern_definition,
+                promotion=await _load_generation_promotion(
+                    session, products, generation, language=str(generation.configuration["language"])
                 ),
             )
             return request
@@ -414,16 +493,23 @@ class GenerationWorker:
                 if fact is None or fact.snapshot_id != generation.snapshot_id:
                     raise FactsNotReadyError(str(raw_id))
                 excluded_facts[fact.id] = fact
+            pattern_definition = load_persisted_pattern_definition(
+                generation.configuration["pattern_definition"],
+                pattern_key=generation.pattern_key,
+                pattern_version=generation.pattern_version,
+                duration_seconds=int(generation.configuration["target_duration_seconds"]),
+                language=str(generation.configuration["language"]),
+            )
             report = validate_script(
                 draft,
                 facts,
                 excluded_facts=excluded_facts,
-                creative_pattern_key=generation.pattern_key,
-                phase_sequence=tuple(
-                    str(item)
-                    for item in generation.configuration["pattern_definition"][
-                        "phase_sequence"
-                    ]
+                pattern_definition=pattern_definition,
+                promotion=await _load_generation_promotion(
+                    session,
+                    products,
+                    generation,
+                    language=str(generation.configuration["language"]),
                 ),
             )
             version = ScriptVersionRecord(
@@ -476,3 +562,37 @@ class GenerationWorker:
             .order_by(ScriptVersionRecord.created_at.desc(), ScriptVersionRecord.id.desc())
             .limit(1)
         )
+
+
+async def _load_generation_promotion(
+    session: AsyncSession,
+    products: ProductRepository,
+    generation: ScriptGenerationRecord,
+    *,
+    language: str,
+) -> PromotionRender | None:
+    raw = generation.configuration.get("promotion")
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise PromotionNotActiveError("frozen promotion configuration is invalid")
+    try:
+        fact_id = UUID(str(raw["fact_id"]))
+        frozen_digest = str(raw["value_digest"])
+        frozen_text = str(raw["rendered_text"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise PromotionNotActiveError("frozen promotion configuration is invalid") from exc
+    fact = await products.get_fact(fact_id, for_update=True)
+    observed_at = await session.scalar(select(func.statement_timestamp()))
+    if (
+        fact is None
+        or fact.snapshot_id != generation.snapshot_id
+        or fact.claim_type != "promotion"
+        or canonical_digest(fact.value) != frozen_digest
+        or not promotion_is_active(fact, now=observed_at)
+    ):
+        raise PromotionNotActiveError(str(fact_id))
+    rendered = render_promotion(fact, language=language)
+    if rendered.text != frozen_text:
+        raise PromotionNotActiveError(str(fact_id))
+    return rendered

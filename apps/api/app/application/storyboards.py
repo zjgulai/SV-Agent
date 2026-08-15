@@ -1,16 +1,21 @@
+from collections.abc import Mapping
 from dataclasses import dataclass
 from uuid import UUID
 
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.db.repositories import ProductRepository, ScriptRepository
+from app.domain.common.canonical import canonical_digest
 from app.domain.products.entities import FactStatus, ProductFact
+from app.domain.products.promotion import PromotionRender, promotion_is_active, render_promotion
 from app.domain.scripts.models import (
     FindingSeverity,
     ScriptDraft,
     ValidationFinding,
     ValidationReport,
 )
+from app.domain.scripts.patterns import load_persisted_pattern_definition
 from app.domain.scripts.storyboard import StoryboardPreflight, compile_storyboard_preflight
 from app.domain.scripts.validation import validate_script
 
@@ -44,20 +49,35 @@ class StoryboardPreflightService:
             product_facts,
         )
         draft = ScriptDraft.model_validate(version.draft)
+        pattern_definition = load_persisted_pattern_definition(
+            generation.configuration["pattern_definition"],
+            pattern_key=generation.pattern_key,
+            pattern_version=generation.pattern_version,
+            duration_seconds=int(generation.configuration["target_duration_seconds"]),
+            language=str(generation.configuration["language"]),
+        )
+        promotion, promotion_findings = await self._load_promotion(
+            generation.configuration,
+            generation.snapshot_id,
+            product_facts,
+            language=str(generation.configuration["language"]),
+        )
         runtime_report = validate_script(
             draft,
             {item.id: item for item in selected},
             excluded_facts={item.id: item for item in excluded},
-            creative_pattern_key=generation.pattern_key,
-            phase_sequence=tuple(
-                str(item)
-                for item in generation.configuration["pattern_definition"]["phase_sequence"]
-            ),
+            pattern_definition=pattern_definition,
+            promotion=promotion,
         )
         stored_report = ValidationReport.model_validate(version.validation_report)
         report = ValidationReport(
             findings=self._merge_findings(
-                [*stored_report.findings, *runtime_report.findings, *selection_findings]
+                [
+                    *stored_report.findings,
+                    *runtime_report.findings,
+                    *selection_findings,
+                    *promotion_findings,
+                ]
             )
         )
         return compile_storyboard_preflight(
@@ -118,6 +138,51 @@ class StoryboardPreflightService:
             else:
                 excluded.append(fact)
         return selected, excluded, findings
+
+    async def _load_promotion(
+        self,
+        configuration: Mapping[str, object],
+        snapshot_id: UUID,
+        facts_by_id: dict[UUID, ProductFact],
+        *,
+        language: str,
+    ) -> tuple[PromotionRender | None, list[ValidationFinding]]:
+        raw = configuration.get("promotion")
+        if raw is None:
+            return None, []
+        if not isinstance(raw, dict):
+            return None, [self._promotion_not_active_finding()]
+        try:
+            fact_id = UUID(str(raw["fact_id"]))
+            digest = str(raw["value_digest"])
+            text = str(raw["rendered_text"])
+        except (KeyError, TypeError):
+            return None, [self._promotion_not_active_finding()]
+        except ValueError:
+            return None, [self._promotion_not_active_finding()]
+        fact = facts_by_id.get(fact_id)
+        observed_at = await self.session.scalar(select(func.statement_timestamp()))
+        if (
+            fact is None
+            or fact.snapshot_id != snapshot_id
+            or fact.claim_type != "promotion"
+            or canonical_digest(fact.value) != digest
+            or not promotion_is_active(fact, now=observed_at)
+        ):
+            return None, [self._promotion_not_active_finding()]
+        rendered = render_promotion(fact, language=language)
+        if rendered.text != text:
+            return None, [self._promotion_not_active_finding()]
+        return rendered, []
+
+    @staticmethod
+    def _promotion_not_active_finding() -> ValidationFinding:
+        return ValidationFinding(
+            rule_id="PROMOTION_NOT_ACTIVE",
+            path="promotion_fact_id",
+            message="the frozen promotion is no longer active or valid",
+            severity=FindingSeverity.BLOCKING,
+        )
 
     @staticmethod
     def _merge_findings(

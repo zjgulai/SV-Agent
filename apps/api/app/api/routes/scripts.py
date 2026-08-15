@@ -1,8 +1,10 @@
+import logging
 from typing import Annotated, Literal, cast
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, Query, Response, status
 from fastapi.responses import PlainTextResponse
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.db.models import (
@@ -18,6 +20,8 @@ from app.api.routes.jobs import job_output
 from app.api.schemas.scripts import (
     DeriveVersionInput,
     JobOutput,
+    ScriptFactContractItem,
+    ScriptFactContractOutput,
     ScriptGenerationInput,
     ScriptGenerationOutput,
     ScriptOutput,
@@ -28,9 +32,9 @@ from app.api.schemas.scripts import (
     StoryboardVersionOutput,
     VersionDiffOutput,
 )
-from app.application.dispatch import mark_dispatch_failed
 from app.application.exports import export_json, export_markdown
 from app.application.generations import (
+    AudienceProfileUnsupportedError,
     CreativePatternNotFoundError,
     DurationNotSupportedError,
     FactSelectionInvalidError,
@@ -39,6 +43,20 @@ from app.application.generations import (
     GenerationIdempotencyConflictError,
     GenerationProductNotFoundError,
     GenerationService,
+    LanguageNotSupportedError,
+    PromotionNotActiveError,
+    PromotionSelectionInvalidError,
+)
+from app.application.outbox import publish_job_outbox
+from app.application.script_revisions import (
+    FactBinding,
+    FactRebindCommand,
+    ScriptParentNotAcceptableError,
+    ScriptRevisionFactsNotReadyError,
+    ScriptRevisionIdempotencyConflictError,
+    ScriptRevisionInvalidError,
+    ScriptRevisionNotFoundError,
+    ScriptRevisionService,
 )
 from app.application.storyboard_reviews import (
     StoryboardApprovalStaleError,
@@ -52,15 +70,18 @@ from app.application.storyboards import (
     StoryboardPreflightService,
 )
 from app.application.version_diff import diff_versions
-from app.domain.jobs.entities import JobState
 from app.domain.scripts.models import ScriptDraft, ValidationReport
-from app.domain.scripts.patterns import CREATIVE_PATTERNS
+from app.domain.scripts.patterns import (
+    CREATIVE_PATTERNS,
+    SUPPORTED_PATTERN_LANGUAGES,
+    compile_pattern,
+)
 from app.domain.scripts.storyboard import StoryboardPreflight, StoryboardPreview
-from app.domain.scripts.validation import validate_script
 from app.settings import provider_api_key_is_configured, settings
-from app.worker.tasks import generate_script
+from app.worker.tasks import dispatch_job
 
 router = APIRouter(tags=["scripts"])
+LOGGER = logging.getLogger(__name__)
 
 
 def _generation_output(record: ScriptGenerationRecord) -> ScriptGenerationOutput:
@@ -87,6 +108,10 @@ def _version_output(record: ScriptVersionRecord) -> ScriptVersionOutput:
         parent_version_id=record.parent_version_id,
         draft=ScriptDraft.model_validate(record.draft),
         validation_report=ValidationReport.model_validate(record.validation_report),
+        revision_kind=cast(Literal["fact_rebind"] | None, record.revision_kind),
+        actor_kind=cast(Literal["local_operator"] | None, record.actor_kind),
+        reason_code=cast(Literal["fact_rebind"] | None, record.reason_code),
+        operation_input_digest=record.operation_input_digest,
         created_at=record.created_at,
     )
 
@@ -138,9 +163,31 @@ async def _load_script(session: AsyncSession, script_id: UUID) -> ScriptOutput:
             detail="The requested script does not exist.",
         )
     versions = await repository.list_versions(script_id)
+    products = ProductRepository(session)
+
+    async def fact_contract(raw_ids: list[str]) -> list[ScriptFactContractItem]:
+        contract: list[ScriptFactContractItem] = []
+        for raw_id in raw_ids:
+            fact = await products.get_fact(UUID(raw_id))
+            if fact is None or fact.snapshot_id != generation.snapshot_id:
+                raise RuntimeError("generation fact contract is unavailable")
+            contract.append(
+                ScriptFactContractItem(
+                    id=fact.id,
+                    claim=fact.claim,
+                    status=fact.status,
+                    snapshot_id=fact.snapshot_id,
+                )
+            )
+        return contract
+
     return ScriptOutput(
         generation=_generation_output(generation),
         versions=[_version_output(item) for item in versions],
+        fact_contract=ScriptFactContractOutput(
+            selected=await fact_contract(generation.selected_fact_ids),
+            excluded=await fact_contract(generation.excluded_fact_ids),
+        ),
     )
 
 
@@ -180,6 +227,7 @@ async def create_script_generation(
                     creative_pattern_key=payload.creative_pattern_key,
                     selected_fact_ids=tuple(payload.selected_fact_ids),
                     excluded_fact_ids=tuple(payload.excluded_fact_ids),
+                    promotion_fact_id=payload.promotion_fact_id,
                 ),
                 provider=settings.script_provider,
                 model=(
@@ -209,6 +257,27 @@ async def create_script_generation(
             title="Fact selection invalid",
             detail="Selected and excluded facts must be unique, disjoint, and belong to the current snapshot.",
         ) from exc
+    except PromotionSelectionInvalidError as exc:
+        raise ApiProblem(
+            status=422,
+            code="PROMOTION_SELECTION_INVALID",
+            title="Promotion selection invalid",
+            detail="The promotion must be a separate fact on the current snapshot.",
+        ) from exc
+    except PromotionNotActiveError as exc:
+        raise ApiProblem(
+            status=409,
+            code="PROMOTION_NOT_ACTIVE",
+            title="Promotion is not active",
+            detail="Confirm or lock a currently active promotion before generation.",
+        ) from exc
+    except AudienceProfileUnsupportedError as exc:
+        raise ApiProblem(
+            status=422,
+            code="AUDIENCE_PROFILE_UNSUPPORTED",
+            title="Audience profile unavailable",
+            detail="The selected audience profile is unavailable.",
+        ) from exc
     except CreativePatternNotFoundError as exc:
         raise ApiProblem(
             status=422,
@@ -223,6 +292,13 @@ async def create_script_generation(
             title="Duration not supported",
             detail="The selected creative pattern does not support this duration.",
         ) from exc
+    except LanguageNotSupportedError as exc:
+        raise ApiProblem(
+            status=422,
+            code="LANGUAGE_NOT_SUPPORTED",
+            title="Language not supported",
+            detail="The selected creative pattern does not support this language.",
+        ) from exc
     except GenerationIdempotencyConflictError as exc:
         raise ApiProblem(
             status=409,
@@ -231,17 +307,11 @@ async def create_script_generation(
             detail="This Idempotency-Key was already used with different input.",
         ) from exc
     job = queued.job
-    if queued.created or job.state is JobState.QUEUED:
-        try:
-            generate_script.delay(str(job.id))
-        except Exception as exc:
-            await mark_dispatch_failed(session, job.id)
-            raise ApiProblem(
-                status=503,
-                code="BROKER_UNAVAILABLE",
-                title="Background queue unavailable",
-                detail="The generation task could not be dispatched.",
-            ) from exc
+    try:
+        await publish_job_outbox(session, dispatch_job, job_id=job.id)
+    except (OSError, SQLAlchemyError):
+        # The durable event has already committed. The reconciler owns recovery.
+        LOGGER.warning("immediate script outbox dispatch deferred", exc_info=True)
     response.headers["Location"] = f"/api/v1/jobs/{job.id}"
     return job_output(job)
 
@@ -472,58 +542,63 @@ async def derive_script_version(
     script_id: UUID,
     version_id: UUID,
     payload: DeriveVersionInput,
+    response: Response,
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    idempotency_key: Annotated[
+        str,
+        Header(alias="Idempotency-Key", min_length=1, max_length=255),
+    ],
 ) -> ScriptVersionOutput:
-    async with session.begin():
-        scripts = ScriptRepository(session)
-        generation = await scripts.get_generation(script_id)
-        parent = await scripts.get_version(version_id)
-        if generation is None or parent is None or parent.generation_id != script_id:
-            raise ApiProblem(
-                status=404,
-                code="SCRIPT_VERSION_NOT_FOUND",
-                title="Script version not found",
-                detail="The requested script version does not exist.",
+    try:
+        async with session.begin():
+            stored = await ScriptRevisionService(session).fact_rebind(
+                script_id=script_id,
+                parent_version_id=version_id,
+                operation_key=idempotency_key,
+                command=FactRebindCommand(
+                    fact_bindings=tuple(
+                        FactBinding(shot_index=item.shot_index, fact_id=item.fact_id)
+                        for item in payload.fact_bindings
+                    )
+                ),
             )
-        draft = ScriptDraft.model_validate(parent.draft).model_copy(update={"titles": [payload.title]})
-        products = ProductRepository(session)
-        facts = {}
-        for raw_id in generation.selected_fact_ids:
-            fact = await products.get_fact(UUID(raw_id), for_update=True)
-            if fact is not None:
-                facts[fact.id] = fact
-        excluded_facts = {}
-        for raw_id in generation.excluded_fact_ids:
-            fact = await products.get_fact(UUID(raw_id), for_update=True)
-            if fact is None or fact.snapshot_id != generation.snapshot_id:
-                raise ApiProblem(
-                    status=409,
-                    code="FACTS_NOT_READY",
-                    title="Facts are not ready",
-                    detail="The generation fact contract is no longer available.",
-                )
-            excluded_facts[fact.id] = fact
-        report = validate_script(
-            draft,
-            facts,
-            excluded_facts=excluded_facts,
-            creative_pattern_key=generation.pattern_key,
-            phase_sequence=tuple(
-                str(item)
-                for item in generation.configuration["pattern_definition"][
-                    "phase_sequence"
-                ]
-            ),
-        )
-        version = ScriptVersionRecord(
-            id=uuid4(),
-            generation_id=script_id,
-            parent_version_id=parent.id,
-            draft=draft.model_dump(mode="json"),
-            validation_report=report.model_dump(mode="json"),
-        )
-        await scripts.add_version(version)
-    return _version_output(version)
+    except ScriptRevisionNotFoundError as exc:
+        raise ApiProblem(
+            status=404,
+            code="SCRIPT_VERSION_NOT_FOUND",
+            title="Script version not found",
+            detail="The requested script version does not exist.",
+        ) from exc
+    except ScriptParentNotAcceptableError as exc:
+        raise ApiProblem(
+            status=409,
+            code="SCRIPT_PARENT_NOT_ACCEPTABLE",
+            title="Script parent is not acceptable",
+            detail="Only an acceptable script version can be fact-rebound.",
+        ) from exc
+    except ScriptRevisionFactsNotReadyError as exc:
+        raise ApiProblem(
+            status=409,
+            code="FACTS_NOT_READY",
+            title="Facts are not ready",
+            detail="The frozen generation fact contract is no longer ready.",
+        ) from exc
+    except ScriptRevisionInvalidError as exc:
+        raise ApiProblem(
+            status=422,
+            code="SCRIPT_EDIT_INVALID",
+            title="Script edit invalid",
+            detail="Each shot must bind exactly one selected fact.",
+        ) from exc
+    except ScriptRevisionIdempotencyConflictError as exc:
+        raise ApiProblem(
+            status=409,
+            code="IDEMPOTENCY_CONFLICT",
+            title="Idempotency conflict",
+            detail="This Idempotency-Key was already used with different input.",
+        ) from exc
+    response.status_code = status.HTTP_201_CREATED if stored.created else status.HTTP_200_OK
+    return _version_output(stored.version)
 
 
 @router.get(
@@ -592,9 +667,17 @@ async def list_creative_patterns() -> list[dict[str, object]]:
             "version": item.version,
             "name": item.name,
             "hook_type": item.hook_type,
-            "phase_sequence": item.phase_sequence,
-            "shot_roles": item.shot_roles,
             "supported_durations": item.supported_durations,
+            "supported_languages": SUPPORTED_PATTERN_LANGUAGES,
+            "contracts": [
+                compile_pattern(
+                    item.key,
+                    duration_seconds=duration_seconds,
+                    language=language,
+                ).model_dump(mode="json")
+                for duration_seconds in item.supported_durations
+                for language in SUPPORTED_PATTERN_LANGUAGES
+            ],
         }
         for item in CREATIVE_PATTERNS
     ]

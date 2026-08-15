@@ -10,6 +10,7 @@ from urllib.parse import SplitResult, urlsplit, urlunsplit
 import httpx
 
 from app.adapters.connectors.ssrf import SourceFetchBlocked, SsrfGuard
+from app.domain.common.canonical import canonical_digest
 
 MAX_RESPONSE_BYTES = 1024 * 1024
 MAX_IMAGE_COUNT = 20
@@ -55,6 +56,7 @@ class ParsedProduct:
     price_amount: Decimal | None
     price_currency: str | None
     raw_payload: dict[str, Any]
+    resolution_digest: str | None = None
 
 
 class _JsonLdCollector(HTMLParser):
@@ -238,7 +240,16 @@ class SchemaOrgProductConnector:
                 last_network_error = exc
                 continue
             product = parse_schema_org_product(document)
-            return await self._filter_public_images(product)
+            product = await self._filter_public_images(product)
+            return replace(
+                product,
+                resolution_digest=canonical_digest(
+                    {
+                        "hostname": validated.hostname,
+                        "resolved_ips": list(validated.resolved_ips),
+                    }
+                ),
+            )
 
         if isinstance(last_network_error, httpx.TimeoutException):
             raise SourceFetchTimeout("Product source timed out") from last_network_error

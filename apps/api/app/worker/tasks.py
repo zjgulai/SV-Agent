@@ -20,10 +20,15 @@ from app.adapters.connectors.schema_org import (
 )
 from app.adapters.connectors.ssrf import SourceFetchBlocked
 from app.adapters.db.models import ProductSourceRecord
-from app.adapters.db.repositories import JobRepository, ProductRepository
+from app.adapters.db.repositories import (
+    ImportAttemptRepository,
+    JobRepository,
+    ProductRepository,
+)
 from app.adapters.providers.deterministic import DeterministicScriptProvider
 from app.adapters.providers.openai_compatible import OpenAICompatibleScriptProvider
 from app.application.generations import GenerationWorker
+from app.application.outbox import TASK_NAME_BY_JOB_TYPE
 from app.domain.common.canonical import canonical_digest
 from app.domain.jobs.entities import TERMINAL_STATES, JobState, JobType
 from app.domain.products.entities import ProductFact, ProductSnapshot
@@ -51,7 +56,13 @@ class ProductImportWorker:
         assert attempt_token is not None
         try:
             parsed = await self.connector.fetch(source_url)
-            if not await self._mark_parsing(job_id, attempt_token=attempt_token):
+            response_digest = canonical_digest(parsed.raw_payload)
+            if not await self._mark_parsing(
+                job_id,
+                attempt_token=attempt_token,
+                response_digest=response_digest,
+                resolution_digest=parsed.resolution_digest,
+            ):
                 return None
             async with self.session_factory() as session, session.begin():
                 jobs = JobRepository(session)
@@ -89,6 +100,16 @@ class ProductImportWorker:
                 for fact in self._proposed_facts(snapshot, parsed.description):
                     await products.add_fact(fact)
                 await jobs.save(job.transition_to(JobState.SUCCEEDED))
+                await ImportAttemptRepository(session).append(
+                    job_id=job.id,
+                    source_id=source.id,
+                    attempt_token=attempt_token,
+                    stage="succeeded",
+                    source_url_digest=job.input_digest,
+                    resolution_digest=parsed.resolution_digest,
+                    response_digest=response_digest,
+                    snapshot_id=snapshot.id,
+                )
                 return source.id
         except (SQLAlchemyError, OSError):
             raise
@@ -130,9 +151,23 @@ class ProductImportWorker:
                 await jobs.save(job)
             else:
                 return None, None, False, None
+            await ImportAttemptRepository(session).append(
+                job_id=job.id,
+                source_id=source.id,
+                attempt_token=job.attempt_count,
+                stage="started",
+                source_url_digest=job.input_digest,
+            )
             return source.id, source.source_url, True, job.attempt_count
 
-    async def _mark_parsing(self, job_id: UUID, *, attempt_token: int) -> bool:
+    async def _mark_parsing(
+        self,
+        job_id: UUID,
+        *,
+        attempt_token: int,
+        response_digest: str,
+        resolution_digest: str | None,
+    ) -> bool:
         async with self.session_factory() as session, session.begin():
             jobs = JobRepository(session)
             job = await jobs.get(job_id, for_update=True)
@@ -140,6 +175,17 @@ class ProductImportWorker:
                 return False
             if job.state is JobState.FETCHING:
                 await jobs.save(job.transition_to(JobState.PARSING))
+                if job.result_id is None:
+                    raise LookupError(str(job_id))
+                await ImportAttemptRepository(session).append(
+                    job_id=job.id,
+                    source_id=job.result_id,
+                    attempt_token=attempt_token,
+                    stage="parsed",
+                    source_url_digest=job.input_digest,
+                    resolution_digest=resolution_digest,
+                    response_digest=response_digest,
+                )
                 return True
             return job.state is JobState.PARSING
 
@@ -167,6 +213,15 @@ class ProductImportWorker:
                     error_detail="Product import failed safely.",
                 )
             )
+            if job.result_id is not None:
+                await ImportAttemptRepository(session).append(
+                    job_id=job.id,
+                    source_id=job.result_id,
+                    attempt_token=attempt_token,
+                    stage="failed",
+                    source_url_digest=job.input_digest,
+                    error_code=code,
+                )
 
     @staticmethod
     def _proposed_facts(
@@ -262,6 +317,19 @@ def _is_retry_or_redelivery(task: object) -> bool:
     delivery_info = getattr(request, "delivery_info", None) or {}
     retries = int(getattr(request, "retries", 0) or 0)
     return bool(delivery_info.get("redelivered")) or retries > 0
+
+
+def dispatch_job(task_name: str, job_id: UUID) -> None:
+    if task_name == TASK_NAME_BY_JOB_TYPE[JobType.SCRIPT_GENERATION]:
+        dispatch = generate_script.delay
+    elif task_name == TASK_NAME_BY_JOB_TYPE[JobType.PRODUCT_IMPORT]:
+        dispatch = import_product.delay
+    else:
+        raise ValueError(f"unsupported outbox task {task_name}")
+    try:
+        dispatch(str(job_id))
+    except Exception as exc:
+        raise OSError("Celery broker did not accept the task") from exc
 
 
 @celery_app.task(

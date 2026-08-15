@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     provider_base_url: str = "https://api.openai.com/v1"
     provider_model: str = "gpt-5-mini"
     provider_api_key: SecretStr | None = None
+    outbox_max_delivery_attempts: int = Field(default=10, ge=1, le=1_000)
+    outbox_max_delivery_age_seconds: int = Field(default=3_600, ge=60, le=604_800)
+    outbox_retry_base_seconds: int = Field(default=5, ge=1, le=3_600)
+    outbox_retry_max_seconds: int = Field(default=300, ge=1, le=86_400)
 
 
 def provider_api_key_is_configured(value: SecretStr | None) -> bool:

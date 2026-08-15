@@ -6,6 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 from app.domain.products.entities import FactStatus
+from app.domain.products.promotion import PromotionValue
 
 
 class PriceInput(BaseModel):
@@ -24,6 +25,13 @@ class FactInput(BaseModel):
     claim_type: str = Field(min_length=1, max_length=64)
     claim: str = Field(min_length=1, max_length=500)
     value: dict[str, Any]
+    evidence_excerpt: str = Field(min_length=1, max_length=1000)
+
+
+class PromotionFactInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    value: PromotionValue
     evidence_excerpt: str = Field(min_length=1, max_length=1000)
 
 

@@ -3,6 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
+from app.domain.products.promotion import PromotionRender
+
 
 class ScriptPhase(BaseModel):
     model_config = ConfigDict(frozen=True)
@@ -19,6 +21,7 @@ class ScriptShot(BaseModel):
     start_seconds: float = Field(ge=0)
     end_seconds: float = Field(gt=0)
     phase_key: str
+    role: str | None = None
     voiceover: str
     visual: str
     action: str
@@ -26,6 +29,7 @@ class ScriptShot(BaseModel):
     acceptance_shot: str
     supported_fact_ids: list[UUID]
     product_claims: list[str] = Field(default_factory=list)
+    promotion: PromotionRender | None = None
 
 
 class ScriptDraft(BaseModel):

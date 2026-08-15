@@ -14,7 +14,7 @@ from app.application.generations import GenerationWorker
 
 @pytest.fixture(autouse=True)
 def disable_celery_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("app.api.routes.scripts.generate_script.delay", lambda _job_id: None)
+    monkeypatch.setattr("app.worker.tasks.generate_script.delay", lambda _job_id: None)
 
 
 def _worker_factory(db_session: AsyncSession) -> async_sessionmaker[AsyncSession]:
@@ -58,7 +58,7 @@ async def _ready_script_version(
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "buyers",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": [fact_id],
             "excluded_fact_ids": [],
@@ -144,6 +144,118 @@ async def test_storyboard_review_refuses_a_version_that_is_no_longer_ready(
 
     assert response.status_code == 409
     assert response.json()["code"] == "STORYBOARD_NOT_READY"
+
+
+async def test_storyboard_approval_becomes_stale_when_its_promotion_is_rejected(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    created = await client.post(
+        "/api/v1/products",
+        json={
+            "title": "Promotion storyboard review product",
+            "facts": [
+                {
+                    "claim_type": "feature",
+                    "claim": "The pouch is resealable",
+                    "value": {"resealable": True},
+                    "evidence_excerpt": "The pouch is resealable",
+                }
+            ],
+        },
+    )
+    assert created.status_code == 201
+    product = created.json()
+    product_id = str(product["product_id"])
+    fact_id = str(product["facts"][0]["id"])
+    assert (
+        await client.patch(
+            f"/api/v1/products/{product_id}/facts/{fact_id}", json={"status": "confirmed"}
+        )
+    ).status_code == 200
+    promotion = await client.post(
+        f"/api/v1/products/{product_id}/promotion-facts",
+        headers={"Idempotency-Key": "storyboard-promotion-fact-001"},
+        json={
+            "value": {
+                "schema_version": "promotion-v1",
+                "kind": "percent_off",
+                "percent": "10",
+                "market": "US",
+                "channel": "tiktok_shop",
+                "timezone": "America/Los_Angeles",
+                "effective_from": "2000-01-01T00:00:00-08:00",
+                "effective_to": "2100-01-01T00:00:00-08:00",
+            },
+            "evidence_excerpt": "Promotion review window",
+        },
+    )
+    assert promotion.status_code == 201
+    promotion_id = str(promotion.json()["id"])
+    assert (
+        await client.patch(
+            f"/api/v1/products/{product_id}/facts/{promotion_id}",
+            json={"status": "confirmed"},
+        )
+    ).status_code == 200
+    queued = await client.post(
+        f"/api/v1/products/{product_id}/script-generations",
+        headers={"Idempotency-Key": "storyboard-promotion-script-001"},
+        json={
+            "target_duration_seconds": 15,
+            "language": "en",
+            "audience": "general",
+            "creative_pattern_key": "offer_cta",
+            "selected_fact_ids": [fact_id],
+            "excluded_fact_ids": [],
+            "promotion_fact_id": promotion_id,
+        },
+    )
+    assert queued.status_code == 202
+    job = queued.json()
+    generation_id = str(job["result_id"])
+    version_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert version_id is not None
+    storyboard = await client.post(
+        f"/api/v1/scripts/{generation_id}/versions/{version_id}/storyboards",
+        headers={"Idempotency-Key": "storyboard-promotion-create-001"},
+    )
+    assert storyboard.status_code == 201
+    storyboard_id = str(storyboard.json()["id"])
+    assert (
+        await client.post(
+            f"/api/v1/storyboards/{storyboard_id}/approval-events",
+            headers={"Idempotency-Key": "storyboard-promotion-approval-001"},
+            json={"decision": "approved"},
+        )
+    ).status_code == 201
+    assert (
+        await client.patch(
+            f"/api/v1/products/{product_id}/facts/{promotion_id}",
+            json={"status": "rejected"},
+        )
+    ).status_code == 200
+
+    preflight = await client.get(
+        f"/api/v1/scripts/{generation_id}/versions/{version_id}/storyboard-preflight"
+    )
+    approval = await client.get(f"/api/v1/storyboards/{storyboard_id}/approval")
+    blocked_approval = await client.post(
+        f"/api/v1/storyboards/{storyboard_id}/approval-events",
+        headers={"Idempotency-Key": "storyboard-promotion-approval-002"},
+        json={"decision": "approved"},
+    )
+
+    assert preflight.json()["status"] == "blocked"
+    assert any(
+        item["rule_id"] == "PROMOTION_NOT_ACTIVE"
+        for item in preflight.json()["validation_report"]["findings"]
+    )
+    assert approval.json()["status"] == "stale"
+    assert blocked_approval.status_code == 409
+    assert blocked_approval.json()["code"] == "STORYBOARD_APPROVAL_STALE"
 
 
 async def test_storyboard_records_are_database_immutable(

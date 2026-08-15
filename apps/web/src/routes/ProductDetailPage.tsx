@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FormEvent, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { ApiProblem, FactStatus, ProductFact, api } from "../api/client";
@@ -39,6 +40,38 @@ function FactRow({ productId, fact }: { productId: string; fact: ProductFact }) 
   );
 }
 
+function PromotionFactForm({ productId }: { productId: string }) {
+  const queryClient = useQueryClient();
+  const [kind, setKind] = useState<"percent_off" | "amount_off">("percent_off");
+  const [percent, setPercent] = useState("");
+  const [amount, setAmount] = useState("");
+  const [effectiveFrom, setEffectiveFrom] = useState("");
+  const [effectiveTo, setEffectiveTo] = useState("");
+  const [evidence, setEvidence] = useState("");
+  const create = useMutation({
+    mutationFn: () => api.createPromotionFact(productId, {
+      value: kind === "percent_off"
+        ? { schema_version: "promotion-v1", kind, percent, market: "US", channel: "tiktok_shop", timezone: "America/Los_Angeles", effective_from: effectiveFrom, effective_to: effectiveTo }
+        : { schema_version: "promotion-v1", kind, amount, currency: "USD", market: "US", channel: "tiktok_shop", timezone: "America/Los_Angeles", effective_from: effectiveFrom, effective_to: effectiveTo },
+      evidence_excerpt: evidence,
+    }, crypto.randomUUID()),
+    onSuccess: async () => queryClient.invalidateQueries({ queryKey: ["product", productId] }),
+  });
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    create.mutate();
+  }
+  return <form className="editor-form promotion-fact-form" onSubmit={submit}>
+    <div className="section-heading"><div><p className="eyebrow">PROMOTION FACT</p><h2>受控优惠事实</h2></div><span>仅 TikTok Shop US · 最终 CTA</span></div>
+    <p className="selection-help">优惠码、原价、倒计时、限量和自由促销文案不被支持。确认或锁定后才可用于有效期内的最终 CTA。</p>
+    <div className="field-row"><label>优惠类型<select value={kind} onChange={(event) => setKind(event.target.value as typeof kind)}><option value="percent_off">百分比优惠</option><option value="amount_off">固定金额优惠</option></select></label><label>{kind === "percent_off" ? "百分比" : "金额（USD）"}<input required inputMode="decimal" value={kind === "percent_off" ? percent : amount} onChange={(event) => kind === "percent_off" ? setPercent(event.target.value) : setAmount(event.target.value)} /></label></div>
+    <div className="field-row"><label>开始（含 UTC offset）<input required placeholder="2026-08-14T09:00:00-07:00" value={effectiveFrom} onChange={(event) => setEffectiveFrom(event.target.value)} /></label><label>结束（含 UTC offset）<input required placeholder="2026-08-15T23:59:59-07:00" value={effectiveTo} onChange={(event) => setEffectiveTo(event.target.value)} /></label></div>
+    <label>人工证据摘录<textarea required value={evidence} onChange={(event) => setEvidence(event.target.value)} /></label>
+    {create.error instanceof Error && <div className="inline-error" role="alert">{create.error.message}</div>}
+    <div className="form-actions"><button className="button button-secondary" disabled={create.isPending}>添加 Promotion Fact</button></div>
+  </form>;
+}
+
 export function ProductDetailPage() {
   const { id = "" } = useParams();
   const product = useQuery({ queryKey: ["product", id], queryFn: () => api.getProduct(id), enabled: Boolean(id) });
@@ -61,6 +94,7 @@ export function ProductDetailPage() {
       </div>
       <div className="section-heading"><div><p className="eyebrow">EVIDENCE LEDGER</p><h2>事实台账</h2></div><span>仅 confirmed / locked 事实可以支持商品声明</span></div>
       {data.facts.length === 0 ? <div className="empty-state compact"><h2>暂无事实</h2><p>为商品补充有证据的事实后再生成脚本。</p></div> : <div className="fact-list">{data.facts.map((fact) => <FactRow key={fact.id} productId={id} fact={fact} />)}</div>}
+      <PromotionFactForm productId={id} />
     </section>
   );
 }

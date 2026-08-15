@@ -9,7 +9,15 @@ Read these sources in order:
 3. `docs/architecture/p0-architecture.md`
 4. `docs/development/testing.md`
 5. `outputs/oumomo-reverse-engineering/knowledge-base.md` for clean-room experiment work
-6. `docs/superpowers/specs/2026-08-14-storyboard-approval-preview-p2-design.md` when P2.0 is explicitly approved
+6. `docs/superpowers/specs/2026-08-14-reliable-execution-ledger-p15-design.md` when P1.5 reliable execution is explicitly approved
+7. `docs/superpowers/specs/2026-08-14-storyboard-approval-preview-p2-design.md` when P2.0 is explicitly approved
+8. `docs/superpowers/specs/2026-08-14-outbox-dead-letter-retry-p151b-design.md` when P1.5.1b dead-letter recovery is explicitly approved
+9. `docs/superpowers/specs/2026-08-14-client-operation-recovery-p141-design.md` when P1.4.1 client operation recovery is explicitly approved
+10. `docs/superpowers/specs/2026-08-14-fact-bound-script-revision-p12a-design.md` when P1.2a fact-bound script revision is explicitly approved
+11. `docs/superpowers/specs/2026-08-14-pattern-compiler-p13a-design.md` when P1.3a pattern compiler is explicitly approved
+12. `docs/superpowers/specs/2026-08-14-duration-sensitive-storyboard-p13b-design.md` when P1.3b defaults are explicitly approved
+13. `docs/superpowers/specs/2026-08-14-audience-promotion-contract-p13c-design.md` when P1.3c audience slots or Promotion Facts are explicitly approved
+14. `docs/superpowers/specs/2026-08-14-p1-acceptance-closeout-p142-design.md` when P1.4.2 acceptance closeout is explicitly approved
 
 Inspect `git status --short --branch` before writes. Preserve unrelated changes. Work on `main`; do not create worktrees. Prefix every local shell command with `rtk`.
 

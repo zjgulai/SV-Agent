@@ -38,20 +38,17 @@ P2 Preview-first 视频流水线
 
 ### P1.2 Candidate and editor
 
-- 一次生成 2–3 个低成本 typed candidate，不自动进入视频。
-- 工作台允许编辑 phase/shot 时间、Fact 绑定、口播、字幕、标题和标签。
-- 每次保存追加 ScriptVersion，写 parent、author/reason、operation idempotency。
-- 对 voiceover/caption 增加“原句事实”与“人工批准等价表达”两种模式。
+**P1.2a 事实重绑版本（本地已实施）**：工作台只允许把每个既有分镜重新绑定到 generation 冻结合同中的 confirmed/locked Fact；服务端从事实原句重建 voiceover、caption、product claim 和支持 Fact ID，并重新验证后追加 ScriptVersion。请求只包含 `fact_bindings` 和 Idempotency-Key；相同父版本、相同键和相同输入只返回同一 child，键复用但输入不同返回冲突。版本保存固定 `fact_rebind/local_operator/fact_rebind` provenance，数据库禁止半写或伪造该 provenance。
 
-**验收**：所有保存均生成 deterministic ValidationReport；重复网络请求只产生一个版本；同一版本可恢复、比较、导出。
+**明确未实施**：一次生成 2–3 个 candidate、phase/shot 时间编辑、标题/标签/自由口播编辑、人工等价表达、自由 author/reason，以及任何进入视频的动作。这些项目需要 P1.3 pattern/creative-slot 或 P1.5.3 tenant/approval 合同后另行批准，不能借 P1.2a 的事实重绑入口绕过。
+
+**验收**：阻断父版本、排除/过期/非冻结事实、缺失或重复 shot index 都不能写 child；成功 child 仅在事实绑定字段发生变化，保留父版时间线与服务器创意字段；重复网络请求只产生一个版本，且可比较、导出和进入既有 storyboard preflight。
 
 ### P1.3 Pattern compiler
 
-- 把七个 pattern 从 key/phase 列表升级为完整版本化定义：阶段、shot role、fact role、允许字段、CTA policy、时长预算、语言语速、acceptance checks。
-- 受众只可改变场景/语气等 creative slots，不得生成价格、功效、身份或比较事实。
-- Promotion 作为带有效期/市场/渠道的 Fact 类型，不能由自由文本直接进入生成。
+**P1.3a/P1.3b Pattern compiler（本地实施中）**：P1.3a 已冻结每个 generation 的完整 PatternDefinition。获得产品确认后，P1.3b 为新 generation 定义 15 秒 3 阶段/4 镜头、30 秒 4 阶段/6 镜头、45 秒 5 阶段/8 镜头的确定性默认；各 pattern 保留自己的 server-owned phase/role 语义。该 30 秒 6 镜头是本项目稳定默认，不宣称是站点的私有固定输出：实验中同为 4 阶段的镜头数出现了 4/5/6/8 方差。新 `p1.3b`/`1.2` 合同、预算、语速、字段归属与 CTA policy 都进入 generation 配置及输入摘要；Provider、renderer、validator、storyboard 和 rebind 均从持久化合同读取。旧 `1.0` 与 `p1.3a` generation 只使用各自保存的合同，绝不通过新版 registry 重解释。
 
-**验收**：S-A01 的大学生场景可以改变，但不产生“更便宜/买得起”等新事实；S-P01 的 `10%` 只有在 promotion Fact confirmed/locked 且有效时才可出现。
+**P1.3c audience/promotion（本地已实施）**：未来 generation 使用五个闭合 audience profile，且只改变冻结的 server-owned 场景、道具和拍摄槽；Provider 不接收 profile 或这些 copy。Promotion Fact 通过专用 API 以用户断言创建，当前仅支持 TikTok Shop US / America/Los_Angeles 的 percent/amount-off 窗口，并只能由服务器写入最终 CTA。它在 queue、Worker、版本保存、preflight 与 approval 重新检查；无效时失败关闭。自由受众、优惠码、价格比较、倒计时、限量、多市场、多渠道、报价、视频生成和发布仍未实施。
 
 ### P1.4 Recovery UX
 
@@ -59,7 +56,13 @@ P2 Preview-first 视频流水线
 - response parse/timeout 后进入 `unknown/recovering`，先按 key/Job 恢复，禁止直接再次提交。
 - Polling 支持 backoff、页面隐藏暂停、手动重新连接和稳定 error code 对应动作。
 
+**P1.4.1 本地已实施**：公开 URL 导入与事实脚本生成使用版本化浏览器会话
+记录；202 非 JSON 仅在安全 Job `Location` 下打开既有任务，其他未知结果只能以
+原 body 与原幂等键恢复。此实现不新增后端查询接口、数据库记录或匿名重试入口。
+
 **验收**：模拟 U-B01 的 HTML/JSON 错误，页面不得出现“重新生成”；恢复同一 Job 后进入最终版本且 submit count 仍为 1。
+
+**P1.4.2 本地验收闭环（已实施）**：Promotion Fact 不能进入 selected/excluded 事实集合；Web 对不在有效窗的 confirmed/locked Promotion 显示为不可选择。真实 PostgreSQL 测试覆盖 Provider 调用前和版本保存前失效，以及 storyboard preflight/approval 的失败关闭；Compose 浏览器测试覆盖最终 CTA 限制、否决后的 stale，以及真实后端受理后浏览器接收 HTML 202 或连接中断时的同键恢复。浏览器异常由路由注入制造，不能替代生产代理/部署验收。
 
 ### P1 完成门
 
@@ -69,21 +72,21 @@ P2 Preview-first 视频流水线
 
 ## P1.5：可靠执行、历史与 SaaS 权限
 
-### P1.5.1 Transactional outbox and reconciler
+### P1.5.1 Transactional outbox and reconciler（本地已实施）
 
 - Job 与 OutboxEvent 同事务提交；Publisher 以 lease/fencing 投递 Celery。
-- Reconciler 扫描未发布、长时间 queued/running、Broker failure 和无限暂态重试。
-- 增加 max attempts/max age、dead-letter 与显式人工 retry；terminal FAILED 的重试创建新 attempt，而不是复用模糊状态。
+- Reconciler 仅扫描 queued Job 的 pending 或过期 delivery；运行中的 Worker 从不自动接管。
+- P1.5.1b 已增加指数退避、`max attempts/max age` 与 Outbox dead-letter。broker 投递耗尽仍保留业务 Job 为 queued；恢复只能由部署内 operator command 创建下一投递周期，Web 不提供匿名重试。
 
-**对应缺口**：当前 `routes/*` 在 commit 后直接 `.delay()`；客户端重放能修一部分 crash window，但不能自主恢复。
+**已落地边界**：Job、初始 JobEvent 与 OutboxEvent 同事务提交；API 只 nudge 当前 Job，独立 reconciler 用 lease/token 重投 pending 或过期 delivery。broker 不可用不再把业务 Job 伪造为 FAILED；耗尽后写 `dispatch_dead_lettered` 并停止投递。运行中的 Worker 不自动接管，避免重复外部调用。
 
-### P1.5.2 ImportAttempt and JobEvent
+### P1.5.2 ImportAttempt and JobEvent（本地已实施）
 
 - `ProductSource` 保留稳定身份；每次抓取写 append-only ImportAttempt。
 - Attempt 保存时间、规范 URL digest、DNS/IP digest、响应摘要、错误、Snapshot ID；不保存凭证或完整页面。
 - 每次 Job 状态变更写 JobEvent，UI 展示事实阶段而不是假进度百分比。
 
-**对应实验**：U-B01 的 15→95% 无法判断实际阶段；最终成功只能从队列恢复。
+**已落地边界**：每次 fetch 写 `started/parsed/terminal` immutable ImportAttempt；每个 Job 状态/attempt/delivery 变化写 immutable JobEvent。Job 页面和只读 API 只显示实际阶段、错误代码与摘要，不显示假进度、原始网页或 URL。
 
 ### P1.5.3 SaaS security
 
@@ -97,6 +100,8 @@ P2 Preview-first 视频流水线
 - 优先使用供应商幂等键；没有外部幂等时在 UI 明示“内部防重复保存不等于防重复计费”。
 
 ### P1.5 完成门
+
+当前仅完成 P1.5.1/1.2（含 P1.5.1b 投递死信）的本地可靠性门，不代表整个 P1.5（SaaS security 与 Provider execution record 仍未实施）完成。
 
 - 杀死 API 于 DB commit/.delay 边界后，outbox 自动投递且只产生一个 Job。
 - 杀死 Worker 于 GENERATING/VALIDATING 任意点，旧 token 无法覆盖新 attempt。

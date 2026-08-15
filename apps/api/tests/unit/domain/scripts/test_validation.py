@@ -10,6 +10,11 @@ from app.domain.scripts.creative_contract import (
     SAFE_VISUAL,
 )
 from app.domain.scripts.models import ScriptDraft, ScriptPhase, ScriptShot
+from app.domain.scripts.patterns import (
+    CompiledPatternDefinition,
+    compile_pattern,
+    load_persisted_pattern_definition,
+)
 from app.domain.scripts.validation import validate_script
 
 FACT_ID = UUID("00000000-0000-0000-0000-000000000010")
@@ -197,6 +202,176 @@ def test_validator_uses_persisted_pattern_definition() -> None:
     )
 
     assert report.acceptable is True
+
+
+def test_validator_keeps_legacy_pattern_validation_when_given_a_legacy_adapter() -> None:
+    legacy_pattern = load_persisted_pattern_definition(
+        {
+            "hook_type": "legacy-hook",
+            "phase_sequence": ["legacy_phase"],
+            "shot_roles": ["intro"],
+        },
+        pattern_key="legacy_pattern",
+        pattern_version="1.0",
+        duration_seconds=15,
+        language="en",
+    )
+    draft = _valid_draft().model_copy(
+        update={
+            "phases": [
+                ScriptPhase(
+                    key="legacy_phase",
+                    purpose="Legacy Phase",
+                    start_seconds=0,
+                    end_seconds=15,
+                )
+            ],
+            "shots": [
+                _valid_draft().shots[0].model_copy(update={"phase_key": "legacy_phase"})
+            ],
+            "tags": ["legacy_pattern", SAFE_TAG],
+        }
+    )
+
+    report = validate_script(
+        draft,
+        facts={FACT_ID: _confirmed_fact()},
+        pattern_definition=legacy_pattern,
+    )
+
+    assert report.acceptable is True
+
+
+def _compiled_draft() -> tuple[ScriptDraft, CompiledPatternDefinition]:
+    pattern = compile_pattern("problem_solution", duration_seconds=15, language="en")
+    total_weight = sum(shot.budget_weight for shot in pattern.shots)
+    elapsed = 0.0
+    shot_windows: list[tuple[float, float]] = []
+    for definition in pattern.shots:
+        start_seconds = elapsed
+        elapsed += 15 * definition.budget_weight / total_weight
+        shot_windows.append((start_seconds, elapsed))
+    phases = [
+        ScriptPhase(
+            key=phase.key,
+            purpose=phase.purpose,
+            start_seconds=next(
+                start_seconds
+                for definition, (start_seconds, _) in zip(pattern.shots, shot_windows)
+                if definition.phase_key == phase.key
+            ),
+            end_seconds=next(
+                end_seconds
+                for definition, (_, end_seconds) in reversed(
+                    list(zip(pattern.shots, shot_windows))
+                )
+                if definition.phase_key == phase.key
+            ),
+        )
+        for phase in pattern.phases
+    ]
+    shots = [
+        ScriptShot(
+            start_seconds=shot_windows[index][0],
+            end_seconds=shot_windows[index][1],
+            phase_key=definition.phase_key,
+            role=definition.role,
+            voiceover="The pouch is resealable",
+            visual=pattern.server_owned_copy.visual,
+            action=pattern.server_owned_copy.action,
+            caption="The pouch is resealable",
+            acceptance_shot=pattern.server_owned_copy.acceptance_shot,
+            supported_fact_ids=[FACT_ID],
+            product_claims=["The pouch is resealable"],
+        )
+        for index, definition in enumerate(pattern.shots)
+    ]
+    return (
+        ScriptDraft(
+            target_duration_seconds=15,
+            language="en",
+            audience="students",
+            snapshot_id=SNAPSHOT_ID,
+            phases=phases,
+            shots=shots,
+            titles=[pattern.server_owned_copy.title],
+            tags=[pattern.key, pattern.server_owned_copy.tag_suffix],
+            shooting_list=list(pattern.server_owned_copy.shooting_list),
+        ),
+        pattern,
+    )
+
+
+def test_validator_accepts_the_compiled_duration_sensitive_shot_plan() -> None:
+    draft, pattern = _compiled_draft()
+
+    report = validate_script(
+        draft,
+        facts={FACT_ID: _confirmed_fact()},
+        pattern_definition=pattern,
+    )
+
+    assert report.acceptable is True
+
+
+def test_validator_blocks_compiled_shot_role_and_plan_mismatches() -> None:
+    draft, pattern = _compiled_draft()
+    bad_role = draft.shots[1].model_copy(update={"role": "wrong"})
+    role_report = validate_script(
+        draft.model_copy(update={"shots": [draft.shots[0], bad_role, *draft.shots[2:]]}),
+        facts={FACT_ID: _confirmed_fact()},
+        pattern_definition=pattern,
+    )
+    bad_phase = draft.shots[1].model_copy(update={"phase_key": "hook"})
+    phase_report = validate_script(
+        draft.model_copy(update={"shots": [draft.shots[0], bad_phase, *draft.shots[2:]]}),
+        facts={FACT_ID: _confirmed_fact()},
+        pattern_definition=pattern,
+    )
+
+    assert (
+        "CREATIVE_SHOT_PLAN_MISMATCH",
+        "shots",
+    ) in {(item.rule_id, item.path) for item in role_report.blocking}
+    assert (
+        "CREATIVE_SHOT_PLAN_MISMATCH",
+        "shots",
+    ) in {(item.rule_id, item.path) for item in phase_report.blocking}
+
+
+def test_validator_blocks_compiled_missing_shot_and_speaking_rate_overrun() -> None:
+    draft, pattern = _compiled_draft()
+    long_voiceover = "one two three four five six seven eight nine ten eleven twelve"
+    overrun_shot = draft.shots[0].model_copy(
+        update={
+            "voiceover": long_voiceover,
+            "caption": long_voiceover,
+            "product_claims": [long_voiceover],
+        }
+    )
+    report = validate_script(
+        draft.model_copy(update={"shots": [overrun_shot, *draft.shots[1:-1]]}),
+        facts={FACT_ID: _confirmed_fact()},
+        pattern_definition=pattern,
+    )
+
+    observed = {(item.rule_id, item.path) for item in report.blocking}
+    assert ("CREATIVE_SHOT_PLAN_MISMATCH", "shots") in observed
+    assert ("VOICEOVER_RATE_EXCEEDED", "shots[0].voiceover") in observed
+
+
+def test_validator_blocks_a_compiled_shot_budget_mismatch() -> None:
+    draft, pattern = _compiled_draft()
+    off_budget_shot = draft.shots[0].model_copy(update={"end_seconds": 1})
+    report = validate_script(
+        draft.model_copy(update={"shots": [off_budget_shot, *draft.shots[1:]]}),
+        facts={FACT_ID: _confirmed_fact()},
+        pattern_definition=pattern,
+    )
+
+    assert ("TIMELINE_BUDGET_MISMATCH", "shots[0]") in {
+        (item.rule_id, item.path) for item in report.blocking
+    }
 
 
 def test_validator_requires_complete_pattern_phase_order() -> None:

@@ -6,8 +6,10 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.db.models import JobRecord
-from app.adapters.db.repositories import ProductRepository
+from app.adapters.db.repositories import JobRepository, OutboxRepository, ProductRepository
+from app.application.outbox import task_name_for
 from app.domain.common.canonical import canonical_digest
+from app.domain.jobs.entities import JobType
 
 
 class ImportIdempotencyConflictError(Exception):
@@ -47,6 +49,14 @@ class ProductImportService:
                 .returning(JobRecord.id)
             )
             if inserted_id is not None:
+                job = await JobRepository(self.session).get(inserted_id)
+                if job is None:
+                    raise RuntimeError("created product import job cannot be loaded")
+                jobs = JobRepository(self.session)
+                await jobs.append_event(job, event_type="job_created")
+                await OutboxRepository(self.session).add_dispatch(
+                    job, task_name=task_name_for(JobType.PRODUCT_IMPORT)
+                )
                 return QueuedImport(
                     id=inserted_id,
                     state="queued",

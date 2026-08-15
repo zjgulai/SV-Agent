@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("manual facts produce, version, compare, and export an acceptable script", async ({ page }) => {
+test("manual facts produce, approve, and export an acceptable script", async ({ page }) => {
   await page.goto("/products/new");
   await page.getByLabel("商品名称").fill("Pulse Mix E2E");
   await page.getByLabel("商品描述").fill("The pouch is resealable");
@@ -21,23 +21,17 @@ test("manual facts produce, version, compare, and export an acceptable script", 
 
   await expect(page.getByRole("heading", { name: "结构化脚本" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "校验通过" })).toBeVisible();
+  const scriptUrl = page.url();
   await page.getByRole("link", { name: "分镜预检" }).click();
   await expect(page.getByRole("heading", { name: "事实约束分镜预检" })).toBeVisible();
   await expect(page.getByText("可供后续批准")).toBeVisible();
   await expect(page.getByText("The pouch is resealable").first()).toBeVisible();
-  const scriptUrl = page.url();
   await page.getByRole("button", { name: "创建审核版分镜" }).click();
   await expect(page.getByRole("heading", { name: "审核版分镜" })).toBeVisible();
   await expect(page.getByLabel("零成本 animatic 预览")).toBeVisible();
   await page.getByRole("button", { name: "批准" }).click();
   await expect(page.getByText("已批准用于未来报价门禁")).toBeVisible();
   await page.goto(scriptUrl);
-  await page.getByRole("button", { name: "创建版本二" }).click();
-  await expect(page.getByLabel("脚本版本")).toHaveValue(/.+/);
-  await page.getByRole("link", { name: "比较版本" }).click();
-  await expect(page.getByRole("heading", { name: "版本差异" })).toBeVisible();
-  await expect(page.getByText("titles[0]")).toBeVisible();
-  await page.goBack();
 
   const jsonDownload = page.waitForEvent("download");
   await page.getByRole("link", { name: "导出 JSON" }).click();

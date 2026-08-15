@@ -13,6 +13,7 @@ export function ScriptTimeline({ shots }: { shots: ScriptShot[] }) {
               <div><dt>画面</dt><dd id={`shot-${index}-visual`}>{shot.visual}</dd></div>
               <div><dt>动作</dt><dd id={`shot-${index}-action`}>{shot.action}</dd></div>
               <div><dt>字幕</dt><dd id={`shot-${index}-caption`}>{shot.caption || "—"}</dd></div>
+              {shot.promotion && <div><dt>最终 CTA 优惠</dt><dd id={`shot-${index}-promotion`}>{shot.promotion.text}</dd></div>}
               <div><dt>验收镜头</dt><dd id={`shot-${index}-acceptance_shot`}>{shot.acceptance_shot}</dd></div>
             </dl>
             <div className="fact-chips">{shot.supported_fact_ids.map((id) => <code key={id}>fact:{id.slice(0, 8)}</code>)}</div>

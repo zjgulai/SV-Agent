@@ -86,6 +86,8 @@ class ProductFactRecord(Base):
     confidence: Mapped[Decimal] = mapped_column(Numeric(5, 4), nullable=False)
     status: Mapped[str] = mapped_column(String(32), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    operation_key: Mapped[str | None] = mapped_column(String(255))
+    operation_input_digest: Mapped[str | None] = mapped_column(String(64))
 
 
 class JobRecord(Base):
@@ -106,6 +108,92 @@ class JobRecord(Base):
     )
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class OutboxEventRecord(Base):
+    __tablename__ = "outbox_events"
+    __table_args__ = (
+        UniqueConstraint("job_id", "event_type", name="uq_outbox_events_job_type"),
+    )
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
+    event_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    job_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("jobs.id", ondelete="RESTRICT"), nullable=False
+    )
+    task_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    payload_digest: Mapped[str] = mapped_column(String(64), nullable=False)
+    delivery_state: Mapped[str] = mapped_column(String(16), nullable=False)
+    delivery_attempt_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    delivery_cycle_started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    manual_retry_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    last_manual_retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    available_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    lease_token: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
+    lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    dead_letter_code: Mapped[str | None] = mapped_column(String(64))
+    dead_lettered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error_code: Mapped[str | None] = mapped_column(String(64))
+    last_error_detail: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class JobEventRecord(Base):
+    __tablename__ = "job_events"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
+    job_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("jobs.id", ondelete="RESTRICT"), nullable=False
+    )
+    event_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    from_state: Mapped[str | None] = mapped_column(String(32))
+    to_state: Mapped[str] = mapped_column(String(32), nullable=False)
+    attempt_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    error_code: Mapped[str | None] = mapped_column(String(64))
+    error_detail: Mapped[str | None] = mapped_column(Text)
+    event_sequence: Mapped[int] = mapped_column(
+        BigInteger, nullable=False, server_default=text("nextval('job_event_sequence')")
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class ImportAttemptRecord(Base):
+    __tablename__ = "import_attempts"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
+    job_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("jobs.id", ondelete="RESTRICT"), nullable=False
+    )
+    source_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("product_sources.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    attempt_token: Mapped[int] = mapped_column(Integer, nullable=False)
+    stage: Mapped[str] = mapped_column(String(16), nullable=False)
+    source_url_digest: Mapped[str] = mapped_column(String(64), nullable=False)
+    resolution_digest: Mapped[str | None] = mapped_column(String(64))
+    response_digest: Mapped[str | None] = mapped_column(String(64))
+    snapshot_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("product_snapshots.id", ondelete="RESTRICT")
+    )
+    error_code: Mapped[str | None] = mapped_column(String(64))
+    attempt_sequence: Mapped[int] = mapped_column(
+        BigInteger,
+        nullable=False,
+        server_default=text("nextval('import_attempt_sequence')"),
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
 
 
 class ScriptGenerationRecord(Base):
@@ -141,6 +229,11 @@ class ScriptVersionRecord(Base):
     )
     draft: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
     validation_report: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    revision_kind: Mapped[str | None] = mapped_column(String(32))
+    actor_kind: Mapped[str | None] = mapped_column(String(32))
+    reason_code: Mapped[str | None] = mapped_column(String(64))
+    operation_key: Mapped[str | None] = mapped_column(String(255))
+    operation_input_digest: Mapped[str | None] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )

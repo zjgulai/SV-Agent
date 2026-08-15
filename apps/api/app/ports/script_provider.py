@@ -3,7 +3,9 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.domain.products.promotion import PromotionRender
 from app.domain.scripts.models import ScriptDraft
+from app.domain.scripts.patterns import CompiledPatternDefinition
 
 
 class SupportedFact(BaseModel):
@@ -24,11 +26,8 @@ class ScriptGenerationRequest(BaseModel):
     target_duration_seconds: int = Field(gt=0)
     language: str
     audience: str
-    creative_pattern_key: str
-    creative_pattern_version: str
-    hook_type: str
-    phase_sequence: tuple[str, ...] = Field(min_length=1)
-    shot_roles: tuple[str, ...] = Field(min_length=1)
+    pattern_definition: CompiledPatternDefinition
+    promotion: PromotionRender | None = None
 
 
 class ProviderError(Exception):

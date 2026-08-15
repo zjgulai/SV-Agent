@@ -7,6 +7,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.db.repositories import ProductRepository
+from app.domain.common.canonical import canonical_digest
 from app.domain.products.entities import (
     FactStatus,
     ProductFact,
@@ -15,6 +16,7 @@ from app.domain.products.entities import (
     SourceType,
 )
 from app.domain.products.errors import LockedFactError
+from app.domain.products.promotion import PromotionValue, promotion_claim
 
 
 class ProductNotFoundError(Exception):
@@ -26,6 +28,10 @@ class FactNotFoundError(Exception):
 
 
 class FactStateConflictError(Exception):
+    pass
+
+
+class FactIdempotencyConflictError(Exception):
     pass
 
 
@@ -126,6 +132,44 @@ class ProductService:
         async with self.session.begin():
             await self.repository.add_fact(fact)
         return fact
+
+    async def add_promotion_fact(
+        self,
+        product_id: UUID,
+        *,
+        value: PromotionValue,
+        evidence_excerpt: str,
+        idempotency_key: str,
+    ) -> ProductFact:
+        async with self.session.begin():
+            snapshot = await self.repository.get_latest_snapshot(product_id)
+            if snapshot is None:
+                raise ProductNotFoundError(str(product_id))
+            serialized_value = value.model_dump(mode="json", exclude_none=True)
+            operation_input_digest = canonical_digest(
+                {
+                    "schema": "promotion-fact-operation-v1",
+                    "snapshot_id": str(snapshot.id),
+                    "value": serialized_value,
+                    "evidence_excerpt": evidence_excerpt.strip(),
+                }
+            )
+            fact = ProductFact.create(
+                snapshot_id=snapshot.id,
+                claim_type="promotion",
+                claim=promotion_claim(value),
+                value=serialized_value,
+                evidence_kind="user_assertion",
+                evidence_locator="manual-form",
+                evidence_excerpt=evidence_excerpt,
+                confidence=Decimal(1),
+                operation_key=idempotency_key,
+                operation_input_digest=operation_input_digest,
+            )
+            persisted, _ = await self.repository.add_fact_idempotent(fact)
+            if persisted.operation_input_digest != operation_input_digest:
+                raise FactIdempotencyConflictError(idempotency_key)
+        return persisted
 
     async def transition_fact(
         self, product_id: UUID, fact_id: UUID, status: FactStatus

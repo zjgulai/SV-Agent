@@ -5,7 +5,9 @@ import httpx
 import pytest
 
 from app.adapters.providers.openai_compatible import OpenAICompatibleScriptProvider
+from app.domain.products.promotion import PromotionRender
 from app.domain.scripts.models import ScriptDraft, ScriptPhase, ScriptShot
+from app.domain.scripts.patterns import compile_pattern
 from app.ports.script_provider import (
     ProviderOutputInvalid,
     ProviderRateLimited,
@@ -34,11 +36,9 @@ def _request() -> ScriptGenerationRequest:
         target_duration_seconds=15,
         language="en",
         audience="busy professionals",
-        creative_pattern_key="problem_solution",
-        creative_pattern_version="1.0",
-        hook_type="pain",
-        phase_sequence=("hook", "problem", "solution", "cta"),
-        shot_roles=("problem", "demo", "result", "cta"),
+        pattern_definition=compile_pattern(
+            "problem_solution", duration_seconds=15, language="en"
+        ),
     )
 
 
@@ -115,9 +115,34 @@ async def test_openai_compatible_provider_parses_structured_draft() -> None:
 
     assert_strict_objects(captured_schema)
     assert "Never render excluded facts" in captured_messages[0]["content"]
-    assert json.loads(captured_messages[1]["content"])["excluded_facts"] == [
+    provider_input = json.loads(captured_messages[1]["content"])
+    assert provider_input["excluded_facts"] == [
         {"id": str(EXCLUDED_FACT_ID), "claim": "The drink is blue", "claim_type": "appearance"}
     ]
+    assert provider_input["pattern_definition"]["contract_version"] == "p1.3c"
+    assert "audience" not in provider_input
+    assert "audience_policy" not in provider_input["pattern_definition"]
+    assert "server_owned_copy" not in provider_input["pattern_definition"]
+
+
+def test_openai_provider_never_receives_promotion_or_server_owned_audience_contract() -> None:
+    request = _request().model_copy(
+        update={
+            "pattern_definition": compile_pattern("offer_cta", duration_seconds=15, language="en"),
+            "promotion": PromotionRender(
+                fact_id=UUID("00000000-0000-0000-0000-000000000023"),
+                text="10% off on TikTok Shop in the US.",
+            ),
+        }
+    )
+
+    provider_input = json.loads(OpenAICompatibleScriptProvider._provider_input(request))
+
+    assert "promotion" not in provider_input
+    assert "audience" not in provider_input
+    assert "audience_policy" not in provider_input["pattern_definition"]
+    assert "server_owned_copy" not in provider_input["pattern_definition"]
+    assert "cta_policy" not in provider_input["pattern_definition"]
 
 
 async def test_openai_compatible_provider_maps_rate_limit() -> None:

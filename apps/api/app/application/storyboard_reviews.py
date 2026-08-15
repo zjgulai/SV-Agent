@@ -13,6 +13,7 @@ from app.adapters.db.repositories import ProductRepository, ScriptRepository
 from app.application.storyboards import StoryboardPreflightNotFoundError, StoryboardPreflightService
 from app.domain.common.canonical import canonical_digest
 from app.domain.scripts.models import ScriptDraft
+from app.domain.scripts.patterns import load_persisted_pattern_definition
 from app.domain.scripts.storyboard import (
     StoryboardPreflight,
     StoryboardPreview,
@@ -75,10 +76,14 @@ class StoryboardReviewService:
         )
         if preflight.status != "ready":
             raise StoryboardNotReadyError(str(version_id))
-        phase_sequence = tuple(
-            str(item)
-            for item in generation.configuration["pattern_definition"]["phase_sequence"]
+        pattern_definition = load_persisted_pattern_definition(
+            generation.configuration["pattern_definition"],
+            pattern_key=generation.pattern_key,
+            pattern_version=generation.pattern_version,
+            duration_seconds=int(generation.configuration["target_duration_seconds"]),
+            language=str(generation.configuration["language"]),
         )
+        phase_sequence = pattern_definition.phase_sequence
         preflight_digest = storyboard_preflight_digest(
             preflight,
             pattern_version=generation.pattern_version,
@@ -159,10 +164,14 @@ class StoryboardReviewService:
         )
         if preflight.status != "ready":
             raise StoryboardApprovalStaleError(str(storyboard_id))
-        phase_sequence = tuple(
-            str(item)
-            for item in generation.configuration["pattern_definition"]["phase_sequence"]
+        pattern_definition = load_persisted_pattern_definition(
+            generation.configuration["pattern_definition"],
+            pattern_key=generation.pattern_key,
+            pattern_version=generation.pattern_version,
+            duration_seconds=int(generation.configuration["target_duration_seconds"]),
+            language=str(generation.configuration["language"]),
         )
+        phase_sequence = pattern_definition.phase_sequence
         preflight_digest = storyboard_preflight_digest(
             preflight,
             pattern_version=generation.pattern_version,

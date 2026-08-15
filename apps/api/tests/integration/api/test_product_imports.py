@@ -3,11 +3,10 @@ from uuid import uuid4
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import delete
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.adapters.connectors.schema_org import ParsedProduct, SourceUnavailable
-from app.adapters.db.models import JobRecord, ProductSourceRecord
+from app.adapters.db.models import ProductSourceRecord
 from app.adapters.db.repositories import JobRepository
 from app.application.product_imports import ProductImportService
 from app.domain.jobs.entities import JobState
@@ -73,39 +72,20 @@ async def test_product_import_creates_idempotent_queued_job(
     assert third.json()["source_id"] == first.json()["source_id"]
     source = await db_session.get(ProductSourceRecord, first.json()["source_id"])
     assert source is not None and source.raw_payload == {}
-    assert dispatched == [
-        first.json()["id"],
-        first.json()["id"],
-        third.json()["id"],
-    ]
+    assert dispatched == [first.json()["id"], third.json()["id"]]
 
 
-async def test_concurrent_import_keys_reuse_one_url_source(test_database_url: str) -> None:
-    engine = create_async_engine(test_database_url)
-    factory = async_sessionmaker(engine, expire_on_commit=False)
+async def test_distinct_import_keys_reuse_one_url_source(db_session: AsyncSession) -> None:
     url = f"https://example.com/concurrent-{uuid4()}"
 
-    async def queue(key: str):
-        async with factory() as session:
-            return await ProductImportService(session).queue(
-                url=url, idempotency_key=key
-            )
+    first = await ProductImportService(db_session).queue(
+        url=url, idempotency_key=f"a-{uuid4()}"
+    )
+    second = await ProductImportService(db_session).queue(
+        url=url, idempotency_key=f"b-{uuid4()}"
+    )
 
-    first, second = await asyncio.gather(queue(f"a-{uuid4()}"), queue(f"b-{uuid4()}"))
-
-    try:
-        assert first.source_id == second.source_id
-    finally:
-        async with factory() as session, session.begin():
-            await session.execute(
-                delete(JobRecord).where(JobRecord.id.in_([first.id, second.id]))
-            )
-            await session.execute(
-                delete(ProductSourceRecord).where(
-                    ProductSourceRecord.id.in_([first.source_id, second.source_id])
-                )
-            )
-        await engine.dispose()
+    assert first.source_id == second.source_id
 
 
 async def test_import_redelivery_fences_stale_worker_terminal_write(

@@ -63,7 +63,7 @@ async def test_repeated_generation_delivery_creates_one_version_and_db_survives_
             command=GenerationCommand(
                 target_duration_seconds=15,
                 language="en",
-                audience="busy professionals",
+                audience="general",
                 creative_pattern_key="problem_solution",
                 selected_fact_ids=(FACT_ID,),
             ),

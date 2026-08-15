@@ -101,6 +101,68 @@ async def test_manual_fact_cannot_spoof_connector_evidence(client: AsyncClient) 
     assert response.status_code == 422
 
 
+async def test_promotion_fact_uses_a_dedicated_idempotent_contract(
+    client: AsyncClient,
+) -> None:
+    product = await _create_product(client)
+    product_id = str(product["product_id"])
+    payload = {
+        "value": {
+            "schema_version": "promotion-v1",
+            "kind": "percent_off",
+            "percent": "10",
+            "market": "US",
+            "channel": "tiktok_shop",
+            "timezone": "America/Los_Angeles",
+            "effective_from": "2026-08-14T09:00:00-07:00",
+            "effective_to": "2026-08-15T09:00:00-07:00",
+        },
+        "evidence_excerpt": "Operator-entered promotion window",
+    }
+    headers = {"Idempotency-Key": "promotion-fact-001"}
+
+    first = await client.post(
+        f"/api/v1/products/{product_id}/promotion-facts", json=payload, headers=headers
+    )
+    replay = await client.post(
+        f"/api/v1/products/{product_id}/promotion-facts", json=payload, headers=headers
+    )
+    conflict = await client.post(
+        f"/api/v1/products/{product_id}/promotion-facts",
+        json={**payload, "value": {**payload["value"], "percent": "15"}},
+        headers=headers,
+    )
+    bypass = await client.post(
+        f"/api/v1/products/{product_id}/facts",
+        json={
+            "claim_type": "promotion",
+            "claim": "10% off",
+            "value": payload["value"],
+            "evidence_excerpt": "bypass attempt",
+        },
+    )
+
+    assert first.status_code == 201
+    assert first.json()["claim_type"] == "promotion"
+    assert first.json()["evidence_kind"] == "user_assertion"
+    assert replay.status_code == 201
+    assert replay.json()["id"] == first.json()["id"]
+    assert conflict.status_code == 409
+    assert conflict.json()["code"] == "IDEMPOTENCY_CONFLICT"
+    assert bypass.status_code == 422
+
+    invalid = await client.post(
+        f"/api/v1/products/{product_id}/promotion-facts",
+        json={
+            "value": {**payload["value"], "amount": "1", "currency": "USD"},
+            "evidence_excerpt": "invalid mixed shape",
+        },
+        headers={"Idempotency-Key": "promotion-fact-invalid"},
+    )
+    assert invalid.status_code == 422
+    assert invalid.json()["code"] == "REQUEST_VALIDATION_FAILED"
+
+
 @pytest.mark.parametrize(
     "image_url",
     [

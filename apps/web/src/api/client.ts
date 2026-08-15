@@ -48,6 +48,18 @@ export class ApiProblem extends Error {
   }
 }
 
+export class ApiTransportError extends Error {
+  constructor() {
+    super("请求状态未知，请恢复原请求。");
+  }
+}
+
+export class ApiResponseParseError extends Error {
+  constructor(public readonly jobPath: string | null) {
+    super(jobPath ? "任务已受理，正在恢复任务。" : "请求状态未知，请恢复原请求。");
+  }
+}
+
 export interface Job {
   id: string;
   job_type: "product_import" | "script_generation";
@@ -66,11 +78,62 @@ export interface Job {
   result_id: string | null;
 }
 
+export interface JobEvent {
+  id: string;
+  event_type: string;
+  from_state: Job["state"] | null;
+  to_state: Job["state"];
+  attempt_count: number;
+  error_code: string | null;
+  error_detail: string | null;
+  event_sequence: number;
+  created_at: string;
+}
+
 export interface CreativePattern {
   key: string;
   version: string;
   name: string;
   supported_durations: number[];
+  supported_languages: string[];
+  contracts: PatternDefinition[];
+}
+
+export interface PatternDefinition {
+  contract_version: "p1.3a" | "p1.3b" | "p1.3c";
+  key: string;
+  version: string;
+  name: string;
+  hook_type: string;
+  duration_seconds: number;
+  language: "en" | "zh-CN";
+  phases: Array<{
+    key: string;
+    purpose: string;
+    shot_role: string;
+    fact_role: "required_selected";
+  }>;
+  shots: Array<{
+    phase_key: string;
+    role: string;
+    fact_role: "required_selected";
+    budget_weight: number;
+  }>;
+  speaking_rate: {
+    unit: "words_per_second" | "han_characters_per_second";
+    max: number;
+  };
+  field_policy: {
+    fact_bound: string[];
+    server_owned: string[];
+  };
+  cta_policy: { mode: "server_generic_no_offer" | "server_promotion_final_cta" };
+  audience_policy: {
+    mode: "record_only" | "server_owned_profile";
+    allowed_slots: string[];
+    profile_key?: "general" | "study_routine" | "work_routine" | "home_routine" | "on_the_go";
+  };
+  acceptance_checks: string[];
 }
 
 export interface ScriptPhase {
@@ -84,6 +147,7 @@ export interface ScriptShot {
   start_seconds: number;
   end_seconds: number;
   phase_key: string;
+  role: string | null;
   voiceover: string;
   visual: string;
   action: string;
@@ -91,6 +155,7 @@ export interface ScriptShot {
   acceptance_shot: string;
   supported_fact_ids: string[];
   product_claims: string[];
+  promotion?: { fact_id: string; text: string } | null;
 }
 
 export interface ValidationFinding {
@@ -105,6 +170,10 @@ export interface ScriptVersion {
   id: string;
   generation_id: string;
   parent_version_id: string | null;
+  revision_kind: "fact_rebind" | null;
+  actor_kind: "local_operator" | null;
+  reason_code: "fact_rebind" | null;
+  operation_input_digest: string | null;
   created_at: string;
   draft: {
     target_duration_seconds: number;
@@ -140,6 +209,20 @@ export interface ScriptResource {
     created_at: string;
   };
   versions: ScriptVersion[];
+  fact_contract: {
+    selected: Array<{
+      id: string;
+      claim: string;
+      status: FactStatus;
+      snapshot_id: string;
+    }>;
+    excluded: Array<{
+      id: string;
+      claim: string;
+      status: FactStatus;
+      snapshot_id: string;
+    }>;
+  };
 }
 
 export interface StoryboardFact {
@@ -217,11 +300,28 @@ export interface VersionDiff {
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
 
+export function safeJobPathFromLocation(location: string | null): string | null {
+  if (!location) return null;
+  try {
+    const resolved = new URL(location, globalThis.location?.origin ?? "http://localhost");
+    if (resolved.origin !== (globalThis.location?.origin ?? resolved.origin) || resolved.search || resolved.hash) return null;
+    const match = resolved.pathname.match(/^\/api\/v1\/jobs\/([A-Za-z0-9-]+)$/);
+    return match ? `/jobs/${match[1]}` : null;
+  } catch {
+    return null;
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      headers: { "Content-Type": "application/json", ...init?.headers },
+    });
+  } catch {
+    throw new ApiTransportError();
+  }
   if (!response.ok) {
     const fallback: ProblemDetails = {
       type: "about:blank",
@@ -239,7 +339,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     }
     throw new ApiProblem(problem);
   }
-  return (await response.json()) as T;
+  try {
+    return (await response.json()) as T;
+  } catch {
+    throw new ApiResponseParseError(safeJobPathFromLocation(response.headers.get("Location")));
+  }
 }
 
 export const api = {
@@ -263,6 +367,16 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ status }),
     }),
+  createPromotionFact: (
+    productId: string,
+    input: { value: Record<string, unknown>; evidence_excerpt: string },
+    idempotencyKey: string,
+  ) =>
+    request<ProductFact>(`/api/v1/products/${productId}/promotion-facts`, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: JSON.stringify(input),
+    }),
   importProduct: (url: string, idempotencyKey: string) =>
     request<{ id: string; state: string; source_id: string }>("/api/v1/product-imports", {
       method: "POST",
@@ -274,10 +388,11 @@ export const api = {
     input: {
       target_duration_seconds: number;
       language: string;
-      audience: string;
+      audience: "general" | "study_routine" | "work_routine" | "home_routine" | "on_the_go";
       creative_pattern_key: string;
       selected_fact_ids: string[];
       excluded_fact_ids: string[];
+      promotion_fact_id?: string | null;
     },
     idempotencyKey: string,
   ) =>
@@ -287,6 +402,7 @@ export const api = {
       body: JSON.stringify(input),
     }),
   getJob: (id: string) => request<Job>(`/api/v1/jobs/${id}`),
+  getJobEvents: (id: string) => request<JobEvent[]>(`/api/v1/jobs/${id}/events`),
   getPatterns: () => request<CreativePattern[]>("/api/v1/creative-patterns"),
   getStoryboardPreflight: (scriptId: string, versionId: string) =>
     request<StoryboardPreflight>(
@@ -317,10 +433,16 @@ export const api = {
       },
     ),
   getScript: (id: string) => request<ScriptResource>(`/api/v1/scripts/${id}`),
-  deriveVersion: (scriptId: string, versionId: string, title: string) =>
+  deriveVersion: (
+    scriptId: string,
+    versionId: string,
+    input: { fact_bindings: Array<{ shot_index: number; fact_id: string }> },
+    idempotencyKey: string,
+  ) =>
     request<ScriptVersion>(`/api/v1/scripts/${scriptId}/versions/${versionId}/derive`, {
       method: "POST",
-      body: JSON.stringify({ title }),
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: JSON.stringify(input),
     }),
   compareVersions: (id: string, left: string, right: string) =>
     request<VersionDiff>(`/api/v1/scripts/${id}/compare?left=${encodeURIComponent(left)}&right=${encodeURIComponent(right)}`),

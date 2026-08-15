@@ -19,6 +19,14 @@ def export_payload(
             "model": generation.model,
             "prompt_contract_version": generation.prompt_contract_version,
             "input_digest": generation.input_digest,
+            "configuration": generation.configuration,
+            "parent_version_id": (
+                str(version.parent_version_id) if version.parent_version_id is not None else None
+            ),
+            "revision_kind": version.revision_kind,
+            "actor_kind": version.actor_kind,
+            "reason_code": version.reason_code,
+            "operation_input_digest": version.operation_input_digest,
         },
         "validation_report": version.validation_report,
         "draft": version.draft,

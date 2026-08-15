@@ -134,6 +134,8 @@ class ProductFact:
     confidence: Decimal
     status: FactStatus
     updated_at: datetime
+    operation_key: str | None = None
+    operation_input_digest: str | None = None
 
     @classmethod
     def create(
@@ -150,6 +152,8 @@ class ProductFact:
         id: UUID | None = None,
         status: FactStatus = FactStatus.PROPOSED,
         updated_at: datetime | None = None,
+        operation_key: str | None = None,
+        operation_input_digest: str | None = None,
     ) -> "ProductFact":
         normalized_confidence = Decimal(str(confidence))
         if not Decimal(0) <= normalized_confidence <= Decimal(1):
@@ -166,6 +170,8 @@ class ProductFact:
             confidence=normalized_confidence,
             status=status,
             updated_at=updated_at or datetime.now(UTC),
+            operation_key=operation_key,
+            operation_input_digest=operation_input_digest,
         )
 
     def transition_to(self, status: FactStatus) -> "ProductFact":

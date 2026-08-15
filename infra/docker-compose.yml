@@ -87,6 +87,21 @@ services:
       redis:
         condition: service_healthy
 
+  reconciler:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: reverse-engineer-mode-api:local
+    command: ["python", "-m", "app.worker.reconciler"]
+    environment:
+      REM_DATABASE_URL: postgresql+asyncpg://reverse_engineer_mode:local-development-only@postgres:5432/reverse_engineer_mode
+      REM_REDIS_URL: redis://redis:6379/0
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
   web:
     build:
       context: ..

@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.connectors.ssrf import SourceFetchBlocked, SsrfGuard
@@ -17,9 +17,11 @@ from app.api.schemas.products import (
     ProductFactOutput,
     ProductOutput,
     ProductSnapshotOutput,
+    PromotionFactInput,
 )
 from app.application.products import (
     FactCommand,
+    FactIdempotencyConflictError,
     FactNotFoundError,
     FactStateConflictError,
     ProductNotFoundError,
@@ -134,10 +136,49 @@ async def get_product(product_id: UUID, session: SessionDependency) -> ProductOu
 async def create_fact(
     product_id: UUID, payload: FactInput, session: SessionDependency
 ) -> ProductFactOutput:
+    if payload.claim_type.strip().casefold() == "promotion":
+        raise ApiProblem(
+            status=422,
+            code="PROMOTION_VALUE_INVALID",
+            title="Promotion requires its dedicated endpoint",
+            detail="Create Promotion Facts through the typed promotion endpoint.",
+        )
     try:
         fact = await ProductService(session).add_fact(product_id, _fact_command(payload))
     except ProductNotFoundError as exc:
         raise _not_found("The requested product does not exist.") from exc
+    return _fact_output(fact)
+
+
+@router.post(
+    "/{product_id}/promotion-facts",
+    response_model=ProductFactOutput,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_promotion_fact(
+    product_id: UUID,
+    payload: PromotionFactInput,
+    session: SessionDependency,
+    idempotency_key: Annotated[
+        str, Header(alias="Idempotency-Key", min_length=1, max_length=255)
+    ],
+) -> ProductFactOutput:
+    try:
+        fact = await ProductService(session).add_promotion_fact(
+            product_id,
+            value=payload.value,
+            evidence_excerpt=payload.evidence_excerpt,
+            idempotency_key=idempotency_key,
+        )
+    except ProductNotFoundError as exc:
+        raise _not_found("The requested product does not exist.") from exc
+    except FactIdempotencyConflictError as exc:
+        raise ApiProblem(
+            status=409,
+            code="IDEMPOTENCY_CONFLICT",
+            title="Idempotency conflict",
+            detail="The Idempotency-Key was already used with different promotion input.",
+        ) from exc
     return _fact_output(fact)
 
 

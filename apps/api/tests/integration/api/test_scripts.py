@@ -7,7 +7,7 @@ import pytest
 from httpx import AsyncClient
 from pydantic import SecretStr
 from sqlalchemy import update
-from sqlalchemy.exc import DBAPIError, SQLAlchemyError
+from sqlalchemy.exc import DBAPIError, IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.adapters.db.models import ScriptGenerationRecord, ScriptVersionRecord
@@ -23,7 +23,7 @@ from app.ports.script_provider import ProviderUnavailable, ScriptGenerationReque
 
 @pytest.fixture(autouse=True)
 def disable_celery_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("app.api.routes.scripts.generate_script.delay", lambda _job_id: None)
+    monkeypatch.setattr("app.worker.tasks.generate_script.delay", lambda _job_id: None)
 
 
 async def create_ready_product(client: AsyncClient, *, lock_fact: bool = True) -> str:
@@ -92,7 +92,7 @@ async def ready_fact_ids(client: AsyncClient, product_id: str) -> list[str]:
     return [
         str(fact["id"])
         for fact in product.json()["facts"]
-        if fact["status"] in {"confirmed", "locked"}
+        if fact["status"] in {"confirmed", "locked"} and fact["claim_type"] != "promotion"
     ]
 
 
@@ -105,11 +105,39 @@ async def generation_payload(
     return {
         "target_duration_seconds": duration,
         "language": "en",
-        "audience": "busy professionals",
+        "audience": "general",
         "creative_pattern_key": "problem_solution",
         "selected_fact_ids": await ready_fact_ids(client, product_id),
         "excluded_fact_ids": [],
     }
+
+
+async def create_confirmed_promotion_fact(client: AsyncClient, product_id: str) -> str:
+    created = await client.post(
+        f"/api/v1/products/{product_id}/promotion-facts",
+        headers={"Idempotency-Key": f"promotion-{uuid4()}"},
+        json={
+            "value": {
+                "schema_version": "promotion-v1",
+                "kind": "percent_off",
+                "percent": "10",
+                "market": "US",
+                "channel": "tiktok_shop",
+                "timezone": "America/Los_Angeles",
+                "effective_from": "2000-01-01T00:00:00-08:00",
+                "effective_to": "2100-01-01T00:00:00-08:00",
+            },
+            "evidence_excerpt": "Operator-entered promotion window",
+        },
+    )
+    assert created.status_code == 201
+    promotion_id = created.json()["id"]
+    confirmed = await client.patch(
+        f"/api/v1/products/{product_id}/facts/{promotion_id}",
+        json={"status": "confirmed"},
+    )
+    assert confirmed.status_code == 200
+    return str(promotion_id)
 
 
 async def test_repeated_generation_key_returns_same_job(
@@ -117,7 +145,7 @@ async def test_repeated_generation_key_returns_same_job(
 ) -> None:
     dispatched: list[str] = []
     monkeypatch.setattr(
-        "app.api.routes.scripts.generate_script.delay",
+        "app.worker.tasks.generate_script.delay",
         lambda job_id: dispatched.append(job_id),
     )
     ready_product_id = await create_ready_product(client)
@@ -138,7 +166,7 @@ async def test_repeated_generation_key_returns_same_job(
     assert first.status_code == 202
     assert second.status_code == 202
     assert first.json()["id"] == second.json()["id"]
-    assert dispatched == [first.json()["id"], first.json()["id"]]
+    assert dispatched == [first.json()["id"]]
 
 
 async def test_generation_persists_requested_fact_order_and_explicit_exclusions(
@@ -156,14 +184,14 @@ async def test_generation_persists_requested_fact_order_and_explicit_exclusions(
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "busy professionals",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": [fact_ids[1], fact_ids[0]],
             "excluded_fact_ids": [fact_ids[2]],
         },
     )
 
-    assert response.status_code == 202
+    assert response.status_code == 202, response.json()
     generation_id = UUID(response.json()["result_id"])
     generation = await db_session.get(ScriptGenerationRecord, generation_id)
     assert generation is not None
@@ -201,11 +229,33 @@ async def test_generation_rejects_invalid_fact_selection_contract(
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "busy professionals",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": selected,
             "excluded_fact_ids": excluded,
         },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["code"] == "FACT_SELECTION_INVALID"
+
+
+@pytest.mark.parametrize("selection_field", ["selected_fact_ids", "excluded_fact_ids"])
+async def test_generation_rejects_promotion_in_the_fact_selection_contract(
+    client: AsyncClient,
+    selection_field: str,
+) -> None:
+    product_id = await create_ready_product(client)
+    ordinary_fact_id = (await ready_fact_ids(client, product_id))[0]
+    promotion_fact_id = await create_confirmed_promotion_fact(client, product_id)
+    payload = await generation_payload(client, product_id)
+    payload["selected_fact_ids"] = [ordinary_fact_id]
+    payload[selection_field] = [promotion_fact_id]
+
+    response = await client.post(
+        f"/api/v1/products/{product_id}/script-generations",
+        headers={"Idempotency-Key": f"promotion-in-{selection_field}"},
+        json=payload,
     )
 
     assert response.status_code == 422
@@ -221,7 +271,7 @@ async def test_generation_requires_an_explicit_nonempty_selection(client: AsyncC
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "busy professionals",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": [],
             "excluded_fact_ids": [],
@@ -241,7 +291,7 @@ async def test_generation_requires_the_selection_field(client: AsyncClient) -> N
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "busy professionals",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "excluded_fact_ids": [],
         },
@@ -250,7 +300,7 @@ async def test_generation_requires_the_selection_field(client: AsyncClient) -> N
     assert response.status_code == 422
 
 
-async def test_broker_failure_marks_generation_job_failed(
+async def test_broker_failure_keeps_generation_job_queued_for_recovery(
     client: AsyncClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     product_id = await create_ready_product(client)
@@ -260,24 +310,24 @@ async def test_broker_failure_marks_generation_job_failed(
     def fail_dispatch(_job_id: str) -> None:
         raise RuntimeError("broker unavailable")
 
-    monkeypatch.setattr("app.api.routes.scripts.generate_script.delay", fail_dispatch)
+    monkeypatch.setattr("app.worker.tasks.generate_script.delay", fail_dispatch)
     failed = await client.post(
         f"/api/v1/products/{product_id}/script-generations",
         json=payload,
         headers=headers,
     )
-    monkeypatch.setattr("app.api.routes.scripts.generate_script.delay", lambda _job_id: None)
+    monkeypatch.setattr("app.worker.tasks.generate_script.delay", lambda _job_id: None)
     replay = await client.post(
         f"/api/v1/products/{product_id}/script-generations",
         json=payload,
         headers=headers,
     )
 
-    assert failed.status_code == 503
-    assert failed.json()["code"] == "BROKER_UNAVAILABLE"
+    assert failed.status_code == 202
+    assert failed.json()["state"] == "queued"
     assert replay.status_code == 202
-    assert replay.json()["state"] == "failed"
-    assert replay.json()["error_code"] == "BROKER_UNAVAILABLE"
+    assert replay.json()["state"] == "queued"
+    assert replay.json()["error_code"] is None
 
 
 async def test_generation_rejects_missing_provider_key(
@@ -320,13 +370,18 @@ async def _queue_generation(
     *,
     key: str,
     duration: int = 15,
+    creative_pattern_key: str = "problem_solution",
+    promotion_fact_id: str | None = None,
 ) -> dict[str, Any]:
+    payload = await generation_payload(client, product_id, duration=duration)
+    payload["creative_pattern_key"] = creative_pattern_key
+    payload["promotion_fact_id"] = promotion_fact_id
     response = await client.post(
         f"/api/v1/products/{product_id}/script-generations",
         headers={"Idempotency-Key": key},
-        json=await generation_payload(client, product_id, duration=duration),
+        json=payload,
     )
-    assert response.status_code == 202
+    assert response.status_code == 202, response.json()
     return response.json()
 
 
@@ -397,7 +452,7 @@ async def test_storyboard_preflight_revalidates_and_exposes_frozen_fact_contract
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "buyers",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": [fact_ids[1], fact_ids[0]],
             "excluded_fact_ids": [fact_ids[2]],
@@ -466,7 +521,7 @@ async def test_storyboard_preflight_is_blocked_for_an_unacceptable_version(
     )
     assert comparison.status_code == 200
     assert comparison.json()["changed"] == [
-        {"path": "titles[0]", "left": "Fact-led product script", "right": "A changed title"}
+        {"path": "titles[0]", "left": "Fact-led product script · General routine", "right": "A changed title"}
     ]
 
 
@@ -482,7 +537,7 @@ async def test_generation_requires_ready_facts_and_idempotent_input(client: Asyn
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "buyers",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": [],
             "excluded_fact_ids": [],
@@ -500,6 +555,16 @@ async def test_generation_requires_ready_facts_and_idempotent_input(client: Asyn
     assert unsupported_duration.status_code == 422
     assert unsupported_duration.json()["code"] == "DURATION_NOT_SUPPORTED"
 
+    unsupported_language_payload = await generation_payload(client, ready_product_id)
+    unsupported_language_payload["language"] = "fr"
+    unsupported_language = await client.post(
+        f"/api/v1/products/{ready_product_id}/script-generations",
+        headers={"Idempotency-Key": "unsupported-language-001"},
+        json=unsupported_language_payload,
+    )
+    assert unsupported_language.status_code == 422
+    assert unsupported_language.json()["code"] == "LANGUAGE_NOT_SUPPORTED"
+
     await _queue_generation(client, ready_product_id, key="conflict-001", duration=15)
     conflict = await client.post(
         f"/api/v1/products/{ready_product_id}/script-generations",
@@ -508,6 +573,44 @@ async def test_generation_requires_ready_facts_and_idempotent_input(client: Asyn
     )
     assert conflict.status_code == 409
     assert conflict.json()["code"] == "IDEMPOTENCY_CONFLICT"
+
+
+async def test_creative_pattern_catalog_exposes_frozen_read_only_contracts(
+    client: AsyncClient,
+) -> None:
+    response = await client.get("/api/v1/creative-patterns")
+
+    assert response.status_code == 200
+    catalog = response.json()
+    assert len(catalog) == 7
+    problem_solution = next(item for item in catalog if item["key"] == "problem_solution")
+    assert problem_solution["version"] == "1.3"
+    assert problem_solution["supported_languages"] == ["en", "zh-CN"]
+    assert len(problem_solution["contracts"]) == 6
+    contract = next(
+        item
+        for item in problem_solution["contracts"]
+        if item["duration_seconds"] == 15 and item["language"] == "en"
+    )
+    assert contract["contract_version"] == "p1.3c"
+    assert [phase["key"] for phase in contract["phases"]] == [
+        "hook",
+        "solution",
+        "cta",
+    ]
+    assert [shot["phase_key"] for shot in contract["shots"]] == [
+        "hook",
+        "solution",
+        "solution",
+        "cta",
+    ]
+    assert [shot["budget_weight"] for shot in contract["shots"]] == [2, 4, 5, 4]
+    assert contract["audience_policy"] == {
+        "mode": "server_owned_profile",
+        "allowed_slots": ["visual", "action", "acceptance_shot", "titles", "tags", "shooting_list"],
+        "profile_key": "general",
+    }
+    assert contract["cta_policy"] == {"mode": "server_generic_no_offer"}
 
 
 class BlockingProvider:
@@ -559,7 +662,7 @@ class WrongContractProvider:
         return ScriptDraft(
             target_duration_seconds=60,
             language="zh-CN",
-            audience="different audience",
+            audience="general",
             snapshot_id=uuid4(),
             phases=[ScriptPhase(key="hook", purpose="Hook", start_seconds=0, end_seconds=60)],
             shots=[
@@ -597,6 +700,20 @@ class RejectingFactProvider(DeterministicScriptProvider):
             fact = await products.get_fact(self.fact_id, for_update=True)
             assert fact is not None
             await products.save_fact(fact.transition_to(FactStatus.REJECTED))
+        return await super().generate(request)
+
+
+class RejectingPromotionProvider(DeterministicScriptProvider):
+    def __init__(self, session: AsyncSession, promotion_fact_id: UUID) -> None:
+        self.session = session
+        self.promotion_fact_id = promotion_fact_id
+
+    async def generate(self, request: ScriptGenerationRequest) -> ScriptDraft:
+        async with self.session.begin_nested():
+            products = ProductRepository(self.session)
+            promotion = await products.get_fact(self.promotion_fact_id, for_update=True)
+            assert promotion is not None
+            await products.save_fact(promotion.transition_to(FactStatus.REJECTED))
         return await super().generate(request)
 
 
@@ -778,7 +895,7 @@ async def test_worker_enforces_persisted_generation_contract(
 
     assert stored["draft"]["target_duration_seconds"] == 15
     assert stored["draft"]["language"] == "en"
-    assert stored["draft"]["audience"] == "busy professionals"
+    assert stored["draft"]["audience"] == "General routine"
     assert stored["draft"]["snapshot_id"] == script.json()["generation"]["snapshot_id"]
     assert stored["validation_report"]["acceptable"] is False
     assert any(
@@ -799,16 +916,42 @@ async def test_worker_passes_persisted_pattern_definition_to_provider(
     script = await client.get(f"/api/v1/scripts/{job['result_id']}")
     configuration = script.json()["generation"]["configuration"]
 
-    assert configuration["pattern_definition"] == {
-        "hook_type": "pain",
-        "phase_sequence": ["hook", "problem", "solution", "cta"],
-        "shot_roles": ["problem", "demo", "result", "cta"],
-        "supported_durations": [15, 30, 45],
+    definition = configuration["pattern_definition"]
+    assert definition["contract_version"] == "p1.3c"
+    assert definition["key"] == "problem_solution"
+    assert definition["version"] == "1.3"
+    assert definition["duration_seconds"] == 15
+    assert [item["key"] for item in definition["phases"]] == [
+        "hook",
+        "solution",
+        "cta",
+    ]
+    assert [item["phase_key"] for item in definition["shots"]] == [
+        "hook",
+        "solution",
+        "solution",
+        "cta",
+    ]
+    assert [item["role"] for item in definition["shots"]] == [
+        "problem",
+        "demo",
+        "result",
+        "cta",
+    ]
+    assert definition["audience_policy"] == {
+        "mode": "server_owned_profile",
+        "allowed_slots": ["visual", "action", "acceptance_shot", "titles", "tags", "shooting_list"],
+        "profile_key": "general",
     }
+    assert definition["cta_policy"] == {"mode": "server_generic_no_offer"}
     assert provider.request is not None
-    assert provider.request.creative_pattern_version == "1.0"
-    assert provider.request.phase_sequence == ("hook", "problem", "solution", "cta")
-    assert provider.request.shot_roles == ("problem", "demo", "result", "cta")
+    assert provider.request.pattern_definition.contract_version == "p1.3c"
+    assert provider.request.pattern_definition.phase_sequence == (
+        "hook",
+        "solution",
+        "cta",
+    )
+    assert provider.request.pattern_definition.shot_roles == ("problem", "demo", "result", "cta")
 
 
 async def test_worker_preserves_ordered_fact_selection_and_passes_deny_set(
@@ -825,7 +968,7 @@ async def test_worker_preserves_ordered_fact_selection_and_passes_deny_set(
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "busy professionals",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": [fact_ids[1], fact_ids[0]],
             "excluded_fact_ids": [fact_ids[2]],
@@ -844,7 +987,7 @@ async def test_worker_preserves_ordered_fact_selection_and_passes_deny_set(
     assert [str(fact.id) for fact in provider.request.excluded_facts] == [fact_ids[2]]
 
 
-async def test_excluded_fact_blocks_generation_and_derived_version(
+async def test_fact_bound_rebind_rejects_blocked_parent_and_excluded_fact(
     client: AsyncClient,
     db_session: AsyncSession,
 ) -> None:
@@ -858,7 +1001,7 @@ async def test_excluded_fact_blocks_generation_and_derived_version(
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "busy professionals",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": [fact_ids[0]],
             "excluded_fact_ids": [fact_ids[1]],
@@ -878,13 +1021,25 @@ async def test_excluded_fact_blocks_generation_and_derived_version(
         for item in blocked.json()["versions"][0]["validation_report"]["blocking"]
     )
 
+    blocked_rebind = await client.post(
+        f"/api/v1/scripts/{job['result_id']}/versions/{version_id}/derive",
+        headers={"Idempotency-Key": "blocked-rebind-001"},
+        json={
+            "fact_bindings": [
+                {"shot_index": 0, "fact_id": fact_ids[0]},
+            ]
+        },
+    )
+    assert blocked_rebind.status_code == 409
+    assert blocked_rebind.json()["code"] == "SCRIPT_PARENT_NOT_ACCEPTABLE"
+
     clean_job = await client.post(
         f"/api/v1/products/{product_id}/script-generations",
         headers={"Idempotency-Key": "excluded-fact-derive-001"},
         json={
             "target_duration_seconds": 15,
             "language": "en",
-            "audience": "busy professionals",
+            "audience": "general",
             "creative_pattern_key": "problem_solution",
             "selected_fact_ids": [fact_ids[0]],
             "excluded_fact_ids": [fact_ids[1]],
@@ -895,16 +1050,21 @@ async def test_excluded_fact_blocks_generation_and_derived_version(
         _worker_factory(db_session), DeterministicScriptProvider()
     ).run(UUID(str(clean_job.json()["id"])))
     assert clean_version is not None
-    derived = await client.post(
+    invalid_rebind = await client.post(
         f"/api/v1/scripts/{clean_job.json()['result_id']}/versions/{clean_version}/derive",
-        json={"title": "Excluded fact"},
+        headers={"Idempotency-Key": "excluded-fact-rebind-001"},
+        json={
+            "fact_bindings": [
+                {"shot_index": index, "fact_id": fact_ids[1]}
+                for index in range(4)
+            ]
+        },
     )
 
-    assert derived.status_code == 201
-    assert any(
-        item["rule_id"] == "FACT_EXCLUDED"
-        for item in derived.json()["validation_report"]["blocking"]
-    )
+    assert invalid_rebind.status_code == 422
+    assert invalid_rebind.json()["code"] == "SCRIPT_EDIT_INVALID"
+    script = await client.get(f"/api/v1/scripts/{clean_job.json()['result_id']}")
+    assert len(script.json()["versions"]) == 1
 
 
 async def test_worker_records_provider_format_repair_attempt(
@@ -969,6 +1129,66 @@ async def test_worker_rechecks_fact_status_before_calling_provider(
     assert stored_job.json()["error_code"] == "FACTS_NOT_READY"
 
 
+async def test_worker_rechecks_promotion_before_calling_provider(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    promotion_fact_id = await create_confirmed_promotion_fact(client, product_id)
+    job = await _queue_generation(
+        client,
+        product_id,
+        key="promotion-preflight-001",
+        creative_pattern_key="offer_cta",
+        promotion_fact_id=promotion_fact_id,
+    )
+    rejected = await client.patch(
+        f"/api/v1/products/{product_id}/facts/{promotion_fact_id}",
+        json={"status": "rejected"},
+    )
+    assert rejected.status_code == 200
+    provider = CountingProvider()
+
+    result = await GenerationWorker(_worker_factory(db_session), provider).run(
+        UUID(str(job["id"]))
+    )
+    stored_job = await client.get(f"/api/v1/jobs/{job['id']}")
+    script = await client.get(f"/api/v1/scripts/{job['result_id']}")
+
+    assert result is None
+    assert provider.calls == 0
+    assert stored_job.json()["state"] == "failed"
+    assert stored_job.json()["error_code"] == "PROMOTION_NOT_ACTIVE"
+    assert script.json()["versions"] == []
+
+
+async def test_worker_rechecks_promotion_before_saving_result(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    promotion_fact_id = await create_confirmed_promotion_fact(client, product_id)
+    job = await _queue_generation(
+        client,
+        product_id,
+        key="promotion-save-toctou-001",
+        creative_pattern_key="offer_cta",
+        promotion_fact_id=promotion_fact_id,
+    )
+
+    result = await GenerationWorker(
+        _worker_factory(db_session),
+        RejectingPromotionProvider(db_session, UUID(promotion_fact_id)),
+    ).run(UUID(str(job["id"])))
+    stored_job = await client.get(f"/api/v1/jobs/{job['id']}")
+    script = await client.get(f"/api/v1/scripts/{job['result_id']}")
+
+    assert result is None
+    assert stored_job.json()["state"] == "failed"
+    assert stored_job.json()["error_code"] == "PROMOTION_NOT_ACTIVE"
+    assert script.json()["versions"] == []
+
+
 async def test_validation_failed_version_remains_viewable(
     client: AsyncClient,
     db_session: AsyncSession,
@@ -988,36 +1208,137 @@ async def test_validation_failed_version_remains_viewable(
     assert script_response.json()["versions"][0]["validation_report"]["acceptable"] is False
 
 
-async def test_derive_version_appends_parent_link_and_produces_field_diff(
+async def test_fact_bound_rebind_appends_an_idempotent_acceptable_child(
     client: AsyncClient,
     db_session: AsyncSession,
 ) -> None:
-    product_id = await create_ready_product(client)
-    job = await _queue_generation(client, product_id, key="derive-001")
+    product_id, fact_ids = await create_ready_product_with_facts(
+        client,
+        ["First selected fact", "Second selected fact"],
+    )
+    queued = await client.post(
+        f"/api/v1/products/{product_id}/script-generations",
+        headers={"Idempotency-Key": "derive-001"},
+        json={
+            "target_duration_seconds": 15,
+            "language": "en",
+            "audience": "general",
+            "creative_pattern_key": "problem_solution",
+            "selected_fact_ids": fact_ids,
+            "excluded_fact_ids": [],
+        },
+    )
+    assert queued.status_code == 202
+    job = queued.json()
     first_version_id = await GenerationWorker(
         _worker_factory(db_session), DeterministicScriptProvider()
     ).run(UUID(str(job["id"])))
     assert first_version_id is not None
 
+    extra_field = await client.post(
+        f"/api/v1/scripts/{job['result_id']}/versions/{first_version_id}/derive",
+        headers={"Idempotency-Key": "fact-rebind-extra-field-001"},
+        json={
+            "fact_bindings": [{"shot_index": index, "fact_id": fact_ids[1]} for index in range(4)],
+            "title": "Client-controlled copy is not allowed",
+        },
+    )
+    assert extra_field.status_code == 422
+
+    incomplete = await client.post(
+        f"/api/v1/scripts/{job['result_id']}/versions/{first_version_id}/derive",
+        headers={"Idempotency-Key": "fact-rebind-incomplete-001"},
+        json={
+            "fact_bindings": [{"shot_index": index, "fact_id": fact_ids[1]} for index in range(3)]
+        },
+    )
+    assert incomplete.status_code == 422
+    assert incomplete.json()["code"] == "SCRIPT_EDIT_INVALID"
+
+    payload = {
+        "fact_bindings": [
+            {"shot_index": index, "fact_id": fact_ids[1]}
+            for index in range(4)
+        ]
+    }
+    headers = {"Idempotency-Key": "fact-rebind-001"}
     derived = await client.post(
         f"/api/v1/scripts/{job['result_id']}/versions/{first_version_id}/derive",
-        json={"title": "Fact-led product script · Version 2"},
+        headers=headers,
+        json=payload,
     )
 
     assert derived.status_code == 201
     assert derived.json()["parent_version_id"] == str(first_version_id)
-    assert derived.json()["draft"]["titles"][0].endswith("Version 2")
+    assert derived.json()["revision_kind"] == "fact_rebind"
+    assert derived.json()["actor_kind"] == "local_operator"
+    assert derived.json()["reason_code"] == "fact_rebind"
+    assert all(
+        shot["voiceover"] == "Second selected fact"
+        and shot["caption"] == "Second selected fact"
+        and shot["product_claims"] == ["Second selected fact"]
+        and shot["supported_fact_ids"] == [fact_ids[1]]
+        for shot in derived.json()["draft"]["shots"]
+    )
+    assert derived.json()["validation_report"]["acceptable"] is True
+
+    replay = await client.post(
+        f"/api/v1/scripts/{job['result_id']}/versions/{first_version_id}/derive",
+        headers=headers,
+        json=payload,
+    )
+    assert replay.status_code == 200
+    assert replay.json()["id"] == derived.json()["id"]
+
+    conflict = await client.post(
+        f"/api/v1/scripts/{job['result_id']}/versions/{first_version_id}/derive",
+        headers=headers,
+        json={
+            "fact_bindings": [
+                {"shot_index": index, "fact_id": fact_ids[0]}
+                for index in range(4)
+            ]
+        },
+    )
+    assert conflict.status_code == 409
+    assert conflict.json()["code"] == "IDEMPOTENCY_CONFLICT"
+
+    script = await client.get(f"/api/v1/scripts/{job['result_id']}")
+    assert [item["id"] for item in script.json()["fact_contract"]["selected"]] == fact_ids
+    assert [item["status"] for item in script.json()["fact_contract"]["selected"]] == [
+        "confirmed",
+        "confirmed",
+    ]
+    assert len(script.json()["versions"]) == 2
     comparison = await client.get(
         f"/api/v1/scripts/{job['result_id']}/compare?left={first_version_id}"
         f"&right={derived.json()['id']}"
     )
-    assert comparison.json()["changed"] == [
-        {
-            "path": "titles[0]",
-            "left": "Fact-led product script",
-            "right": "Fact-led product script · Version 2",
-        }
-    ]
+    assert {item["path"] for item in comparison.json()["changed"]} >= {
+        "shots[0].caption",
+        "shots[0].product_claims[0]",
+        "shots[0].supported_fact_ids[0]",
+        "shots[0].voiceover",
+    }
+
+    parent = await db_session.get(ScriptVersionRecord, first_version_id)
+    assert parent is not None
+    malformed = ScriptVersionRecord(
+        id=uuid4(),
+        generation_id=parent.generation_id,
+        parent_version_id=first_version_id,
+        draft=parent.draft,
+        validation_report=parent.validation_report,
+        revision_kind="fact_rebind",
+        actor_kind="local_operator",
+        reason_code=None,
+        operation_key="malformed-provenance-001",
+        operation_input_digest="a" * 64,
+    )
+    with pytest.raises(IntegrityError):
+        async with db_session.begin_nested():
+            db_session.add(malformed)
+            await db_session.flush()
 
 
 async def test_script_version_is_database_immutable(

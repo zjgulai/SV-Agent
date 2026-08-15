@@ -116,4 +116,80 @@ describe("product facts workspace", () => {
     expect(keys[0]).not.toBe(keys[1]);
     expect(keys.every((key) => /^[0-9a-f-]{36}$/i.test(key))).toBe(true);
   });
+
+  it("opens the accepted job when a URL import returns HTML with Location", async () => {
+    const submits: string[] = [];
+    server.use(
+      http.post("/api/v1/product-imports", ({ request }) => {
+        submits.push(request.headers.get("idempotency-key") ?? "");
+        return new HttpResponse("<html>accepted</html>", {
+          status: 202,
+          headers: { Location: "/api/v1/jobs/import-known" },
+        });
+      }),
+      http.get("/api/v1/jobs/import-known", () =>
+        HttpResponse.json({
+          id: "import-known",
+          job_type: "product_import",
+          state: "queued",
+          attempt_count: 0,
+          error_code: null,
+          error_detail: null,
+          result_id: "source-1",
+        }),
+      ),
+    );
+    const user = userEvent.setup();
+    render(<TestApp initialEntries={["/products/new"]} />);
+
+    await user.click(screen.getByRole("button", { name: "公开 URL 导入" }));
+    await user.type(screen.getByLabelText(/^公开商品 URL/), "https://example.com/product");
+    await user.click(screen.getByRole("button", { name: "开始安全导入" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent("等待安全导入");
+    expect(submits).toHaveLength(1);
+  });
+
+  it("replays an unknown URL import with the exact same request after refresh", async () => {
+    const requests: Array<{ key: string; body: unknown }> = [];
+    server.use(
+      http.post("/api/v1/product-imports", async ({ request }) => {
+        requests.push({
+          key: request.headers.get("idempotency-key") ?? "",
+          body: await request.json(),
+        });
+        if (requests.length === 1) return HttpResponse.error();
+        return HttpResponse.json(
+          { id: "import-recovered", state: "queued", source_id: "source-1" },
+          { status: 202 },
+        );
+      }),
+      http.get("/api/v1/jobs/import-recovered", () =>
+        HttpResponse.json({
+          id: "import-recovered",
+          job_type: "product_import",
+          state: "queued",
+          attempt_count: 0,
+          error_code: null,
+          error_detail: null,
+          result_id: "source-1",
+        }),
+      ),
+    );
+    const user = userEvent.setup();
+    const first = render(<TestApp initialEntries={["/products/new"]} />);
+    await user.click(screen.getByRole("button", { name: "公开 URL 导入" }));
+    await user.type(screen.getByLabelText(/^公开商品 URL/), "https://example.com/product");
+    await user.click(screen.getByRole("button", { name: "开始安全导入" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("请求状态未知");
+    first.unmount();
+
+    render(<TestApp initialEntries={["/products/new"]} />);
+    await user.click(screen.getByRole("button", { name: "公开 URL 导入" }));
+    await user.click(await screen.findByRole("button", { name: "恢复原请求" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent("等待安全导入");
+    expect(requests).toHaveLength(2);
+    expect(requests[1]).toEqual(requests[0]);
+  });
 });
