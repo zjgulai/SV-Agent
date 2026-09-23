@@ -177,11 +177,7 @@ def validate_bundle(bundle: Path) -> list[str]:
         if not (bundle / name).is_file():
             errors.append(f"missing required file: {name}")
 
-    assets = sorted(
-        path
-        for path in bundle.glob("asset.*")
-        if path.is_file() and path.suffix.lower() in _ASSET_EXTENSIONS
-    )
+    assets = find_bundle_assets(bundle)
     if not assets:
         errors.append("missing required file: asset.*")
     elif len(assets) > 1:
@@ -217,3 +213,12 @@ def validate_bundle(bundle: Path) -> list[str]:
 def find_asset_bundles(root: Path) -> list[Path]:
     """Find bundle directories by their required recipe record."""
     return sorted({path.parent for path in root.rglob("recipe.json")})
+
+
+def find_bundle_assets(bundle: Path) -> list[Path]:
+    """Return only media files supported by the Bundle contract."""
+    return sorted(
+        path
+        for path in bundle.glob("asset.*")
+        if path.is_file() and path.suffix.lower() in _ASSET_EXTENSIONS
+    )

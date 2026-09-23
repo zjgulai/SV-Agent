@@ -1,0 +1,56 @@
+{
+  "aggregate_schema_version": "momcozy-aggregate-index.v1",
+  "asset_type": {
+    "image": 235,
+    "video": 9
+  },
+  "baseline_id": "momcozy-m5-v1",
+  "counts": {
+    "bundles": 244,
+    "quarantined": 0,
+    "valid": 244
+  },
+  "coverage": {
+    "batch": {
+      "known": 235,
+      "unknown": 9
+    },
+    "channel": {
+      "known": 12,
+      "unknown": 232
+    },
+    "commercial_approval": {
+      "known": 0,
+      "unknown": 244
+    },
+    "concept_group": {
+      "known": 198,
+      "unknown": 46
+    }
+  },
+  "disposition": {
+    "approved": 36,
+    "hold": 198,
+    "missing": 0,
+    "rejected": 2,
+    "revision_needed": 8,
+    "unknown": 0
+  },
+  "findings": 0,
+  "limitations": [
+    "BATCH_METADATA_INCOMPLETE",
+    "CHANNEL_METADATA_INCOMPLETE",
+    "COMMERCIAL_APPROVAL_UNAVAILABLE",
+    "CONCEPT_GROUP_METADATA_INCOMPLETE"
+  ],
+  "observed_at_present": 244,
+  "projection_digest": "594eece99e144d2951d4d2122a6bcea668f02a9c35971b8de57b09ee70b1a127",
+  "resolution": {
+    "1K": 235,
+    "480P": 9
+  },
+  "schema_version": "momcozy-private-gate-baseline.v1",
+  "state": "partial",
+  "unique_bundle_refs": 244,
+  "unique_relative_paths": 244
+}
