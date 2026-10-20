@@ -1,0 +1,18 @@
+{
+  "schema": "momcozy-fact-map/v1",
+  "status": "SOURCE_VERIFICATION_COMPLETE_RUNTIME_BINDING_PENDING",
+  "product": "Momcozy KleanPal Pro · BS03 · US White",
+  "factPolicy": "只允许 confirmed / locked 事实支撑可接受 claim；本案例摘要不把候选事实写成广告文案。",
+  "candidateFacts": [
+    { "topic": "identity", "state": "candidate", "note": "说明书型号与产品身份存在来源交叉，但参考片未显示可读铭牌。" },
+    { "topic": "wash_sterilize_dry_store_functions", "state": "candidate", "note": "厂商功能描述；不等于灭菌率、医用等级或健康结论。" },
+    { "topic": "loading_capacity", "state": "candidate_with_limits", "note": "容量与配件组合有装载限制，不外推为任意瓶型兼容。" },
+    { "topic": "wash_duration", "state": "deferred", "note": "页面与说明书的阶段语义需保持区分，不拼接成未经核验的总周期。" },
+    { "topic": "storage_duration", "state": "candidate_with_limits", "note": "不升级为持续无菌、绝对卫生或婴幼儿健康保障。" },
+    { "topic": "water_and_drainage", "state": "candidate_with_limits", "note": "容量、每周期用水与排水管是不同语义，不能互换。" },
+    { "topic": "detergent_and_loading_steps", "state": "operation_only", "note": "说明书支持操作与安全约束，不自动变成营销事实。" },
+    { "topic": "nominal_us_specification", "state": "market_bound", "note": "只适用于本次 US 说明书，不外推其他市场。" }
+  ],
+  "excludedClaimGroups": ["洗净或杀菌率", "医疗级安全", "省时或健康结果", "价格与促销", "无限兼容", "无维护或无需排水"],
+  "storyboardUse": "最终片采用生活体验关系，不使用数字功效 claim；操作镜头仍需人工核对。"
+}

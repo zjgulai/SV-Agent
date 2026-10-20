@@ -1,0 +1,36 @@
+{
+  "fixture_id": "VR-P4-003-F2",
+  "scenario": "参考视频本身可稳定回放，但请求方以旧截图和未回指的标签宣称要立即复刻当前趋势；趋势名称、市场、语言、观察窗口和 source ref 没有被固定。",
+  "reference_bundle": {
+    "reference_id": "ref-trend-freshness-001",
+    "source_digest": "sha256:fixture-only-trend-reference-digest",
+    "playability_state": "reproducible",
+    "capture_time": "2026-08-01T09:00:00Z"
+  },
+  "trend_signal_binding": {
+    "signal_kind": "hashtag_and_audio_claim",
+    "trend_observation_id": null,
+    "source_refs": [],
+    "platform": "short_video",
+    "market": null,
+    "language": null,
+    "observed_at": null,
+    "observation_window": null,
+    "request": "立即复刻当前热门趋势"
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "trend_signal_identity_unresolved",
+      "trend_observation_window_unbounded",
+      "current_trend_claim_unsupported"
+    ],
+    "allowed_next_action": "捕获带 source refs、平台、市场、语言、时间窗和 availability 的有界趋势观察；在外部验证前保留当前趋势状态为 unknown。",
+    "must_not": [
+      "rewrite_old_screenshot_or_tag_as_current_trend",
+      "infer_platform_recommendation_or_template_availability",
+      "treat_reference_playability_as_trend_freshness"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

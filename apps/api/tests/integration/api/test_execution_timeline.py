@@ -3,8 +3,8 @@ from uuid import uuid4
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.adapters.connectors.schema_org import ParsedProduct
 from app.application.product_imports import ProductImportService
+from app.ports.product_connector import ParsedProduct
 from app.worker.tasks import ProductImportWorker
 
 

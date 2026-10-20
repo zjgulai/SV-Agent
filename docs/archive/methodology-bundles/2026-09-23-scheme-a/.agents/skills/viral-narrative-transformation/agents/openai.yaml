@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Narrative Transformation"
+  short_description: "Transfer problem-to-result narrative mechanics"
+  default_prompt: "Adapt a narrative mechanism to target Product Truth without copying reference claims or surface."

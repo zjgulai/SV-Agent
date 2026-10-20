@@ -298,6 +298,76 @@ export interface VersionDiff {
   changed: Array<{ path: string; left: unknown; right: unknown }>;
 }
 
+export interface ComparisonFinding {
+  code: string;
+  context: "identity" | "comparability" | "product_truth" | "script_validation" | "storyboard" | "performance" | "experiment" | "asset";
+  path: string | null;
+  message: string;
+}
+
+export interface ComparisonCandidate {
+  version_id: string;
+  parent_version_id: string | null;
+  created_at: string;
+  draft: ScriptVersion["draft"];
+  stored_validation_report: ScriptVersion["validation_report"];
+  live_validation_report: ScriptVersion["validation_report"];
+  storyboard_readiness: "ready" | "blocked";
+}
+
+export interface SemanticDifference {
+  section: "script" | "storyboard" | "asset";
+  path: string;
+  change: "added" | "removed" | "changed";
+  kind: "declared_dimension" | "unexpected_change" | "fact_binding_change" | "unverified";
+  control_present: boolean;
+  variant_present: boolean;
+  control: unknown | null;
+  variant: unknown | null;
+}
+
+export interface ComparisonFact {
+  id: string;
+  availability: "present" | "missing";
+  claim: string | null;
+  status: FactStatus | null;
+}
+
+export interface ComparisonEvidence {
+  availability: "available" | "unavailable" | "quarantined";
+  source_reference: string;
+  limitation: string;
+}
+
+export interface CreativeComparisonProjection {
+  schema_version: "creative-comparison-view-v1";
+  script_id: string;
+  observed_at: string;
+  readiness: {
+    state: "blocked" | "needs_evidence" | "reviewable";
+    disposition: "revise" | "collect_evidence" | "stop";
+    single_variable_status: "unverified";
+    blockers: ComparisonFinding[];
+    evidence_needs: ComparisonFinding[];
+  };
+  control: ComparisonCandidate;
+  variant: ComparisonCandidate;
+  differences: SemanticDifference[];
+  product_truth_gate: {
+    status: "pass" | "blocked";
+    snapshot_id: string;
+    pattern_key: string;
+    pattern_version: string;
+    selected_facts: ComparisonFact[];
+    excluded_facts: ComparisonFact[];
+  };
+  performance_evidence: ComparisonEvidence;
+  experiment_evidence: ComparisonEvidence;
+  asset_evidence: ComparisonEvidence;
+  limitations: ComparisonFinding[];
+  projection_digest: string;
+}
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export function safeJobPathFromLocation(location: string | null): string | null {
@@ -446,4 +516,8 @@ export const api = {
     }),
   compareVersions: (id: string, left: string, right: string) =>
     request<VersionDiff>(`/api/v1/scripts/${id}/compare?left=${encodeURIComponent(left)}&right=${encodeURIComponent(right)}`),
+  getCreativeComparison: (id: string, control: string, variant: string) =>
+    request<CreativeComparisonProjection>(
+      `/api/v1/scripts/${id}/creative-comparison?control=${encodeURIComponent(control)}&variant=${encodeURIComponent(variant)}`,
+    ),
 };

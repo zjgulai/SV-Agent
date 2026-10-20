@@ -1,0 +1,37 @@
+{
+  "fixture_id": "VR-P4-003-F3",
+  "scenario": "参考音频的节拍切点已被观察到，但其使用范围仅限内部分析。计划复用原音频或生成近似音频，并在 Variant 中更换 target sound policy，却宣称唯一变化是 template_grammar。",
+  "trend_native_plan": {
+    "selected_trend_component": "template_grammar",
+    "frozen_trend_components": [
+      "trend_signal_binding",
+      "trend_semantic_frame",
+      "audio_function"
+    ],
+    "audio_function": {
+      "time_ranges_seconds": [[1.0, 2.5], [5.0, 6.0]],
+      "observed_function": "动作切换与节拍切点同步",
+      "source_audio_ref": "obs://fixture/source-audio-001",
+      "reference_analysis_state": "confirmed_for_internal_analysis_only",
+      "source_audio_reuse_state": "not_permitted",
+      "target_sound_policy_control": "independent_authorized_sound_A",
+      "target_sound_policy_variant": "near_duplicate_of_source_audio"
+    }
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "reference_audio_reuse_not_permitted",
+      "audio_substitution_provenance_unresolved",
+      "audio_function_not_frozen",
+      "declared_dimension_does_not_match_actual_drift"
+    ],
+    "allowed_next_action": "以可追溯的独立 target-authorized sound 替代来源音频，并冻结 sound policy；如实验确实比较声音功能，显式选择 audio_function 并建立单独 Variant。",
+    "must_not": [
+      "treat_playability_as_audio_permission",
+      "treat_near_duplicate_ai_audio_as_automatically_authorized",
+      "hide_audio_policy_drift_under_template_grammar"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

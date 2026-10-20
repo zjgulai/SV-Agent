@@ -1,0 +1,29 @@
+{
+  "schema": "momcozy-storyboard-summary/v1",
+  "version": "v2",
+  "status": "SCOPE_REVISED_USER_CONFIRMED",
+  "concept": "Evening bottle routine",
+  "durationSeconds": 22,
+  "format": "9:16 · silent draft · no public delivery target",
+  "primaryMechanism": "experience-pov",
+  "shots": [
+    { "id": "S01", "role": "routine_open", "visual": "倒净奶瓶残液，放下奶瓶，保持自然手部动作。", "status": "accepted_with_limit" },
+    { "id": "S02", "role": "product_intervention", "visual": "设备靠近水槽，排水管向下；向独立清水箱加入常温净水。", "status": "accepted_repair" },
+    { "id": "S04", "role": "loading", "visual": "奶瓶口朝下对准喷孔，拆开配件按说明书位置放置。", "status": "accepted_with_limit" },
+    { "id": "S06", "role": "life_continuation", "visual": "整理相邻台面与擦手巾。", "status": "accepted" },
+    { "id": "S07", "role": "life_continuation", "visual": "拿起笔记本，在相邻座位坐下翻开一页。", "status": "accepted_with_limit" },
+    { "id": "S08", "role": "return_frame", "visual": "设备留在正确安装状态；不展示洗净后结果或功效动画。", "status": "accepted" }
+  ],
+  "removedShots": [
+    { "id": "S03", "reason": "精确投片不可稳定验证" },
+    { "id": "S05", "reason": "按键触碰不能证明机器启动" }
+  ],
+  "controlVariant": {
+    "control": ["S01", "S06", "S07", "S02", "S04", "S08"],
+    "variant": ["S01", "S02", "S04", "S06", "S07", "S08"],
+    "changedDimension": "shot_block_order_only",
+    "executionCount": 0,
+    "causalClaim": false
+  },
+  "guardrails": ["不复制参考人物、音乐、独特构图", "不把编辑变成实物测试", "不把说明书操作升级成性能承诺"]
+}

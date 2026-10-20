@@ -5,11 +5,12 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.adapters.connectors.schema_org import ParsedProduct, SourceUnavailable
+from app.adapters.connectors.schema_org import SourceUnavailable
 from app.adapters.db.models import ProductSourceRecord
 from app.adapters.db.repositories import JobRepository
 from app.application.product_imports import ProductImportService
 from app.domain.jobs.entities import JobState
+from app.ports.product_connector import ParsedProduct
 from app.worker.tasks import ProductImportWorker
 
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Attention Grammar"
+  short_description: "Transfer one timed attention component"
+  default_prompt: "Use $viral-attention-grammar to adapt one observable attention component while freezing all other creative dimensions."

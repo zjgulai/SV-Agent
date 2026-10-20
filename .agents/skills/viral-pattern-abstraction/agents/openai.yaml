@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Pattern Abstraction"
+  short_description: "Extract mechanisms instead of copying surfaces"
+  default_prompt: "Compile a bounded PatternHypothesis with invariant, replaceable, prohibited, and unknown elements."

@@ -1,0 +1,38 @@
+{
+  "fixture_id": "VR-P3-004",
+  "scenario": "控制组和变体同时改变了视觉结构、时长和旁白语言，无法归因于单一机制。",
+  "replication_contract": {
+    "contract_id": "contract-drift-001",
+    "primary_mechanism": "proof_demonstration",
+    "control": {
+      "duration_seconds": 15,
+      "language": "zh-CN",
+      "visual_proof_device": "split_screen",
+      "voiceover": "present"
+    },
+    "variant": {
+      "duration_seconds": 30,
+      "language": "en-US",
+      "visual_proof_device": "countdown",
+      "voiceover": "absent"
+    },
+    "declared_changed_dimension": "proof_device",
+    "frozen_dimensions": ["product_snapshot", "platform", "budget"],
+    "evaluation_request": "causal_lift_and_winner"
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "multiple_changed_dimensions",
+      "declared_dimension_does_not_match_actual_drift",
+      "causal_request_exceeds_contract"
+    ],
+    "allowed_next_action": "rebuild_control_and_variant_with_one_changed_dimension_then_rerun",
+    "must_not": [
+      "report_winner",
+      "attribute_lift_to_proof_device",
+      "hide_language_or_duration_drift_in_summary"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

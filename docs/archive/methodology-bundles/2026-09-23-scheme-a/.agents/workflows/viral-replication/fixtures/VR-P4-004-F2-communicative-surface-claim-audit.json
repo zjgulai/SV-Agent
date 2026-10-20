@@ -1,0 +1,40 @@
+{
+  "fixture_id": "VR-P4-004-F2",
+  "scenario": "技术 profile 符合冻结合同，但 OCR 从包装文字读到 excluded Product Fact，ASR 也不可用且没有明确的独立人工核对范围。请求方以“画面无问题”跳过可见/可听 claim audit。",
+  "media_integrity_record": {
+    "mode": "artifact_review",
+    "technical_profile": {
+      "probe_status": "ok",
+      "matches_frozen_contract": true
+    },
+    "communicative_surface": {
+      "ocr_status": "completed",
+      "ocr_claim_candidates": [
+        {
+          "surface": "packaging_text",
+          "fact_id": "fact-excluded-fixture",
+          "disposition": "excluded"
+        }
+      ],
+      "asr_status": "unavailable",
+      "human_fallback": null,
+      "unsupported_occurrence_count": 0,
+      "excluded_occurrence_count": 1
+    }
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "excluded_claim_detected_in_media_surface",
+      "audible_surface_unreviewed",
+      "communicative_surface_evidence_incomplete"
+    ],
+    "allowed_next_action": "移除或重制 excluded packaging surface，并以 ASR 或记录范围的独立人工核对覆盖可听内容；随后重跑 full-surface Fact Mapping。",
+    "must_not": [
+      "treat_technical_profile_as_claim_audit",
+      "ignore_ocr_detected_excluded_fact",
+      "replace_missing_asr_with_assumed_silence"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

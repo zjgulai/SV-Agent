@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Reliable Execution"
+  short_description: "Diagnose Jobs, Outbox delivery, fencing, and recovery"
+  default_prompt: "Apply the FactFrame reliable execution workflow to diagnose or change this asynchronous Job path."

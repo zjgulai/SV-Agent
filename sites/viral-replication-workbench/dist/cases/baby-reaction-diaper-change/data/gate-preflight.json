@@ -1,0 +1,283 @@
+{
+  "schema": "brand-voice-gate-preflight/v1",
+  "gate_id": "BV-GATE-001",
+  "case_id": "bv-002-baby-reaction-diaper-change",
+  "track": "brand_voice_social",
+  "operator_authorization": {
+    "state": "granted_to_prepare_preflight",
+    "scope": "local_contract_and_evidence_intake_only",
+    "does_not_prove": [
+      "creator_or_guardian_consent",
+      "music_or_sound_rights",
+      "commercial_reuse_license",
+      "connector_access"
+    ]
+  },
+  "gate_status": "awaiting_user_gate",
+  "subject_ref_redacted": "independent_parenting_creator · child identity withheld",
+  "requested_use": [
+    "analysis_only"
+  ],
+  "request_state": {
+    "requested": ["analysis_only"],
+    "not_requested": [
+      "adaptation_candidate",
+      "embed_or_rehost",
+      "commercial_use",
+      "paid_amplification",
+      "publish",
+      "connector_read",
+      "brand_lift"
+    ]
+  },
+  "planned_use": [
+    "analysis_only",
+    "adaptation_candidate",
+    "embed_or_rehost",
+    "commercial_use",
+    "paid_amplification",
+    "publish",
+    "connector_read",
+    "brand_lift"
+  ],
+  "decision": {
+    "analysis_only": "proceed_with_limits",
+    "adaptation_candidate": "blocked",
+    "embed_or_rehost": "blocked",
+    "commercial_use": "blocked",
+    "paid_amplification": "blocked",
+    "publish": "blocked",
+    "connector_read": "not_requested",
+    "brand_lift": "not_requested"
+  },
+  "commercial_disclosure": "unknown",
+  "evidence_items": [
+    {
+      "evidence_id": "E-BV002-SOURCE-01",
+      "kind": "public_source",
+      "issuer": "ARK by KOMI",
+      "public_locator": "https://ark.media/record/19758",
+      "region": "US",
+      "captured_at": "2026-10-11",
+      "scope": ["analysis_only", "metadata"],
+      "state": "observed",
+      "what_it_proves": "third_party_page_summary_reported_window_and_reported_views",
+      "what_it_does_not_prove": "original_post_identity_rights_consent_or_paid_organic_state",
+      "reviewer_role": "local_evidence_reviewer",
+      "review_method": "public_page_read_only"
+    },
+    {
+      "evidence_id": "E-BV002-POLICY-01",
+      "kind": "policy_baseline",
+      "issuer": "TikTok",
+      "public_locator": "https://ads.tiktok.com/resources/help/article/brand-collaboration-through-tiktok-content-suite",
+      "region": "global_policy_reference",
+      "captured_at": "2026-10-11",
+      "scope": ["policy_baseline"],
+      "state": "observed",
+      "what_it_proves": "authorization_workflow_and_reversibility_baseline",
+      "what_it_does_not_prove": "case_specific_authorization",
+      "reviewer_role": "local_evidence_reviewer",
+      "review_method": "official_policy_read_only"
+    }
+  ],
+  "rights_scope": {
+    "analysis": "internal_analysis_only_no_media_reuse",
+    "adaptation": "blocked",
+    "reuse": "blocked",
+    "embed": "blocked",
+    "redistribute": "blocked",
+    "commercial": "blocked",
+    "publish": "blocked"
+  },
+  "music_rights": {
+    "state": "unknown",
+    "track_or_sound": "not_identified",
+    "account": "unknown",
+    "territory": "unknown",
+    "platform": "unknown",
+    "duration": "unknown",
+    "license_chain": "unknown",
+    "derivative_edit": "blocked",
+    "paid_amplification": "blocked"
+  },
+  "creator_permission": "unresolved",
+  "guardian_consent": "unresolved",
+  "likeness_scope": "not_embedded",
+  "child_safety": {
+    "minor_context": true,
+    "intimate_care": true,
+    "hazard_review": "required_before_any_adaptation",
+    "identity_exposure": "elevated",
+    "manual_review": "not_completed"
+  },
+  "connector_access": {
+    "provider": "TikTok",
+    "product": "not_selected",
+    "account_ref_redacted": null,
+    "scopes": [],
+    "commercial_access": "unknown",
+    "quota": "unknown",
+    "eligibility_state": "unknown",
+    "commercial_user_eligibility": "unknown",
+    "org_app_approval": "missing",
+    "data_classes": [],
+    "quota_window": null,
+    "terms_version": null,
+    "credential_state": "not_accessed",
+    "expires_at": null
+  },
+  "external_action_approval": {
+    "publish": "not_approved",
+    "paid": "not_approved",
+    "brand_lift": "not_approved",
+    "rollback": "not_applicable"
+  },
+  "blockers": [
+    "original_post_or_rightsholder_not_identified",
+    "guardian_creator_consent_missing",
+    "music_rights_missing",
+    "intimate_care_child_safety_review_missing",
+    "connector_scope_and_quota_missing",
+    "external_action_approval_missing"
+  ],
+  "unknowns": [
+    "paid_or_organic_state",
+    "interaction_denominators_and_collection_method",
+    "commercial_disclosure",
+    "likeness_scope_and_revocation_terms"
+  ],
+  "conflicts": [],
+  "reviewed_at": "2026-10-11",
+  "source_register": [
+    {
+      "source_ref": "SRC-BV002-ARK-19758",
+      "locator": "https://ark.media/record/19758",
+      "evidence_id": "E-BV002-SOURCE-01",
+      "source_kind": "third_party_public_index",
+      "proves": ["public_summary", "source_reported_window", "source_reported_views"],
+      "does_not_prove": ["original_post_identity", "rights_clearance", "guardian_consent", "paid_or_organic_state"]
+    }
+  ],
+  "preflight_checks": [
+    {
+      "id": "source_identity",
+      "label": "原始帖子 / 权利主体可定位",
+      "state": "unresolved",
+      "required_evidence": "original_post_url_or_authorized_rightsholder_record",
+      "current_evidence": "third_party_index_only",
+      "stop_action": "do_not_embed_or_download"
+    },
+    {
+      "id": "creator_guardian_consent",
+      "label": "创作者与监护人许可",
+      "state": "unresolved",
+      "required_evidence": "written_or_platform_authorization_covering_adaptation_embed_reuse_redistribute_publish_territory_platform_duration_paid_amplification_derivative_and_revocation",
+      "current_evidence": "none",
+      "stop_action": "do_not_recreate_child_likeness"
+    },
+    {
+      "id": "music_sound_rights",
+      "label": "音乐 / 声音商业使用权",
+      "state": "unresolved",
+      "required_evidence": "specific_track_or_sound_id_account_region_platform_duration_and_owned_cml_or_license_chain_covering_commercial_derivative_edit_and_paid_scope",
+      "current_evidence": "unknown",
+      "stop_action": "do_not_copy_or_download_audio"
+    },
+    {
+      "id": "child_safety",
+      "label": "儿童隐私、身份暴露与危险模仿",
+      "state": "review_required",
+      "required_evidence": "market_specific_child_safety_review_and_non_intimate_transfer_plan",
+      "current_evidence": "diaper_change_is_intimate_care_context",
+      "stop_action": "do_not_recreate_intimate_care_scene"
+    },
+    {
+      "id": "commercial_disclosure",
+      "label": "自然 / 付费 / UGC disclosure",
+      "state": "unknown",
+      "required_evidence": "platform_post_disclosure_or_source_attestation",
+      "current_evidence": "not_reported",
+      "stop_action": "do_not_claim_campaign_effect"
+    },
+    {
+      "id": "connector_scope",
+      "label": "社媒 connector credential / scope / quota",
+      "state": "not_accessed",
+      "required_evidence": "approved_credential_scope_commercial_access_quota_record",
+      "current_evidence": "none",
+      "stop_action": "do_not_connect_or_scrape"
+    },
+    {
+      "id": "external_action",
+      "label": "嵌入、投放、发布与 Brand Lift",
+      "state": "not_approved",
+      "required_evidence": "separate_business_and_platform_approval",
+      "current_evidence": "local_analysis_only",
+      "stop_action": "do_not_publish_or_launch"
+    }
+  ],
+  "policy_references": [
+    {
+      "source_ref": "POLICY-TIKTOK-CONTENT-SUITE",
+      "locator": "https://ads.tiktok.com/resources/help/article/brand-collaboration-through-tiktok-content-suite",
+      "evidence_id": "E-BV002-POLICY-01",
+      "relevance": "video_level_authorization_is_time_bound_and_account_level_authorization_is_reversible",
+      "proof_level": "public_policy_reference"
+    },
+    {
+      "source_ref": "POLICY-TIKTOK-BRANDED-CONTENT-MARKET",
+      "locator": "https://ads.tiktok.com/resources/help/article/branded-content-policy-country-specific-requirements",
+      "relevance": "baby_products_and_diapers_have_market_and_age_restrictions_for_branded_content",
+      "proof_level": "public_policy_reference",
+      "reference_only": true,
+      "captured_at": "2026-10-11",
+      "region": "policy_page_scope_must_be_checked_per_market"
+    },
+    {
+      "source_ref": "POLICY-TIKTOK-DISCLOSURE",
+      "locator": "https://ads.tiktok.com/resources/help/article/how-to-turn-on-the-commercial-content-disclosure-setting-in-tiktok",
+      "relevance": "brand_or_product_promotion_requires_commercial_content_disclosure",
+      "proof_level": "public_policy_reference",
+      "reference_only": true,
+      "captured_at": "2026-10-11",
+      "region": "policy_page_scope_must_be_checked_per_market"
+    },
+    {
+      "source_ref": "POLICY-TIKTOK-MUSIC-LEGALITY",
+      "locator": "https://ads.tiktok.com/business/library/TikTok_Music_Legality.pdf",
+      "relevance": "commercial_music_requires_owned_or_licensed_scope_not_generic_platform_availability",
+      "proof_level": "public_policy_reference",
+      "reference_only": true,
+      "captured_at": "2026-10-11",
+      "region": "TikTok_for_Business_MENA_guidance_not_global_clearance"
+    },
+    {
+      "source_ref": "POLICY-TIKTOK-RESEARCH-TOOLS",
+      "locator": "https://developers.tiktok.com/docs/en/about-research-api",
+      "relevance": "research_access_requires_application_approval_scope_and_eligibility_review",
+      "proof_level": "public_policy_reference",
+      "reference_only": true,
+      "captured_at": "2026-10-11",
+      "region": "policy_page_scope_must_be_checked_per_market"
+    }
+  ],
+  "media_boundary": {
+    "source_use": "analysis_only",
+    "media_state": "metadata_only",
+    "raw_media_hosted": false,
+    "raw_audio_hosted": false,
+    "comment_scraping": false,
+    "connector_access": false
+  },
+  "next_action": "collect_external_evidence",
+  "proof_level": "local",
+  "limitations": [
+    "public_policy_reference_is_not_case_specific_authorization",
+    "user_operator_authorization_is_not_creator_or_guardian_consent",
+    "no_original_post_or_rightsholder_record",
+    "no_music_or_sound_license",
+    "no_connector_scope_or_quota_approval",
+    "no_external_action_or_brand_lift_approval"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "fixture_id": "VR-P3-003",
+  "scenario": "目标商品有一个 confirmed Fact、一个明确 excluded Fact，以及两个没有证据的候选声明。",
+  "product_snapshot": {
+    "snapshot_id": "snap-demo-001",
+    "facts": [
+      {
+        "fact_id": "fact-temperature-display-confirmed",
+        "claim": "设备可显示温度读数",
+        "status": "confirmed",
+        "source": "source_field",
+        "unit": "celsius"
+      },
+      {
+        "fact_id": "fact-antibacterial-excluded",
+        "claim": "可杀菌",
+        "status": "excluded",
+        "source": "user_assertion/manual-form",
+        "reason": "本版本禁止使用该主张"
+      }
+    ]
+  },
+  "claim_candidates": [
+    {
+      "claim_id": "claim-display",
+      "text": "屏幕显示温度",
+      "kind": "voiceover",
+      "fact_refs": ["fact-temperature-display-confirmed"]
+    },
+    {
+      "claim_id": "claim-kills-bacteria",
+      "text": "杀菌看得见",
+      "kind": "caption",
+      "fact_refs": []
+    },
+    {
+      "claim_id": "claim-blue-color",
+      "text": "蓝色代表更安全",
+      "kind": "on_screen_text",
+      "fact_refs": ["fact-antibacterial-excluded"]
+    }
+  ],
+  "expected": {
+    "disposition": "blocked",
+    "allowed_claim_ids": ["claim-display"],
+    "blocked_claim_ids": ["claim-kills-bacteria", "claim-blue-color"],
+    "blockers": [
+      "unsupported_claim",
+      "excluded_fact_resurrection"
+    ],
+    "allowed_next_action": "rewrite_or_remove_blocked_claims_and_reaudit_same_snapshot",
+    "must_not": [
+      "treat_reference_demo_as_product_evidence",
+      "use_excluded_fact_as_visual_implication",
+      "promote_claim_after_model_confidence"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

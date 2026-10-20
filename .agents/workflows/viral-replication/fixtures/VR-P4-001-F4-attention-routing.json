@@ -1,0 +1,35 @@
+{
+  "fixture_id": "VR-P4-001-F4",
+  "scenario": "参考的主要表达依赖一个指定平台热门音频及其固定挑战模板，但请求方将其路由为 attention-grammar。",
+  "decomposition_map": {
+    "proposed_primary_mechanism": "attention-grammar",
+    "attention_observations": [
+      {
+        "time_range_seconds": [0.0, 4.0],
+        "component": "sonic_timing",
+        "observed_function": "动作切换与指定热门音频的固定节拍同步",
+        "source_ref": "obs://fixture/audio-timing-001"
+      }
+    ],
+    "trend_dependency": {
+      "platform_template_required": true,
+      "named_audio_required": true,
+      "usage_rights_state": "unknown"
+    }
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "primary_mechanism_misrouted",
+      "trend_native_dependency",
+      "trend_audio_rights_unknown"
+    ],
+    "allowed_next_action": "将样本路由到 trend-native 设计入口；在趋势、平台兼容和权利合同齐备前不建立 attention-grammar adaptation plan。",
+    "must_not": [
+      "treat_named_trend_audio_as_generic_sonic_timing",
+      "reuse_platform_template",
+      "assume_audio_permission_from_playability"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

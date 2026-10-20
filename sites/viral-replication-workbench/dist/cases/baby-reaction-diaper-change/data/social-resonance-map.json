@@ -1,0 +1,77 @@
+{
+  "schema": "social-resonance-map/v1",
+  "case_id": "bv-002-baby-reaction-diaper-change",
+  "track": "brand_voice_social",
+  "intent": "brand_awareness_only",
+  "observation_window": {
+    "platform": "TikTok",
+    "posted_at": "2025-08-12",
+    "capture_at": "2026-10-11",
+    "window_precision": "source_page_reported"
+  },
+  "resonance_fields": [
+    {
+      "field": "parent_tension",
+      "value": "care_routine_friction",
+      "state": "observed_summary",
+      "source_ref": "SRC-BV002-ARK-19758",
+      "disposition": "cite"
+    },
+    {
+      "field": "recognition_signal",
+      "value": "one readable expression makes a routine moment legible",
+      "state": "bounded_inference",
+      "source_ref": "SRC-BV002-ARK-19758",
+      "disposition": "test"
+    },
+    {
+      "field": "emotional_payoff",
+      "value": "humor and affection may invite parent identification",
+      "state": "bounded_inference",
+      "source_ref": "SRC-BV002-ARK-19758",
+      "disposition": "test"
+    },
+    {
+      "field": "participation_cue",
+      "value": "comments, shares, saves and reaction remixes",
+      "state": "not_reported",
+      "source_ref": "SRC-BV002-ARK-19758",
+      "disposition": "collect_evidence"
+    }
+  ],
+  "interaction_signals": [
+    { "name": "views", "value": 11100000, "state": "reported", "denominator": "not_disclosed", "paid_or_organic": "unknown", "source_ref": "SRC-BV002-ARK-19758" },
+    { "name": "likes", "value": null, "state": "not_reported", "denominator": "not_disclosed", "paid_or_organic": "unknown", "source_ref": "SRC-BV002-ARK-19758" },
+    { "name": "comments_shares_saves_ugc", "value": null, "state": "not_collected", "denominator": "not_disclosed", "paid_or_organic": "unknown", "source_ref": "SRC-BV002-ARK-19758" },
+    { "name": "completion_profile_visits", "value": null, "state": "not_reported", "denominator": "not_disclosed", "paid_or_organic": "unknown", "source_ref": "SRC-BV002-ARK-19758" }
+  ],
+  "observations": [
+    "The public source summary describes an infant's comical facial expression during a diaper-change routine.",
+    "The source page reports approximately 11.1 million TikTok views and classifies the item under Parenting & Kids.",
+    "The source page reports a US filming context and a 12 August 2025 posted date."
+  ],
+  "bounded_inferences": [
+    "A single reaction reveal may create a compact attention structure without requiring a product claim.",
+    "A parenting routine may provide recognition value, but the intimate-care context limits safe creative transfer."
+  ],
+  "alternative_explanations": [
+    "The private-care setting, novelty, creator distribution or editorial selection may explain part of the reported views.",
+    "The expression may be specific to the child and not transferable to a brand cue.",
+    "The source summary does not establish that comments or shares caused the reported reach."
+  ],
+  "unknowns": [
+    "Original TikTok post identity, account size, paid or organic distribution and denominator.",
+    "Likes, comments, shares, saves, completion, profile visits and UGC volume.",
+    "Guardian consent, child likeness scope, music or sound rights and commercial disclosure.",
+    "Brand recall, familiarity, favorability or any exposed-versus-control lift."
+  ],
+  "rights_safety_boundary": {
+    "source_use": "analysis_only",
+    "media_state": "metadata_only",
+    "raw_media_hosted": false,
+    "comment_scraping": false,
+    "connector_access": false,
+    "child_media_reuse": "not_authorized",
+    "intimate_care_context": "elevated_review_required"
+  }
+}

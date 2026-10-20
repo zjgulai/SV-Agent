@@ -1,0 +1,40 @@
+{
+  "fixture_id": "VR-P4-004-F3",
+  "scenario": "所有商品口播和字幕均有 Fact binding，但中段画面更换为未绑定的相似包装、不同颜色和不同组件数量；模型相似度给出高分，未形成逐镜头身份/连续性人工或可解释审计。",
+  "media_integrity_record": {
+    "mode": "artifact_review",
+    "communicative_surface": {
+      "claim_map_status": "complete",
+      "unsupported_occurrence_count": 0,
+      "excluded_occurrence_count": 0
+    },
+    "target_identity_continuity": {
+      "required_identity": {
+        "target_asset_ref": "asset-ref-fixture-A",
+        "color": "navy",
+        "component_count": 2
+      },
+      "observations": [
+        {"shot_index": 1, "asset_ref": "asset-ref-fixture-A", "color": "navy", "component_count": 2},
+        {"shot_index": 2, "asset_ref": "asset-ref-unbound-B", "color": "rose", "component_count": 3}
+      ],
+      "model_similarity_score": 0.94,
+      "independent_review_state": "not_completed"
+    }
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "target_identity_drift_detected",
+      "cross_shot_continuity_unverified",
+      "model_similarity_not_sufficient_for_identity_gate"
+    ],
+    "allowed_next_action": "以冻结 target asset/属性重制漂移镜头，或记录合格的逐镜头独立身份审计；不得用相似度分数替代 identity/continuity evidence。",
+    "must_not": [
+      "treat_fact_binding_as_visual_identity_proof",
+      "accept_unbound_similar_packaging",
+      "treat_model_similarity_as_human_or_contract_review"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Proof Demonstration"
+  short_description: "Transfer observable proof mechanisms safely"
+  default_prompt: "Design a fact-bound proof demonstration that separates observation from product conclusion."

@@ -1,0 +1,37 @@
+{
+  "fixture_id": "VR-P4-003-F1",
+  "scenario": "参考主体是固定条件下的前后对比 proof；结尾才出现 trend tag 与背景热门音频。移除该音频与标签后，对比结构仍完整，但请求方将样本路由为 trend-native。",
+  "decomposition_map": {
+    "proposed_primary_mechanism": "trend-native",
+    "proof_observations": [
+      {
+        "time_range_seconds": [0.0, 12.0],
+        "observed_function": "在固定条件下依次展示前后状态与可读差异",
+        "source_ref": "obs://fixture/trend-incidental-proof-001"
+      }
+    ],
+    "trend_observations": [
+      {
+        "time_range_seconds": [12.0, 15.0],
+        "component": "audio_function",
+        "observed_function": "结尾背景音频与标签，不改变前述 proof 结构",
+        "source_ref": "obs://fixture/trend-incidental-audio-001"
+      }
+    ]
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "primary_mechanism_misrouted",
+      "trend_dependency_not_primary",
+      "proof_demonstration_primary"
+    ],
+    "allowed_next_action": "路由至 proof-demonstration，并将 trend tag 与背景音频冻结为 secondary surface；如未来单独比较 trend component，建立新的单变量 Variant。",
+    "must_not": [
+      "classify_any_video_with_trend_tag_or_audio_as_trend_native",
+      "treat_background_audio_as_trend_effect_evidence",
+      "infer_current_trend_or_performance"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

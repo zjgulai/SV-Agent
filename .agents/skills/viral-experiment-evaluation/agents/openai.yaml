@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Experiment Evaluation"
+  short_description: "Reconcile replication evidence and findings"
+  default_prompt: "Evaluate a frozen replication run without turning one sample into causal or production proof."

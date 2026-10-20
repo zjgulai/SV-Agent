@@ -32,6 +32,14 @@ from app.api.schemas.scripts import (
     StoryboardVersionOutput,
     VersionDiffOutput,
 )
+from app.application.creative_comparison_lab import (
+    CreativeComparisonIntegrityError,
+    CreativeComparisonLab,
+    CreativeComparisonProjection,
+    CreativeComparisonReferenceInvalidError,
+    CreativeComparisonRequest,
+    CreativeComparisonSubjectNotFoundError,
+)
 from app.application.exports import export_json, export_markdown
 from app.application.generations import (
     AudienceProfileUnsupportedError,
@@ -599,6 +607,54 @@ async def derive_script_version(
         ) from exc
     response.status_code = status.HTTP_201_CREATED if stored.created else status.HTTP_200_OK
     return _version_output(stored.version)
+
+
+@router.get(
+    "/api/v1/scripts/{script_id}/creative-comparison",
+    response_model=CreativeComparisonProjection,
+)
+async def get_creative_comparison(
+    script_id: UUID,
+    control: Annotated[UUID, Query()],
+    variant: Annotated[UUID, Query()],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> CreativeComparisonProjection:
+    try:
+        return await CreativeComparisonLab(session).inspect(
+            CreativeComparisonRequest(
+                script_id=script_id,
+                control_version_id=control,
+                variant_version_id=variant,
+            )
+        )
+    except CreativeComparisonReferenceInvalidError as exc:
+        raise ApiProblem(
+            status=409,
+            code="COMPARISON_REFERENCE_INVALID",
+            title="Creative comparison reference invalid",
+            detail="Control and variant must be different versions of the requested script.",
+        ) from exc
+    except CreativeComparisonIntegrityError as exc:
+        raise ApiProblem(
+            status=500,
+            code="PRODUCT_TRUTH_INTEGRITY_ERROR",
+            title="Product truth integrity error",
+            detail="The creative comparison cannot be projected from the stored product truth.",
+        ) from exc
+    except SQLAlchemyError as exc:
+        raise ApiProblem(
+            status=503,
+            code="PRODUCT_TRUTH_UNAVAILABLE",
+            title="Product truth unavailable",
+            detail="The authoritative product truth store is unavailable.",
+        ) from exc
+    except CreativeComparisonSubjectNotFoundError as exc:
+        raise ApiProblem(
+            status=404,
+            code="COMPARISON_SUBJECT_NOT_FOUND",
+            title="Creative comparison subject not found",
+            detail="The requested script or version does not exist.",
+        ) from exc
 
 
 @router.get(

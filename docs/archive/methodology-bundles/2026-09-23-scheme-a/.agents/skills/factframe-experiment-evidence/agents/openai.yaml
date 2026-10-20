@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Experiment Evidence"
+  short_description: "Validate and distill clean-room experiment evidence"
+  default_prompt: "Apply the FactFrame experiment evidence workflow to this Oumomo run, ledger, artifact, or finding."

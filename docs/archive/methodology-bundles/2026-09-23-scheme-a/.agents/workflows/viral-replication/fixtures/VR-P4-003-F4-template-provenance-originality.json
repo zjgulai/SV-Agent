@@ -1,0 +1,42 @@
+{
+  "fixture_id": "VR-P4-003-F4",
+  "scenario": "可见挑战模板被直接写成可调用 template_id；计划沿用其识别性角色顺序、镜头指令和口播结构，但没有 template 使用范围或 target originality delta。",
+  "trend_native_plan": {
+    "selected_trend_component": "template_grammar",
+    "template_grammar": {
+      "template_ref": "platform-template:fixture-visible-only",
+      "availability_state": "visible_in_reference",
+      "observed_function": "双角色依次出现、固定反转和镜头交接",
+      "target_instruction": "use platform template fixture-visible-only with the same roles, shots and spoken lines"
+    },
+    "trend_admission": {
+      "rights_scope": {
+        "template_usage_state": "unknown",
+        "evidence_refs": []
+      },
+      "originality_delta": {
+        "target_text_substitutions": [],
+        "target_visual_substitutions": [],
+        "target_audio_substitutions": [],
+        "source_identity_exclusions": [],
+        "review_state": "not_collected"
+      }
+    }
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "template_availability_unverified",
+      "template_adaptation_scope_unconfirmed",
+      "template_identity_copy_not_separated",
+      "originality_delta_unreviewable"
+    ],
+    "allowed_next_action": "抽象可观察 template grammar，记录 target text/visual/audio substitutions 与 source identity exclusions，并请求独立 rights 或 originality review；不得把可见模板当作可调用资源。",
+    "must_not": [
+      "claim_template_is_installed_or_executable",
+      "treat_visible_template_as_reuse_permission",
+      "claim_originality_approval_before_vr_p4_004"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

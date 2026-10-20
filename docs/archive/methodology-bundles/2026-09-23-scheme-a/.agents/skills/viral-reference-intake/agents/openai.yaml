@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Reference Intake"
+  short_description: "Freeze a bounded reference before replication"
+  default_prompt: "Create a digest-linked ReferenceBundle and stop on unstable or unauthorized source evidence."

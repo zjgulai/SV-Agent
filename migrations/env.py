@@ -1,7 +1,7 @@
 from logging.config import fileConfig
 
 from alembic import context
-from app.adapters.db import models  # noqa: F401
+from app.adapters.db import models, sv_agent_models  # noqa: F401
 from app.adapters.db.base import Base
 from app.settings import settings
 from sqlalchemy import pool
@@ -29,7 +29,9 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: object) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
+    context.configure(
+        connection=connection, target_metadata=target_metadata, compare_type=True
+    )
     with context.begin_transaction():
         context.run_migrations()
 

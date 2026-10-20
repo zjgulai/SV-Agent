@@ -1,0 +1,45 @@
+{
+  "fixture_id": "VR-P4-001-F5",
+  "scenario": "报告显示一个内容方向 views=0、comments 未报告、shares 未采集；同一 Brand Workspace 下的 Product Family 和 Variant 也没有绑定。请求方据此认定该 Hook 对目标商品无效。",
+  "performance_observation": {
+    "brand_workspace": "fixture-brand-workspace-001",
+    "performance_subject_binding": "unresolved",
+    "metrics": [
+      {
+        "metric": "views",
+        "value": 0,
+        "state": "observed_zero",
+        "source_ref": "obs://fixture/performance-views-001"
+      },
+      {
+        "metric": "comments",
+        "value": null,
+        "state": "not_reported",
+        "source_ref": null
+      },
+      {
+        "metric": "shares",
+        "value": null,
+        "state": "not_collected",
+        "source_ref": null
+      }
+    ]
+  },
+  "requested_conclusion": "这个 Hook 表现差，因此不适用于目标商品。",
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "observed_zero_cannot_mean_attention_failure",
+      "observation_availability_unresolved",
+      "performance_subject_binding_unresolved",
+      "cross_subject_generalization_blocked"
+    ],
+    "allowed_next_action": "保留原始 Availability 状态，补齐 performance subject binding 和来源证据，或将结论降级为 unknown。",
+    "must_not": [
+      "interpret_zero_as_attention_failure",
+      "convert_not_reported_or_not_collected_to_zero",
+      "generalize_to_target_product"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

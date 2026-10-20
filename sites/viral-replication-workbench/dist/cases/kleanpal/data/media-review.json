@@ -1,0 +1,15 @@
+{
+  "schema": "momcozy-media-review/v1",
+  "status": "CURATED_LOCAL_PACKET",
+  "items": [
+    { "file": "media/01-reference-restored.mp4", "label": "参考片恢复版", "kind": "reference", "durationSeconds": 27.966667, "resolution": "606×1080", "fps": 30, "review": "仅用于机制研究；权利未核验" },
+    { "file": "media/02-reference-analysis.mp4", "label": "参考分解演示", "kind": "intermediate", "durationSeconds": 73.130667, "resolution": "960×540", "fps": 25, "review": "时间线与观察层，不是最终成片" },
+    { "file": "media/03-production-v5-s02.mp4", "label": "产品镜头 production v5 · S02", "kind": "intermediate", "durationSeconds": 5.041667, "resolution": "1076×1924", "fps": 24, "review": "迭代样本，保留用于查看制作路径" },
+    { "file": "media/04-repair-v7-s02-accepted.mp4", "label": "repair v7 · S02", "kind": "intermediate_accepted", "durationSeconds": 5.041667, "resolution": "1076×1924", "fps": 24, "review": "采用的修复候选；仍需人工画面核验" },
+    { "file": "media/05-repair-v8-s05-not-adopted.mp4", "label": "repair v8 · S05", "kind": "intermediate_not_adopted", "durationSeconds": 5.083333, "resolution": "1076×1924", "fps": 24, "review": "未采用；过渡读数未独立验证，按决定停止同路由重试" },
+    { "file": "media/06-final-control-review.mp4", "label": "review film v4 · control", "kind": "final_screening", "durationSeconds": 22, "resolution": "1080×1920", "fps": 24, "review": "本地筛查片；非广告、非教程、不可发布" },
+    { "file": "media/07-final-variant-review.mp4", "label": "review film v4 · variant", "kind": "final_screening", "durationSeconds": 22, "resolution": "1080×1920", "fps": 24, "review": "只改变镜头区块顺序；未执行实验计分" },
+    { "file": "media/08-final-control-silent.mp4", "label": "review film v4 · silent control", "kind": "final_screening_silent", "durationSeconds": 22, "resolution": "1080×1920", "fps": 24, "review": "无口播版本；音频与字幕不构成性能证明" }
+  ],
+  "integrityBoundary": ["AI 标记保留", "没有正式人审结论", "没有商业批准或发布授权", "代表性视频不是全量原始库"]
+}

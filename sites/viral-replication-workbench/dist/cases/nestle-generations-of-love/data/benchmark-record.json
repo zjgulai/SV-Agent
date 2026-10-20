@@ -1,0 +1,117 @@
+{
+  "schema": "campaign-awareness-benchmark/v1",
+  "case_id": "bv-benchmark-nestle-generations-of-love-2024",
+  "track": "campaign_awareness_benchmark",
+  "intent": "brand_awareness_only",
+  "title": "Campaign Benchmark · Nestlé Generations of Love",
+  "subject": {
+    "creator_or_brand": "Nestlé",
+    "market": "Philippines · Indonesia · Malaysia · Thailand · Vietnam",
+    "language": "multi-market",
+    "audience_context": "mothers and growing-up children families"
+  },
+  "primary_mechanism": "not_applicable",
+  "mechanism_scope": "benchmark_design_not_replication",
+  "invariant_elements": [
+    "campaign window and market definition",
+    "organic participation separated from boosted UGC",
+    "measurement cells defined before interpreting lift"
+  ],
+  "replaceable_surfaces": [
+    "Momcozy-owned creative and creator mix",
+    "Momcozy market and audience",
+    "Momcozy awareness measurement question"
+  ],
+  "prohibited_surfaces": [
+    "Nestlé claims, branded effect, hashtag or creator assets",
+    "reported lift copied as Momcozy performance",
+    "cross-track ranking against organic views"
+  ],
+  "observation_window": {
+    "platform": "TikTok",
+    "start": "2024-02-06",
+    "end": "2024-02-12",
+    "timezone": "unknown",
+    "capture_at": "2026-10-11",
+    "window_precision": "source_page_reported"
+  },
+  "source_register": [
+    {
+      "source_ref": "SRC-CB-NESTLE-01",
+      "locator": "https://ads.tiktok.com/business/en/inspiration/nestle-branded-mission-case-study?redirected=1",
+      "source_kind": "official_platform_case_study",
+      "what_it_proves": "official_page_reports_campaign_window_markets_formats_and_results",
+      "precision": "reported_via_official_case_page",
+      "rights_scope": "benchmark_only",
+      "original_assets": "not_imported"
+    },
+    {
+      "source_ref": "SRC-CB-NESTLE-02",
+      "locator": "https://ads.tiktok.com/resources/help/article/tiktok-brand-lift-studies?lang=en",
+      "source_kind": "official_measurement_guidance",
+      "what_it_proves": "official_page_describes_sponsored_content_brand_lift_exposed_control_design",
+      "precision": "current_public_guidance",
+      "rights_scope": "method_reference",
+      "original_assets": "not_imported"
+    }
+  ],
+  "campaign_design": {
+    "category": "growing_up_milk",
+    "product_presence": "category_present",
+    "media_mix": ["Branded Mission", "Branded Effect", "Branded Hashtag Challenge", "selected UGC boosted"],
+    "commercial_disclosure": "mixed_organic_and_boosted_ugc",
+    "audience": "creators and families across five Southeast Asian markets",
+    "measurement_method": "Brand Lift Study across all five markets",
+    "measurement_fields": ["ad_recall", "familiarity", "brand_association", "intent"],
+    "study_design_reference": "TikTok describes randomized Exposed and Control groups with polling and statistical comparison; account-manager setup required"
+  },
+  "metrics": [
+    { "name": "ad_recall_lift_thailand", "value": 3.9, "unit": "%", "state": "reported", "denominator": "not_disclosed", "paid_or_organic": "mixed", "source_ref": "SRC-CB-NESTLE-01" },
+    { "name": "familiarity_lift_vietnam", "value": 7.3, "unit": "%", "state": "reported", "denominator": "not_disclosed", "paid_or_organic": "mixed", "source_ref": "SRC-CB-NESTLE-01" },
+    { "name": "intent_lift_indonesia", "value": 6.5, "unit": "%", "state": "reported_but_out_of_scope_for_translation", "denominator": "not_disclosed", "paid_or_organic": "mixed", "source_ref": "SRC-CB-NESTLE-01" },
+    { "name": "ugc_videos", "value": 1554, "unit": "videos", "state": "reported", "denominator": "source_aggregate", "paid_or_organic": "mixed", "source_ref": "SRC-CB-NESTLE-01" },
+    { "name": "ugc_users", "value": 1135, "unit": "users", "state": "reported", "denominator": "source_aggregate", "paid_or_organic": "mixed", "source_ref": "SRC-CB-NESTLE-01" },
+    { "name": "boosted_submissions", "value": 65, "unit": "submissions", "state": "reported", "denominator": "source_aggregate", "paid_or_organic": "boosted_ugc", "source_ref": "SRC-CB-NESTLE-01" },
+    { "name": "boosted_engagement_rate", "value": 4.71, "unit": "%", "state": "reported", "denominator": "source_aggregate_not_disclosed", "paid_or_organic": "boosted_ugc", "source_ref": "SRC-CB-NESTLE-01" }
+  ],
+  "benchmark_use": {
+    "allowed": ["campaign window and multi-market planning", "organic and boosted UGC separation", "Brand Lift field design", "exposed/control preflight", "participation mechanic review"],
+    "prohibited": ["ranking against organic candidate views", "transferring lift to Momcozy", "copying branded effect, hashtag, music or creator assets", "treating a reported case as local causal evidence"]
+  },
+  "commercial_disclosure": "mixed_organic_and_boosted_ugc",
+  "media_state": "metadata_only",
+  "claim_register": [
+    {
+      "claim": "the official case page reports the listed window, markets, UGC aggregates and lift values",
+      "source_ref": "SRC-CB-NESTLE-01",
+      "disposition": "cite"
+    },
+    {
+      "claim": "the reported lift is a Momcozy causal result or a TikTok-only estimate",
+      "source_ref": "SRC-CB-NESTLE-01",
+      "disposition": "reject"
+    }
+  ],
+  "source_quality": {
+    "status": "reported_benchmark",
+    "missing": ["market-level sample sizes", "exposed/control cell sizes", "creative-level spend and reach", "raw survey instrument", "full denominator for engagement rate"]
+  },
+  "rights_safety_boundary": {
+    "source_use": "benchmark_only",
+    "media_state": "metadata_only",
+    "raw_media_hosted": false,
+    "creator_assets_imported": false,
+    "connector_access": false,
+    "child_media_reuse": "not_applicable_to_site_package"
+  },
+  "status": "proceed_with_limits",
+  "benchmark_status": "observed_benchmark",
+  "next_action": "collect_evidence",
+  "proof_level": "reported",
+  "limitations": [
+    "official_case_page_is_a_reported_marketing_case_not_a_reproducible_raw_dataset",
+    "reported_lift_is_not_a_Momcozy_result",
+    "sample_and_denominator_details_are_incomplete",
+    "no_raw_campaign_assets_or_creator_media_imported"
+  ]
+}

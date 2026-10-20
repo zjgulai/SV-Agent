@@ -1,10 +1,11 @@
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.adapters.db.models import ScriptGenerationRecord, ScriptVersionRecord
 from app.adapters.db.repositories import ProductRepository, ScriptRepository
 from app.domain.common.canonical import canonical_digest
 from app.domain.products.entities import FactStatus, ProductFact
@@ -24,6 +25,15 @@ class StoryboardPreflightNotFoundError(Exception):
     pass
 
 
+@dataclass(frozen=True, slots=True)
+class StoryboardPreflightEvaluation:
+    preflight: StoryboardPreflight
+    fact_contract_findings: tuple[ValidationFinding, ...]
+    promotion_findings: tuple[ValidationFinding, ...]
+    stored_validation_report: ValidationReport
+    live_validation_report: ValidationReport
+
+
 @dataclass(slots=True)
 class StoryboardPreflightService:
     session: AsyncSession
@@ -37,18 +47,38 @@ class StoryboardPreflightService:
         if generation is None or version is None or version.generation_id != script_id:
             raise StoryboardPreflightNotFoundError(str(version_id))
 
-        product_facts = {
-            item.id: item
-            for item in await ProductRepository(self.session).list_facts(
-                generation.snapshot_id, for_update=lock_facts
-            )
-        }
+        product_facts, observed_at = await ProductRepository(
+            self.session
+        ).list_facts_at_observation(generation.snapshot_id, for_update=lock_facts)
+        return self.evaluate_loaded(
+            generation=generation,
+            version=version,
+            product_facts=product_facts,
+            observed_at=observed_at,
+        ).preflight
+
+    def evaluate_loaded(
+        self,
+        *,
+        generation: ScriptGenerationRecord,
+        version: ScriptVersionRecord,
+        product_facts: Mapping[UUID, ProductFact] | Sequence[ProductFact],
+        observed_at: datetime,
+        strict_draft: bool = False,
+    ) -> StoryboardPreflightEvaluation:
+        facts_by_id = (
+            dict(product_facts)
+            if isinstance(product_facts, Mapping)
+            else {item.id: item for item in product_facts}
+        )
         selected, excluded, selection_findings = self._load_fact_contract(
             generation.selected_fact_ids,
             generation.excluded_fact_ids,
-            product_facts,
+            facts_by_id,
         )
-        draft = ScriptDraft.model_validate(version.draft)
+        draft = ScriptDraft.model_validate(
+            version.draft, extra="forbid" if strict_draft else None
+        )
         pattern_definition = load_persisted_pattern_definition(
             generation.configuration["pattern_definition"],
             pattern_key=generation.pattern_key,
@@ -56,11 +86,12 @@ class StoryboardPreflightService:
             duration_seconds=int(generation.configuration["target_duration_seconds"]),
             language=str(generation.configuration["language"]),
         )
-        promotion, promotion_findings = await self._load_promotion(
+        promotion, promotion_findings = self._load_promotion(
             generation.configuration,
             generation.snapshot_id,
-            product_facts,
+            facts_by_id,
             language=str(generation.configuration["language"]),
+            observed_at=observed_at,
         )
         runtime_report = validate_script(
             draft,
@@ -69,7 +100,9 @@ class StoryboardPreflightService:
             pattern_definition=pattern_definition,
             promotion=promotion,
         )
-        stored_report = ValidationReport.model_validate(version.validation_report)
+        stored_report = self._load_stored_report(
+            version.validation_report, strict=strict_draft
+        )
         report = ValidationReport(
             findings=self._merge_findings(
                 [
@@ -80,9 +113,9 @@ class StoryboardPreflightService:
                 ]
             )
         )
-        return compile_storyboard_preflight(
-            script_id=script_id,
-            version_id=version_id,
+        preflight = compile_storyboard_preflight(
+            script_id=generation.id,
+            version_id=version.id,
             input_digest=generation.input_digest,
             pattern_key=generation.pattern_key,
             snapshot_id=generation.snapshot_id,
@@ -91,6 +124,32 @@ class StoryboardPreflightService:
             draft=draft,
             validation_report=report,
         )
+        return StoryboardPreflightEvaluation(
+            preflight=preflight,
+            fact_contract_findings=tuple(selection_findings),
+            promotion_findings=tuple(promotion_findings),
+            stored_validation_report=stored_report,
+            live_validation_report=runtime_report,
+        )
+
+    @staticmethod
+    def _load_stored_report(
+        raw: Mapping[str, object], *, strict: bool
+    ) -> ValidationReport:
+        if not strict:
+            return ValidationReport.model_validate(raw)
+        allowed = {"findings", "blocking", "acceptable"}
+        if set(raw) - allowed:
+            raise ValueError("stored validation report contains unknown fields")
+        report = ValidationReport.model_validate(
+            {"findings": raw.get("findings")}, extra="forbid"
+        )
+        serialized = report.model_dump(mode="json")
+        if raw.get("blocking") != serialized["blocking"]:
+            raise ValueError("stored validation blocking projection is inconsistent")
+        if raw.get("acceptable") != serialized["acceptable"]:
+            raise ValueError("stored validation acceptable projection is inconsistent")
+        return report
 
     @staticmethod
     def _load_fact_contract(
@@ -139,13 +198,14 @@ class StoryboardPreflightService:
                 excluded.append(fact)
         return selected, excluded, findings
 
-    async def _load_promotion(
+    def _load_promotion(
         self,
         configuration: Mapping[str, object],
         snapshot_id: UUID,
         facts_by_id: dict[UUID, ProductFact],
         *,
         language: str,
+        observed_at: datetime,
     ) -> tuple[PromotionRender | None, list[ValidationFinding]]:
         raw = configuration.get("promotion")
         if raw is None:
@@ -161,7 +221,6 @@ class StoryboardPreflightService:
         except ValueError:
             return None, [self._promotion_not_active_finding()]
         fact = facts_by_id.get(fact_id)
-        observed_at = await self.session.scalar(select(func.statement_timestamp()))
         if (
             fact is None
             or fact.snapshot_id != snapshot_id

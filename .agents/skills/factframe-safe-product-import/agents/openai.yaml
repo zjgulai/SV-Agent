@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Safe Product Import"
+  short_description: "Protect and verify public Schema.org Product ingestion"
+  default_prompt: "Apply the FactFrame safe product import workflow to this URL ingestion task."

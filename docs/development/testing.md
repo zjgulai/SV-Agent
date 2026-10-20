@@ -12,7 +12,7 @@ The repository pins Python and npm dependencies in `apps/api/uv.lock` and `apps/
 
 ```bash
 rtk docker compose -f infra/docker-compose.yml up -d postgres redis
-rtk uv run --project apps/api alembic -c apps/api/alembic.ini upgrade head
+rtk uv run --project apps/api python -m alembic -c apps/api/alembic.ini upgrade head
 ```
 
 Integration tests require a **separate disposable database** (create it once after
@@ -20,7 +20,7 @@ PostgreSQL is healthy, then run its migrations):
 
 ```bash
 rtk docker compose -f infra/docker-compose.yml exec -T postgres createdb -U reverse_engineer_mode rem_test
-rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api alembic -c apps/api/alembic.ini upgrade head
+rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m alembic -c apps/api/alembic.ini upgrade head
 export TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test
 ```
 
@@ -50,16 +50,131 @@ recheck inactive promotions before provider execution, version save and storyboa
 
 Creative Comparison tests verify that both candidates share one current Fact observation, Product Truth eligibility stays separate from stored/live script validation, rejected or missing contract Facts remain explicit, unknown persisted draft fields fail closed, frozen-field differences block, and the GET performs no external filesystem or network I/O. Web tests verify one Projection GET, local-only lens switching, distinct error recovery and the absence of prototype fixtures or mutation controls.
 
+## Viral Replication contract gates
+
+The SV-Agent Batch 1 checks are standalone, deterministic contract checks. They do not
+start an Agent runtime, persist PostgreSQL records, call model or media providers, render
+video, publish content, or grant rights, commercial, deployment, or production approval.
+
+```bash
+rtk uv run --project apps/api python -m unittest tools.viral_replication.tests.test_artifact_contracts -v
+rtk uv run --project apps/api python -m unittest tools.viral_replication_oracle.tests.test_oracle -v
+rtk uv run --project apps/api python -m tools.viral_replication_oracle
+rtk uv run --project apps/api ruff check tools/viral_replication tools/viral_replication_oracle
+rtk uv run --project apps/api ruff format --check tools/viral_replication tools/viral_replication_oracle
+rtk uv run --project apps/api python -m mypy --explicit-package-bases tools/viral_replication tools/viral_replication_oracle
+```
+
+Interpret the output as three separate results:
+
+1. Canonical artifact schema validation proves only that the Batch 1 typed artifacts,
+   references, closed values, evidence boundaries, and cross-artifact invariants pass.
+2. Fixture-shape validation proves only that committed synthetic oracle inputs are readable
+   and structurally supported; it is not canonical artifact validation.
+3. Workflow expectation and coverage validation proves only that each of the six synthetic
+   mechanism routes returns the expected bounded disposition and stable finding codes.
+
+A green result is not proof of durable Task/Run persistence, authorization, live source
+quality, media integrity of a real asset, human approval, or end-to-end SV-Agent operation.
+
+## SV-Agent domain kernel gates
+
+SV-101 is a pure domain contract. Its tests cover the full Run transition matrix, Task Goal
+Track separation, the closed Primary Mechanism / Creative Dimension partition, revision and
+rehydration invariants, stable domain errors, and the infrastructure import boundary.
+
+```bash
+rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent -q
+rtk uv run --project apps/api python -m pytest apps/api/tests/unit -q
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/tests/unit/domain/sv_agent
+rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent apps/api/tests/unit/domain/sv_agent
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent
+```
+
+A green result proves only the in-memory Task/Run contract and dependency boundary. It does
+not prove PostgreSQL persistence, optimistic concurrency across processes, replay, ToolRun,
+Human Approval authority, API behavior, worker recovery, deployment, or production acceptance.
+
+## SV-Agent persistence and journal gates
+
+SV-102 adds an isolated PostgreSQL namespace and an internal Task persistence seam. Routine
+integration tests use the outer transaction fixture and leave no ledger rows behind:
+
+```bash
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_task_journal.py apps/api/tests/integration/sv_agent/test_runtime_journal_schema.py -q
+rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent -q
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/app/adapters/db/sv_agent_models.py apps/api/app/adapters/db/sv_agent_repository.py apps/api/tests/unit/domain/sv_agent apps/api/tests/integration/sv_agent migrations/versions/0012_sv_agent_persistence.py migrations/env.py
+rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent apps/api/app/adapters/db/sv_agent_models.py apps/api/app/adapters/db/sv_agent_repository.py apps/api/tests/unit/domain/sv_agent apps/api/tests/integration/sv_agent migrations/versions/0012_sv_agent_persistence.py migrations/env.py
+rtk uv run --project apps/api --all-extras python -m mypy apps/api/app/domain/sv_agent apps/api/app/adapters/db/sv_agent_models.py apps/api/app/adapters/db/sv_agent_repository.py
+```
+
+The two committed multi-connection tests cannot run inside the rollback fixture. Create a
+new disposable database, migrate it, run only that file, then drop it:
+
+```bash
+rtk docker compose -f infra/docker-compose.yml exec -T postgres createdb -U reverse_engineer_mode rem_sv102_concurrency_check
+rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_sv102_concurrency_check uv run --project apps/api python -m alembic -c apps/api/alembic.ini upgrade head
+rtk env SV_CONCURRENCY_TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_sv102_concurrency_check uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_task_concurrency.py -q
+rtk docker compose -f infra/docker-compose.yml exec -T postgres dropdb -U reverse_engineer_mode rem_sv102_concurrency_check
+```
+
+A green SV-102 result proves the local additive schema, Task CAS/idempotency, immutable
+guards and read-only factual replay. It does not prove an authorized actor, Run/ToolRun or
+Artifact writer, HumanApproval service, public API, planner, provider execution, deployment,
+rights, commercial approval or production acceptance.
+
+## SV-Agent read-tool registry gates
+
+SV-103 adds six closed application-level read contracts and an internal ToolRun audit seam.
+Run the contract, dependency, domain-state and real PostgreSQL behavior checks together:
+
+```bash
+rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent/test_tool_runs.py apps/api/tests/unit/test_sv_agent_read_tool_registry.py apps/api/tests/unit/test_sv_agent_tool_architecture.py -q
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_read_tool_execution.py -q
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_tool_contracts.py apps/api/app/application/sv_agent_tool_registry.py apps/api/app/application/sv_agent_tool_handler.py apps/api/app/application/sv_agent_read_tool_execution.py apps/api/app/application/job_reads.py apps/api/app/application/script_reads.py apps/api/app/application/storyboard_reads.py apps/api/app/ports/sv_agent_tool_journal.py apps/api/app/adapters/db/sv_agent_tool_run_repository.py apps/api/tests/unit/domain/sv_agent/test_tool_runs.py apps/api/tests/unit/test_sv_agent_read_tool_registry.py apps/api/tests/unit/test_sv_agent_tool_architecture.py apps/api/tests/integration/sv_agent/test_read_tool_execution.py
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_tool_contracts.py apps/api/app/application/sv_agent_tool_registry.py apps/api/app/application/sv_agent_tool_handler.py apps/api/app/application/sv_agent_read_tool_execution.py apps/api/app/application/job_reads.py apps/api/app/application/script_reads.py apps/api/app/application/storyboard_reads.py apps/api/app/ports/sv_agent_tool_journal.py apps/api/app/adapters/db/sv_agent_tool_run_repository.py
+```
+
+A green result proves the local closed registry, strict typed inputs/outputs, application
+dependency boundary, bounded collection projections, ToolRun lifecycle/event journal,
+revision/prior-state/attempt fencing, completed-result digests, all found read actions without
+business-row mutation, safe Job error projection, and the distinction between completed
+negative evidence and technical unavailability. It does not prove a public SV-Agent API,
+verified identity/authorization, command-receipt replay, concurrent invocation deduplication,
+planner/orchestrator, controlled write tools, HumanApproval, provider/media execution,
+deployment, publication, rights, commercial approval, or production acceptance.
+
+## SV-Agent pure planner and prerequisite gates
+
+SV-104A/B adds only deterministic in-memory planning and prerequisite evaluation. Run the
+closed RunPlan, route, guard, dependency and static checks together:
+
+```bash
+rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent/test_planning.py apps/api/tests/unit/test_sv_agent_orchestration.py apps/api/tests/unit/test_sv_agent_tool_architecture.py -q
+rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent -q
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_orchestration.py apps/api/tests/unit/domain/sv_agent/test_planning.py apps/api/tests/unit/test_sv_agent_orchestration.py apps/api/tests/unit/test_sv_agent_tool_architecture.py
+rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_orchestration.py apps/api/tests/unit/domain/sv_agent/test_planning.py apps/api/tests/unit/test_sv_agent_orchestration.py apps/api/tests/unit/test_sv_agent_tool_architecture.py
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_orchestration.py
+```
+
+A green result proves the typed `sv-run-plan/v1` value, digest-bound static six-mechanism
+catalog, explicit FactScope evidence, complete ApprovalRequest-handle matching, closed guard
+evaluation, cross-scope/conflict rejection and computational repeatability. A
+`VERIFIED_HUMAN` test value proves only the projection contract, not a trusted identity adapter. It
+does not prove a RunPlan database writer, Run CAS, command-receipt resume, concurrent
+exactly-once behavior, Tool dispatch, Human Approval authority, public API, deployment,
+render, publication, rights, commercial approval or production acceptance.
+
 `TEST_DATABASE_URL` must identify a disposable database, never the development or deployment database. Append-only ledger tests intentionally cannot clean rows by deleting them; use the fixture transaction rollback for routine tests and a one-off database for any multi-connection concurrency test.
 
 Migration rollback is destructive. Verify it only against a newly created disposable database, never against the application database:
 
 ```bash
 rtk docker compose -f infra/docker-compose.yml exec -T postgres createdb -U reverse_engineer_mode rem_migration_check
-rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_migration_check uv run --project apps/api alembic -c apps/api/alembic.ini upgrade 0002_integrity_guards
-rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_migration_check uv run --project apps/api alembic -c apps/api/alembic.ini upgrade head
-rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_migration_check uv run --project apps/api alembic -c apps/api/alembic.ini downgrade base
-rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_migration_check uv run --project apps/api alembic -c apps/api/alembic.ini upgrade head
+rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_migration_check uv run --project apps/api python -m alembic -c apps/api/alembic.ini upgrade 0011_audience_promotion
+rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_migration_check uv run --project apps/api python -m alembic -c apps/api/alembic.ini upgrade head
+rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_migration_check uv run --project apps/api python -m alembic -c apps/api/alembic.ini downgrade 0011_audience_promotion
+rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_migration_check uv run --project apps/api python -m alembic -c apps/api/alembic.ini upgrade head
 rtk docker compose -f infra/docker-compose.yml exec -T postgres dropdb -U reverse_engineer_mode rem_migration_check
 ```
 

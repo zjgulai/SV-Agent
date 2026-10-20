@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Product Truth"
+  short_description: "Govern Product Snapshots, Facts, and claim eligibility"
+  default_prompt: "Apply the FactFrame Product Truth workflow to this source, Snapshot, Fact, or claim-eligibility task."

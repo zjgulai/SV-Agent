@@ -1,0 +1,300 @@
+{
+  "schema": "brand-voice-gate-preflight/v1",
+  "gate_id": "BV-GATE-001",
+  "case_id": "bv-benchmark-nestle-generations-of-love-2024",
+  "track": "campaign_awareness_benchmark",
+  "operator_authorization": {
+    "state": "granted_to_prepare_preflight",
+    "scope": "local_benchmark_contract_and_policy_reference_only",
+    "does_not_prove": [
+      "Nestle_asset_license",
+      "creator_or_participant_consent",
+      "Momcozy_campaign_approval",
+      "connector_access"
+    ]
+  },
+  "gate_status": "awaiting_user_gate",
+  "subject_ref_redacted": "Nestlé official case study · original participants and assets not imported",
+  "requested_use": [
+    "analysis_only",
+    "benchmark_reference"
+  ],
+  "request_state": {
+    "requested": ["analysis_only", "benchmark_reference"],
+    "not_requested": [
+      "adaptation_candidate",
+      "embed_or_rehost",
+      "commercial_use",
+      "paid_amplification",
+      "publish",
+      "connector_read",
+      "brand_lift"
+    ]
+  },
+  "planned_use": [
+    "analysis_only",
+    "benchmark_reference",
+    "adaptation_candidate",
+    "embed_or_rehost",
+    "commercial_use",
+    "paid_amplification",
+    "publish",
+    "connector_read",
+    "brand_lift"
+  ],
+  "decision": {
+    "analysis_only": "proceed_with_limits",
+    "benchmark_reference": "proceed_with_limits",
+    "adaptation_candidate": "candidate_only",
+    "embed_or_rehost": "blocked",
+    "commercial_use": "blocked",
+    "paid_amplification": "blocked",
+    "publish": "blocked",
+    "connector_read": "not_requested",
+    "brand_lift": "blocked"
+  },
+  "commercial_disclosure": "not_applicable_to_metadata_only_benchmark",
+  "evidence_items": [
+    {
+      "evidence_id": "E-CB-NESTLE-SOURCE-01",
+      "kind": "public_source",
+      "issuer": "TikTok for Business",
+      "public_locator": "https://ads.tiktok.com/business/en/inspiration/nestle-branded-mission-case-study?redirected=1",
+      "region": "Philippines · Indonesia · Malaysia · Thailand · Vietnam",
+      "captured_at": "2026-10-11",
+      "scope": ["analysis_only", "benchmark_reference"],
+      "state": "observed",
+      "what_it_proves": "official_case_page_reported_campaign_design_window_and_aggregate_metrics",
+      "what_it_does_not_prove": "Momcozy_effect_raw_assets_or_reuse_rights",
+      "reviewer_role": "local_evidence_reviewer",
+      "review_method": "official_case_page_read_only"
+    },
+    {
+      "evidence_id": "E-CB-NESTLE-POLICY-01",
+      "kind": "policy_baseline",
+      "issuer": "TikTok",
+      "public_locator": "https://ads.tiktok.com/resources/help/article/tiktok-brand-lift-studies?lang=en",
+      "region": "global_policy_reference",
+      "captured_at": "2026-10-11",
+      "scope": ["measurement_method_reference"],
+      "state": "observed",
+      "what_it_proves": "public_exposed_control_method_reference",
+      "what_it_does_not_prove": "case_specific_setup_sample_or_momcozy_approval",
+      "reviewer_role": "local_evidence_reviewer",
+      "review_method": "official_guidance_read_only"
+    },
+    {
+      "evidence_id": "E-CB-NESTLE-POLICY-02",
+      "kind": "policy_baseline",
+      "issuer": "TikTok for Business",
+      "public_locator": "https://ads.tiktok.com/resources/help/article/brand-collaboration-through-tiktok-content-suite",
+      "region": "global_policy_reference",
+      "captured_at": "2026-10-11",
+      "scope": ["authorization_workflow_reference"],
+      "state": "observed",
+      "what_it_proves": "public_authorization_workflow_baseline",
+      "what_it_does_not_prove": "Nestle_asset_license_creator_or_participant_consent",
+      "reviewer_role": "local_evidence_reviewer",
+      "review_method": "official_policy_read_only"
+    }
+  ],
+  "rights_scope": {
+    "analysis": "internal_analysis_only_no_media_reuse",
+    "adaptation": "candidate_only_without_source_assets",
+    "reuse": "blocked",
+    "embed": "blocked",
+    "redistribute": "blocked",
+    "commercial": "blocked",
+    "publish": "blocked"
+  },
+  "music_rights": {
+    "state": "not_applicable_to_site_package",
+    "track_or_sound": "not_imported",
+    "account": "not_applicable",
+    "license_chain": "not_applicable_to_metadata_only_benchmark",
+    "territory": "not_applicable",
+    "platform": "not_applicable",
+    "duration": "not_applicable",
+    "derivative_edit": "blocked_if_activated",
+    "paid_amplification": "blocked_if_activated"
+  },
+  "creator_permission": "not_requested",
+  "guardian_consent": "not_applicable_to_metadata_only_benchmark",
+  "likeness_scope": "not_embedded",
+  "child_safety": {
+    "minor_context": "possible_in_campaign_context",
+    "intimate_care": false,
+    "hazard_review": "required_before_any_adaptation",
+    "identity_exposure": "not_applicable_to_site_package",
+    "manual_review": "required_if_activated"
+  },
+  "connector_access": {
+    "provider": "TikTok",
+    "product": "not_selected",
+    "account_ref_redacted": null,
+    "scopes": [],
+    "commercial_access": "unknown",
+    "quota": "unknown",
+    "eligibility_state": "unknown",
+    "commercial_user_eligibility": "unknown",
+    "org_app_approval": "missing",
+    "data_classes": [],
+    "quota_window": null,
+    "terms_version": null,
+    "credential_state": "not_accessed",
+    "expires_at": null
+  },
+  "external_action_approval": {
+    "publish": "not_approved",
+    "paid": "not_approved",
+    "brand_lift": "not_approved",
+    "rollback": "not_applicable"
+  },
+  "blockers": [
+    "no_nestle_asset_or_creator_reuse_grant",
+    "no_momcozy_experiment_design_or_business_approval",
+    "connector_scope_and_quota_missing",
+    "external_action_approval_missing"
+  ],
+  "unknowns": [
+    "market_level_sample_and_exposed_control_cells",
+    "creative_level_spend_reach_and_denominators",
+    "terms_and_expiry_for_any_future_creator_work"
+  ],
+  "conflicts": [],
+  "reviewed_at": "2026-10-11",
+  "source_register": [
+    {
+      "source_ref": "SRC-CB-NESTLE-01",
+      "locator": "https://ads.tiktok.com/business/en/inspiration/nestle-branded-mission-case-study?redirected=1",
+      "evidence_id": "E-CB-NESTLE-SOURCE-01",
+      "source_kind": "official_platform_case_study",
+      "proves": ["reported_campaign_design", "reported_window", "reported_aggregate_metrics"],
+      "does_not_prove": ["Momcozy_effect", "raw_campaign_assets", "transferable_rights"]
+    },
+    {
+      "source_ref": "SRC-CB-NESTLE-02",
+      "locator": "https://ads.tiktok.com/resources/help/article/tiktok-brand-lift-studies?lang=en",
+      "evidence_id": "E-CB-NESTLE-POLICY-01",
+      "source_kind": "official_measurement_guidance",
+      "proves": ["public_exposed_control_method_reference"],
+      "does_not_prove": ["case_specific_sample_or_causal_result"]
+    }
+  ],
+  "preflight_checks": [
+    {
+      "id": "source_identity",
+      "label": "官方 benchmark 来源可定位",
+      "state": "closed_for_benchmark_reference",
+      "required_evidence": "official_case_page_and_method_page",
+      "current_evidence": "official_public_pages",
+      "stop_action": "do_not_represent_as_momcozy_result"
+    },
+    {
+      "id": "campaign_asset_rights",
+      "label": "广告 / UGC / 创作者素材复用权",
+      "state": "not_requested",
+      "required_evidence": "rights_cleared_asset_package_and_creator_permissions",
+      "current_evidence": "no_assets_imported",
+      "stop_action": "do_not_embed_or_copy_campaign_assets"
+    },
+    {
+      "id": "child_safety",
+      "label": "儿童参与与市场规则",
+      "state": "review_required_if_activated",
+      "required_evidence": "market_specific_policy_and_participant_safety_review",
+      "current_evidence": "benchmark_metadata_only",
+      "stop_action": "do_not_recreate_participant_or_child_media"
+    },
+    {
+      "id": "measurement_approval",
+      "label": "Momcozy Brand Lift 设计与样本批准",
+      "state": "not_approved",
+      "required_evidence": "independent_momcozy_experiment_design_and_business_approval",
+      "current_evidence": "nestle_reported_benchmark_only",
+      "stop_action": "do_not_transfer_reported_lift"
+    },
+    {
+      "id": "connector_scope",
+      "label": "TikTok / research / ads connector scope",
+      "state": "not_accessed",
+      "required_evidence": "approved_credential_scope_commercial_access_quota_record",
+      "current_evidence": "none",
+      "stop_action": "do_not_connect_or_scrape"
+    },
+    {
+      "id": "external_action",
+      "label": "活动、投放与发布",
+      "state": "not_approved",
+      "required_evidence": "separate_campaign_business_approval",
+      "current_evidence": "benchmark_only",
+      "stop_action": "do_not_publish_or_launch"
+    }
+  ],
+  "policy_references": [
+    {
+      "source_ref": "POLICY-TIKTOK-CONTENT-SUITE",
+      "locator": "https://ads.tiktok.com/resources/help/article/brand-collaboration-through-tiktok-content-suite",
+      "evidence_id": "E-CB-NESTLE-POLICY-02",
+      "relevance": "authorization_workflow_is_separate_from_public_case_study",
+      "proof_level": "public_policy_reference",
+      "reference_only": false,
+      "captured_at": "2026-10-11",
+      "region": "global_policy_reference"
+    },
+    {
+      "source_ref": "POLICY-TIKTOK-BRANDED-CONTENT-MARKET",
+      "locator": "https://ads.tiktok.com/resources/help/article/branded-content-policy-country-specific-requirements",
+      "relevance": "market_and_age_restrictions_must_be_reviewed_before_baby_product_branded_content",
+      "proof_level": "public_policy_reference",
+      "reference_only": true,
+      "captured_at": "2026-10-11",
+      "region": "policy_page_scope_must_be_checked_per_market"
+    },
+    {
+      "source_ref": "POLICY-TIKTOK-DISCLOSURE",
+      "locator": "https://ads.tiktok.com/resources/help/article/how-to-turn-on-the-commercial-content-disclosure-setting-in-tiktok",
+      "relevance": "commercial_disclosure_is_required_when_promoting_a_brand_product_or_service",
+      "proof_level": "public_policy_reference",
+      "reference_only": true,
+      "captured_at": "2026-10-11",
+      "region": "policy_page_scope_must_be_checked_per_market"
+    },
+    {
+      "source_ref": "POLICY-TIKTOK-MUSIC-LEGALITY",
+      "locator": "https://ads.tiktok.com/business/library/TikTok_Music_Legality.pdf",
+      "relevance": "commercial_music_requires_owned_or_licensed_scope_not_generic_platform_availability",
+      "proof_level": "public_policy_reference",
+      "reference_only": true,
+      "captured_at": "2026-10-11",
+      "region": "TikTok_for_Business_MENA_guidance_not_global_clearance"
+    },
+    {
+      "source_ref": "POLICY-TIKTOK-RESEARCH-TOOLS",
+      "locator": "https://developers.tiktok.com/docs/en/about-research-api",
+      "relevance": "research_access_requires_application_approval_scope_and_eligibility_review",
+      "proof_level": "public_policy_reference",
+      "captured_at": "2026-10-11",
+      "region": "policy_page_scope_must_be_checked_per_market",
+      "reference_only": true
+    }
+  ],
+  "media_boundary": {
+    "source_use": "benchmark_only",
+    "media_state": "metadata_only",
+    "raw_media_hosted": false,
+    "raw_audio_hosted": false,
+    "comment_scraping": false,
+    "connector_access": false
+  },
+  "next_action": "collect_external_evidence",
+  "proof_level": "local",
+  "limitations": [
+    "official_case_study_is_not_a_momcozy_approval",
+    "public_policy_reference_is_not_asset_license",
+    "no_campaign_assets_or_creator_permissions",
+    "no_independent_momcozy_experiment_design",
+    "no_connector_scope_or_quota_approval",
+    "no_external_action_or_brand_lift_approval"
+  ]
+}

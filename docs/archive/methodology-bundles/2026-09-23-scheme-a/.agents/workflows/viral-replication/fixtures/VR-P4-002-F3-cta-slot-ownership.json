@@ -1,0 +1,41 @@
+{
+  "fixture_id": "VR-P4-002-F3",
+  "scenario": "计划向一个 generic CTA Pattern 注入 Promotion Fact，并把优惠交给 provider，随后同时渲染到 hook 与最终 CTA。",
+  "generation_contract": {
+    "snapshot_id": "snap-conversion-003",
+    "creative_pattern": {
+      "key": "problem_solution",
+      "cta_policy": "server_generic_no_offer",
+      "shot_roles": [
+        "hook",
+        "demo",
+        "cta"
+      ]
+    },
+    "promotion_fact_id": "fact-promotion-active",
+    "provider_input_fields": [
+      "promotion",
+      "pattern_definition.cta_policy"
+    ],
+    "requested_promotion_slots": [
+      "hook",
+      "cta"
+    ]
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "promotion_cta_policy_mismatch",
+      "promotion_provider_leakage",
+      "promotion_slot_not_final_cta",
+      "generic_and_promotion_cta_conflated"
+    ],
+    "allowed_next_action": "若要测试 promotion_contract，选择冻结的 server_promotion_final_cta Pattern 并只在最后一个 cta role 由服务端渲染；若保持 generic CTA，则不携带 Promotion Fact。",
+    "must_not": [
+      "inject_offer_into_generic_cta_pattern",
+      "render_promotion_in_hook",
+      "let_provider_choose_cta_policy"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

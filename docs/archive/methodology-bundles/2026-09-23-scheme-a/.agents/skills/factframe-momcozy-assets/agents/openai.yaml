@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Momcozy Assets"
+  short_description: "Validate Momcozy Bundles, releases, and Private Gate"
+  default_prompt: "Apply the FactFrame Momcozy asset workflow in the exact synthetic, publish, or private-gate mode requested."

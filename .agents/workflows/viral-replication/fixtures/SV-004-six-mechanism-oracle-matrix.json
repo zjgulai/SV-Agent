@@ -1,0 +1,168 @@
+{
+  "fixture_id": "SV-004-six-mechanism-oracle-matrix",
+  "scenario": "六类主机制的 deterministic fixture oracle 覆盖矩阵；每类分别验证可进入下一门、主机制歧义和机制专项阻断。",
+  "oracle_cases": [
+    {
+      "case_id": "narrative-positive",
+      "case_kind": "positive",
+      "primary_mechanism": "narrative-transformation",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["narrative-transformation"], "declared_primary": "narrative-transformation"},
+      "contract": {"changed_dimensions": ["narrative_arc"], "declared_changed_dimension": "narrative_arc", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "narrative_arc_state": "problem_intervention_result_bound"},
+      "expected": {"disposition": "ready_for_next_gate", "blockers": []}
+    },
+    {
+      "case_id": "narrative-ambiguous",
+      "case_kind": "ambiguous",
+      "primary_mechanism": "narrative-transformation",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["narrative-transformation", "experience-pov"], "declared_primary": "narrative-transformation"},
+      "contract": {"changed_dimensions": ["narrative_arc"], "declared_changed_dimension": "narrative_arc", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "narrative_arc_state": "problem_intervention_result_bound"},
+      "expected": {"disposition": "blocked", "blockers": ["primary_mechanism_ambiguous"]}
+    },
+    {
+      "case_id": "narrative-blocked",
+      "case_kind": "blocked",
+      "primary_mechanism": "narrative-transformation",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["narrative-transformation"], "declared_primary": "narrative-transformation"},
+      "contract": {"changed_dimensions": ["narrative_arc"], "declared_changed_dimension": "narrative_arc", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "narrative_arc_state": "missing_result_binding"},
+      "expected": {"disposition": "blocked", "blockers": ["narrative_arc_incomplete"]}
+    },
+    {
+      "case_id": "proof-positive",
+      "case_kind": "positive",
+      "primary_mechanism": "proof-demonstration",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["proof-demonstration"], "declared_primary": "proof-demonstration"},
+      "contract": {"changed_dimensions": ["proof_protocol"], "declared_changed_dimension": "proof_protocol", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "proof_claim_state": "observed_and_claim_separated"},
+      "expected": {"disposition": "ready_for_next_gate", "blockers": []}
+    },
+    {
+      "case_id": "proof-ambiguous",
+      "case_kind": "ambiguous",
+      "primary_mechanism": "proof-demonstration",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["proof-demonstration", "attention-grammar"], "declared_primary": "proof-demonstration"},
+      "contract": {"changed_dimensions": ["proof_protocol"], "declared_changed_dimension": "proof_protocol", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "proof_claim_state": "observed_and_claim_separated"},
+      "expected": {"disposition": "blocked", "blockers": ["primary_mechanism_ambiguous"]}
+    },
+    {
+      "case_id": "proof-blocked",
+      "case_kind": "blocked",
+      "primary_mechanism": "proof-demonstration",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["proof-demonstration"], "declared_primary": "proof-demonstration"},
+      "contract": {"changed_dimensions": ["proof_protocol"], "declared_changed_dimension": "proof_protocol", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "proof_claim_state": "phenomenon_promoted_to_product_claim"},
+      "expected": {"disposition": "blocked", "blockers": ["proof_claim_boundary_unresolved"]}
+    },
+    {
+      "case_id": "experience-positive",
+      "case_kind": "positive",
+      "primary_mechanism": "experience-pov",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["experience-pov"], "declared_primary": "experience-pov"},
+      "contract": {"changed_dimensions": ["experience_pov"], "declared_changed_dimension": "experience_pov", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "identity_continuity_state": "target_identity_confirmed"},
+      "expected": {"disposition": "ready_for_next_gate", "blockers": []}
+    },
+    {
+      "case_id": "experience-ambiguous",
+      "case_kind": "ambiguous",
+      "primary_mechanism": "experience-pov",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["experience-pov", "narrative-transformation"], "declared_primary": "experience-pov"},
+      "contract": {"changed_dimensions": ["experience_pov"], "declared_changed_dimension": "experience_pov", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "identity_continuity_state": "target_identity_confirmed"},
+      "expected": {"disposition": "blocked", "blockers": ["primary_mechanism_ambiguous"]}
+    },
+    {
+      "case_id": "experience-blocked",
+      "case_kind": "blocked",
+      "primary_mechanism": "experience-pov",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["experience-pov"], "declared_primary": "experience-pov"},
+      "contract": {"changed_dimensions": ["experience_pov"], "declared_changed_dimension": "experience_pov", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "identity_continuity_state": "cross_shot_target_unresolved"},
+      "expected": {"disposition": "blocked", "blockers": ["experience_identity_continuity_unresolved"]}
+    },
+    {
+      "case_id": "attention-positive",
+      "case_kind": "positive",
+      "primary_mechanism": "attention-grammar",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["attention-grammar"], "declared_primary": "attention-grammar"},
+      "contract": {"changed_dimensions": ["attention_component"], "declared_changed_dimension": "attention_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "attention_component_state": "single_component_bound"},
+      "expected": {"disposition": "ready_for_next_gate", "blockers": []}
+    },
+    {
+      "case_id": "attention-ambiguous",
+      "case_kind": "ambiguous",
+      "primary_mechanism": "attention-grammar",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["attention-grammar", "trend-native"], "declared_primary": "attention-grammar"},
+      "contract": {"changed_dimensions": ["attention_component"], "declared_changed_dimension": "attention_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "attention_component_state": "single_component_bound"},
+      "expected": {"disposition": "blocked", "blockers": ["primary_mechanism_ambiguous"]}
+    },
+    {
+      "case_id": "attention-blocked",
+      "case_kind": "blocked",
+      "primary_mechanism": "attention-grammar",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["attention-grammar"], "declared_primary": "attention-grammar"},
+      "contract": {"changed_dimensions": ["attention_component"], "declared_changed_dimension": "attention_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "attention_component_state": "multiple_components_changed"},
+      "expected": {"disposition": "blocked", "blockers": ["attention_component_ambiguous"]}
+    },
+    {
+      "case_id": "conversion-positive",
+      "case_kind": "positive",
+      "primary_mechanism": "conversion-action",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["conversion-action"], "declared_primary": "conversion-action"},
+      "contract": {"changed_dimensions": ["conversion_component"], "declared_changed_dimension": "conversion_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "promotion_cta_state": "server_owned_or_not_applicable"},
+      "expected": {"disposition": "ready_for_next_gate", "blockers": []}
+    },
+    {
+      "case_id": "conversion-ambiguous",
+      "case_kind": "ambiguous",
+      "primary_mechanism": "conversion-action",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["conversion-action", "proof-demonstration"], "declared_primary": "conversion-action"},
+      "contract": {"changed_dimensions": ["conversion_component"], "declared_changed_dimension": "conversion_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "promotion_cta_state": "server_owned_or_not_applicable"},
+      "expected": {"disposition": "blocked", "blockers": ["primary_mechanism_ambiguous"]}
+    },
+    {
+      "case_id": "conversion-blocked",
+      "case_kind": "blocked",
+      "primary_mechanism": "conversion-action",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["conversion-action"], "declared_primary": "conversion-action"},
+      "contract": {"changed_dimensions": ["conversion_component"], "declared_changed_dimension": "conversion_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "promotion_cta_state": "provider_owned_offer_copy"},
+      "expected": {"disposition": "blocked", "blockers": ["conversion_cta_ownership_unresolved"]}
+    },
+    {
+      "case_id": "trend-positive",
+      "case_kind": "positive",
+      "primary_mechanism": "trend-native",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["trend-native"], "declared_primary": "trend-native"},
+      "contract": {"changed_dimensions": ["trend_component"], "declared_changed_dimension": "trend_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "trend_admission_state": "bounded_no_external_execution"},
+      "expected": {"disposition": "ready_for_next_gate", "blockers": []}
+    },
+    {
+      "case_id": "trend-ambiguous",
+      "case_kind": "ambiguous",
+      "primary_mechanism": "trend-native",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["trend-native", "attention-grammar"], "declared_primary": "trend-native"},
+      "contract": {"changed_dimensions": ["trend_component"], "declared_changed_dimension": "trend_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "trend_admission_state": "bounded_no_external_execution"},
+      "expected": {"disposition": "blocked", "blockers": ["primary_mechanism_ambiguous"]}
+    },
+    {
+      "case_id": "trend-blocked",
+      "case_kind": "blocked",
+      "primary_mechanism": "trend-native",
+      "reference": {"source_identity": "resolved", "source_digest": "present", "playability": "reproducible", "rights_state": "analysis_and_adaptation_confirmed"},
+      "routing": {"candidate_mechanisms": ["trend-native"], "declared_primary": "trend-native"},
+      "contract": {"changed_dimensions": ["trend_component"], "declared_changed_dimension": "trend_component", "facts_state": "confirmed_locked_only", "rights_state": "confirmed", "trend_admission_state": "external_publish_requested"},
+      "expected": {"disposition": "blocked", "blockers": ["trend_admission_unresolved"]}
+    }
+  ]
+}

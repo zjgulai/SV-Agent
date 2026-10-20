@@ -1,0 +1,121 @@
+{
+  "schema": "social-resonance-map/v1",
+  "case_id": "bv-001-messy-eater-cleanup",
+  "track": "brand_voice_social",
+  "intent": "brand_awareness_only",
+  "proof_level": "local",
+  "status": "observation_only",
+  "observation_window": {
+    "platform": "TikTok",
+    "posted_at": "2025-10-10",
+    "capture_at": "2026-10-10",
+    "timezone": "unknown",
+    "precision": "source_page_reported"
+  },
+  "source_register": [
+    {
+      "source_ref": "SRC-01",
+      "locator": "https://ark.media/record/20842",
+      "what_it_proves": "source_page_reports_content_summary_and_view_count",
+      "rights_scope": "analysis_only"
+    }
+  ],
+  "resonance_fields": [
+    {
+      "field": "parent_tension",
+      "value": "post_meal_cleanup_burden",
+      "state": "observed",
+      "source_ref": "SRC-01",
+      "disposition": "cite"
+    },
+    {
+      "field": "recognition_signal",
+      "value": "parenting_identity_may_recognize_routine",
+      "state": "bounded_inference",
+      "source_ref": "HYP-01",
+      "disposition": "test"
+    },
+    {
+      "field": "emotional_payoff",
+      "value": "relief_and_surprise_hypothesis",
+      "state": "bounded_inference",
+      "source_ref": "HYP-02",
+      "disposition": "test"
+    },
+    {
+      "field": "participation_cue",
+      "value": "shares_comments_saves_ugc",
+      "state": "not_reported",
+      "source_ref": "SRC-01",
+      "disposition": "reject"
+    }
+  ],
+  "interaction_signals": [
+    {
+      "signal": "views",
+      "value": 8700000,
+      "state": "reported",
+      "denominator": "not_disclosed",
+      "paid_or_organic": "unknown",
+      "source_ref": "SRC-01"
+    },
+    {
+      "signal": "likes",
+      "value": null,
+      "state": "not_reported",
+      "denominator": "not_disclosed",
+      "paid_or_organic": "unknown",
+      "source_ref": "SRC-01"
+    },
+    {
+      "signal": "comments",
+      "value": null,
+      "state": "not_reported",
+      "denominator": "not_disclosed",
+      "paid_or_organic": "unknown",
+      "source_ref": "SRC-01"
+    },
+    {
+      "signal": "shares_saves_ugc_profile_visits",
+      "value": null,
+      "state": "not_collected",
+      "denominator": "not_disclosed",
+      "paid_or_organic": "unknown",
+      "source_ref": "SRC-01"
+    }
+  ],
+  "observations": [
+    "公开记录页将内容描述为把宝宝、餐椅和餐盘的清洁任务放进同一条连续动作。",
+    "公开记录页报告约 8.7M views；帖子级身份、分母和采集方法未闭合。"
+  ],
+  "bounded_inferences": [
+    "把多条父母清洁任务放在一个可见动作里，可能形成任务压缩的识别感。",
+    "轻微意外感与熟悉的育儿负担可能构成可测试的情绪回报。"
+  ],
+  "alternative_explanations": [
+    "账号分发、编辑选择或跨平台传播可能解释部分 views。",
+    "场景新奇可能独立于父母身份认同产生注意力。",
+    "缺少评论样本，无法排除观众只是围观而非形成社区参与。"
+  ],
+  "unknowns": [
+    "likes_comments_shares_saves_completion_profile_visits_ugc_count",
+    "paid_organic_boosted_status_account_size_and_deduplication_method",
+    "brand_recall_familiarity_favorability_and_exposed_vs_control_lift",
+    "creator_guardian_music_and_child_likeness_reuse_authorization"
+  ],
+  "rights_safety_boundary": {
+    "source_use": "analysis_only",
+    "media_state": "metadata_only",
+    "raw_media_hosted": false,
+    "comment_scraping": false,
+    "connector_access": false
+  },
+  "next_action": "collect_evidence",
+  "evidence_disposition": "test",
+  "limitations": [
+    "social_resonance_is_a_hypothesis_not_a_causal_result",
+    "views_do_not_equal_brand_lift_or_sales",
+    "missing_values_are_not_zero",
+    "no_commercial_or_production_approval"
+  ]
+}

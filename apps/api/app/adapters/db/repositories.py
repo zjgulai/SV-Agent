@@ -229,6 +229,25 @@ class ProductRepository:
         records = (await self.session.scalars(statement)).all()
         return [_fact_from_record(item) for item in records]
 
+    async def list_facts_at_observation(
+        self, snapshot_id: UUID, *, for_update: bool = False
+    ) -> tuple[Sequence[ProductFact], datetime]:
+        statement = (
+            select(ProductFactRecord, func.statement_timestamp())
+            .where(ProductFactRecord.snapshot_id == snapshot_id)
+            .order_by(ProductFactRecord.updated_at, ProductFactRecord.id)
+        )
+        if for_update:
+            statement = statement.with_for_update(of=ProductFactRecord)
+        rows = (await self.session.execute(statement)).all()
+        if not rows:
+            observed_at = await self.session.scalar(select(func.statement_timestamp()))
+            if observed_at is None:
+                raise RuntimeError("PostgreSQL did not return statement_timestamp")
+            return [], observed_at
+        observed_at = rows[0][1]
+        return [_fact_from_record(row[0]) for row in rows], observed_at
+
     async def save_fact(self, fact: ProductFact) -> ProductFact:
         record = await self.session.get(ProductFactRecord, fact.id)
         if record is None:

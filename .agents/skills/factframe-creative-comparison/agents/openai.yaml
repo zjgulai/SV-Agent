@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Creative Comparison"
+  short_description: "Compare immutable versions with governed evidence"
+  default_prompt: "Apply the FactFrame Creative Comparison workflow to this version comparison or evidence-binding task."

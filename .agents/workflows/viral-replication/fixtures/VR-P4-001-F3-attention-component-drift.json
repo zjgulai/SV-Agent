@@ -1,0 +1,43 @@
+{
+  "fixture_id": "VR-P4-001-F3",
+  "scenario": "合同声明只比较 caption cadence，但 Control 与 Variant 同时改变了 Hook、揭示节奏、时长和声音。",
+  "replication_contract": {
+    "contract_id": "contract-attention-drift-001",
+    "primary_mechanism": "attention-grammar",
+    "declared_changed_dimension": "caption_cadence",
+    "control": {
+      "duration_seconds": 15,
+      "language": "zh-CN",
+      "hook_trigger": "先呈现目标画面，再提出问题",
+      "reveal_cadence": [0.0, 1.0, 2.0],
+      "caption_cadence": [0.0, 1.2, 2.4],
+      "sonic_timing": "target_authorized_sound_policy_a"
+    },
+    "variant": {
+      "duration_seconds": 30,
+      "language": "zh-CN",
+      "hook_trigger": "先提出问题，再呈现目标画面",
+      "reveal_cadence": [0.0, 2.5, 5.0],
+      "caption_cadence": [0.0, 0.6, 1.2, 1.8],
+      "sonic_timing": "target_authorized_sound_policy_b"
+    },
+    "evaluation_request": "attribute_retention_lift_to_caption_cadence"
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "multiple_changed_attention_components",
+      "duration_drift",
+      "sound_policy_drift",
+      "declared_dimension_does_not_match_actual_drift",
+      "causal_request_exceeds_contract"
+    ],
+    "allowed_next_action": "固定时长、Hook、揭示节奏、声音政策和所有非选定组件，只保留一个可观察的 caption cadence 变化后重建合同。",
+    "must_not": [
+      "attribute_result_to_caption_cadence",
+      "report_retention_lift",
+      "hide_non_caption_changes_in_summary"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

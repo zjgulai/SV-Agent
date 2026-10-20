@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Content Decomposition"
+  short_description: "Turn a reference into timed evidence"
+  default_prompt: "Build a source-linked DecompositionMap without inventing missing beats or claims."

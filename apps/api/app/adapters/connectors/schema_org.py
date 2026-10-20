@@ -1,6 +1,6 @@
 import asyncio
 import json
-from dataclasses import dataclass, replace
+from dataclasses import replace
 from decimal import Decimal, InvalidOperation
 from html import unescape
 from html.parser import HTMLParser
@@ -11,6 +11,7 @@ import httpx
 
 from app.adapters.connectors.ssrf import SourceFetchBlocked, SsrfGuard
 from app.domain.common.canonical import canonical_digest
+from app.ports.product_connector import ParsedProduct
 
 MAX_RESPONSE_BYTES = 1024 * 1024
 MAX_IMAGE_COUNT = 20
@@ -45,18 +46,6 @@ class SourceHttpError(Exception):
 
 class SourceUnavailable(Exception):
     code = "SOURCE_UNAVAILABLE"
-
-
-@dataclass(frozen=True, slots=True)
-class ParsedProduct:
-    title: str
-    description: str
-    category_path: tuple[str, ...]
-    images: tuple[str, ...]
-    price_amount: Decimal | None
-    price_currency: str | None
-    raw_payload: dict[str, Any]
-    resolution_digest: str | None = None
 
 
 class _JsonLdCollector(HTMLParser):

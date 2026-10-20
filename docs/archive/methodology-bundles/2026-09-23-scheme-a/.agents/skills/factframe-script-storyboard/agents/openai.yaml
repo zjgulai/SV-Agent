@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Script & Storyboard"
+  short_description: "Build fact-bound scripts and governed Storyboards"
+  default_prompt: "Apply the FactFrame Script and Storyboard workflow to this generation, revision, validation, or review task."

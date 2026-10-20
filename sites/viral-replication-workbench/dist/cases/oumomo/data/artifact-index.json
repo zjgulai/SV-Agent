@@ -1,0 +1,12 @@
+{
+  "schema": "momcozy-curated-artifact-index/v1",
+  "case": "oumomo-clean-room-reverse-engineering",
+  "downloadPolicy": "只提供脱敏总结，不提供原始会话、凭据、哈希或私有接口记录。",
+  "artifacts": [
+    { "stage": "Z00–Z12", "name": "零积分探针与入口枚举", "file": "data/case-summary.json", "type": "summary", "status": "published" },
+    { "stage": "M-EX01", "name": "既有媒体事实审计", "file": "data/workflow-findings.json", "type": "finding", "status": "content_fail" },
+    { "stage": "R-B01", "name": "工程链路受控基线", "file": "data/case-summary.json", "type": "baseline", "status": "technical_succeeded" },
+    { "stage": "R3-P01", "name": "刷新与播放门禁", "file": "data/workflow-findings.json", "type": "gate", "status": "blocked" }
+  ],
+  "localOnlyInventory": "完整 SOP、实验记录、帧格、ASR/OCR、评分表与原始媒体仍保留在本地逆向工程目录。"
+}

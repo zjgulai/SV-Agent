@@ -1,0 +1,40 @@
+{
+  "fixture_id": "VR-P4-001-F2",
+  "scenario": "适配计划声称只迁移字幕节拍，却保留参考的逐字字幕、特征性音频和可识别品牌视觉。",
+  "reference_bundle": {
+    "reference_id": "ref-attention-surface-001",
+    "source_digest": "sha256:fixture-only-attention-surface-digest",
+    "rights_state": "confirmed_for_internal_analysis_only",
+    "usage_scope": "analysis_only"
+  },
+  "attention_adaptation_plan": {
+    "primary_mechanism": "attention-grammar",
+    "selected_component": "caption_cadence",
+    "target_substitutions": {
+      "caption_text": "reference_caption_verbatim",
+      "audio": "reference_audio_digest_reused",
+      "visual_identity": "reference_brand_visual_reused"
+    },
+    "prohibited_surface_copy": [
+      "exact_caption_text",
+      "reference_audio",
+      "reference_brand_visual"
+    ]
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "protected_surface_copy",
+      "adaptation_scope_exceeds_rights_scope",
+      "prohibited_surface_copy_ignored"
+    ],
+    "allowed_next_action": "保留字幕时序功能，使用原创 fact-bound 文本、目标授权音频和不同的目标视觉重新建立 adaptation plan。",
+    "must_not": [
+      "reuse_reference_audio",
+      "reuse_reference_caption_wording",
+      "reuse_reference_brand_visual",
+      "treat_analysis_permission_as_adaptation_permission"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

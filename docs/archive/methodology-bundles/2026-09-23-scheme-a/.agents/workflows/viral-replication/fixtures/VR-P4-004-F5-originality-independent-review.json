@@ -1,0 +1,31 @@
+{
+  "fixture_id": "VR-P4-004-F5",
+  "scenario": "target 计划已经列出文字、视觉和声音 substitutions，但保留了来源人物身份、固定动作与可识别镜头组合；唯一审阅来自模型相似度摘要，结果被写成“原创度已通过”。",
+  "media_integrity_record": {
+    "mode": "preflight",
+    "originality_delta": {
+      "target_text_substitutions": ["target-created caption"],
+      "target_visual_substitutions": ["target-created product setting"],
+      "target_audio_substitutions": ["independent target sound policy"],
+      "source_identity_exclusions": ["source_audio"],
+      "unexcluded_source_surfaces": ["performer_identity", "signature_action", "recognizable_shot_sequence"],
+      "comparison_method": "model_similarity_summary_only",
+      "review_state": "claimed_passed"
+    }
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "source_identity_exclusion_incomplete",
+      "originality_review_not_independent",
+      "originality_approval_overclaim"
+    ],
+    "allowed_next_action": "补齐全部 source identity exclusions 和 target substitutions，并由有范围、可追溯的独立审阅记录比较方法与未决风险；在独立 gate 前保持 originality state=unavailable 或 evidence_collected。",
+    "must_not": [
+      "treat_model_similarity_as_originality_approval",
+      "claim_legal_or_commercial_clearance",
+      "retain_recognizable_source_identity_without_review"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

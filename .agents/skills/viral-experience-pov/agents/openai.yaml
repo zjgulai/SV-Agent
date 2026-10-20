@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Experience POV"
+  short_description: "Transfer POV and sensory experience mechanics"
+  default_prompt: "Adapt POV or ASMR mechanics while separating experience language from Product Truth."

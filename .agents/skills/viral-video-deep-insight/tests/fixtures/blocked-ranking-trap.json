@@ -1,0 +1,116 @@
+{
+  "schema_version": "viral-video-deep-insight-v1",
+  "status": "blocked",
+  "action": "collect_evidence",
+  "decision_question": "Top 10 集中度是否足以证明某一创意机制带来表现提升？",
+  "evidence_level": "Inference",
+  "proof_level": "local",
+  "subject": {
+    "brand": "Momcozy",
+    "market": "DE",
+    "product_family": "bottle-care",
+    "model": "unknown",
+    "variant": "unknown",
+    "binding_state": "unresolved"
+  },
+  "performance_window": {
+    "platform": "all",
+    "start": "2026-08-21",
+    "end": "2026-08-27",
+    "source_ref": "SRC-LEAP",
+    "source_digest": "sha256:fixture-leap-slice"
+  },
+  "observations": [
+    {
+      "id": "OBS-TOTAL",
+      "text": "报告窗口内记录 10312 total views。",
+      "source_ref": "SRC-LEAP",
+      "availability": "observed",
+      "value": 10312
+    },
+    {
+      "id": "OBS-TOP10",
+      "text": "报告内部 Top 10 合计 8878 views，约占 86.09%。",
+      "source_ref": "SRC-LEAP",
+      "availability": "observed",
+      "value": 8878
+    },
+    {
+      "id": "OBS-COMMENTS",
+      "text": "评论在不同展示面出现短横线与零值冲突。",
+      "source_ref": "SRC-LEAP",
+      "availability": "source_ambiguous",
+      "value": null
+    },
+    {
+      "id": "OBS-PAID",
+      "text": "报告未披露 paid/organic 拆分。",
+      "source_ref": "SRC-LEAP",
+      "availability": "not_reported",
+      "value": null
+    }
+  ],
+  "inferences": [
+    {
+      "id": "INF-CONCENTRATION",
+      "text": "86.09% 是报告内部的分布观察，可形成 Creative Signal 待测试，但不支持 causal lift 或 winner 结论。",
+      "supporting_observation_ids": ["OBS-TOTAL", "OBS-TOP10"],
+      "disposition": "test",
+      "alternative_explanation": "排序规则、账号基数、同批次分发或付费合作可能造成集中度。"
+    },
+    {
+      "id": "INF-MISSING",
+      "text": "评论口径和付费拆分缺失会改变互动解释，因此当前只能 collect_evidence。",
+      "supporting_observation_ids": ["OBS-COMMENTS", "OBS-PAID"],
+      "disposition": "recompute",
+      "alternative_explanation": "来源可能只展示聚合值，帖级数据仍需独立复核。"
+    }
+  ],
+  "primary_mechanism": "narrative-transformation",
+  "media_gates": [
+    {"key": "artifact_traceability", "state": "blocked", "evidence": "reference identity and target artifact are not reconstructable"},
+    {"key": "technical_profile", "state": "unavailable", "evidence": "no target artifact is in scope"},
+    {"key": "communicative_surface", "state": "unavailable", "evidence": "reference surface is not sufficiently reproducible"},
+    {"key": "target_identity_continuity", "state": "blocked", "evidence": "Product Family/Model/Variant binding is unresolved"},
+    {"key": "source_use_scope", "state": "unavailable", "evidence": "rights and intended use scope are not established"},
+    {"key": "originality_delta", "state": "unavailable", "evidence": "no bounded target substitution review exists"}
+  ],
+  "dimensions": [
+    {"key": "source_context", "evidence_state": "observed", "transferability": "context_bound", "next_test": "建立帖级身份和 digest。"},
+    {"key": "performance_signal", "evidence_state": "observed", "transferability": "context_bound", "next_test": "复算排序、分母和平台拆分。"},
+    {"key": "audience_tension", "evidence_state": "unknown", "transferability": "unknown", "next_test": "补齐时间化张力观察。"},
+    {"key": "attention_grammar", "evidence_state": "unknown", "transferability": "unknown", "next_test": "取得可复现参考并记录五组件。"},
+    {"key": "narrative_transformation", "evidence_state": "unknown", "transferability": "unknown", "next_test": "不要从排名直接推导叙事机制。"},
+    {"key": "proof_demonstration", "evidence_state": "unknown", "transferability": "unknown", "next_test": "确认 proof 是否存在。"},
+    {"key": "experience_pov", "evidence_state": "unknown", "transferability": "unknown", "next_test": "确认 POV/ASMR 是否是主机制。"},
+    {"key": "conversion_action", "evidence_state": "unknown", "transferability": "unknown", "next_test": "确认 CTA 是否决定主要表达。"},
+    {"key": "trend_native", "evidence_state": "unknown", "transferability": "unknown", "next_test": "确认趋势信号、窗口和权限。"},
+    {"key": "product_truth", "evidence_state": "blocked", "transferability": "unknown", "next_test": "建立 Product Snapshot binding。"},
+    {"key": "surface_originality", "evidence_state": "unknown", "transferability": "surface_bound", "next_test": "补齐 source-use 和 originality evidence。"},
+    {"key": "experimentability", "evidence_state": "blocked", "transferability": "unknown", "next_test": "冻结 Control/Variant 后再测试。"},
+    {"key": "media_integrity", "evidence_state": "unknown", "transferability": "unknown", "next_test": "没有 artifact 前保持 pending。"}
+  ],
+  "claims": [
+    {
+      "id": "CLM-REPORTED-01",
+      "state": "reported_product_claim",
+      "fact_id": null,
+      "snapshot_id": null
+    }
+  ],
+  "changed_creative_dimension": "",
+  "unknowns": [
+    "帖级 reference identity",
+    "paid/organic、账号基数、发布时间和排序方法",
+    "target Product Snapshot / Model / Variant binding"
+  ],
+  "guardrails": [
+    "Top 10 concentration 不是 causal lift 或 winner 证明。",
+    "source_ambiguous 不能改写成 observed zero。",
+    "在 subject binding 和单变量合同闭合前不得进入复刻测试。"
+  ],
+  "source_refs": ["SRC-LEAP"],
+  "limitations": [
+    "此 fixture 只验证排名陷阱、主体未闭合和缺失语义的 fail-closed 行为。"
+  ]
+}

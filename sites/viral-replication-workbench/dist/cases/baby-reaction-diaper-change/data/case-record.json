@@ -1,0 +1,123 @@
+{
+  "schema": "brand-awareness-case/v1",
+  "case_id": "bv-002-baby-reaction-diaper-change",
+  "track": "brand_voice_social",
+  "intent": "brand_awareness_only",
+  "title": "Baby Social Voice · Diaper Change Reaction",
+  "subject": {
+    "context": "independent_parenting_creator",
+    "market": "US",
+    "language": "English",
+    "audience_context": "Parenting & Kids"
+  },
+  "observation_window": {
+    "platform": "TikTok",
+    "posted_at": "2025-08-12",
+    "capture_at": "2026-10-11",
+    "timezone": "unknown",
+    "window_precision": "source_page_reported"
+  },
+  "source_register": [
+    {
+      "source_ref": "SRC-BV002-ARK-19758",
+      "locator": "https://ark.media/record/19758",
+      "source_kind": "third_party_public_index",
+      "what_it_proves": "source_page_reports_parenting_content_summary_and_11_1m_view_count",
+      "precision": "reported_via_source_page",
+      "rights_scope": "analysis_only",
+      "original_post": "unknown"
+    }
+  ],
+  "metrics": [
+    {
+      "name": "views",
+      "value": 11100000,
+      "state": "reported",
+      "denominator": "not_disclosed",
+      "paid_or_organic": "unknown",
+      "source_ref": "SRC-BV002-ARK-19758"
+    },
+    {
+      "name": "likes_comments_shares_completion_account_size",
+      "value": null,
+      "state": "not_reported",
+      "denominator": "not_applicable",
+      "paid_or_organic": "unknown",
+      "source_ref": "SRC-BV002-ARK-19758"
+    }
+  ],
+  "content_beats": {
+    "hook": "single_visible_reaction",
+    "tension": "diaper_change_routine",
+    "intervention": "camera_observes_expression",
+    "proof_or_experience": "emotional_micro_moment_hypothesis",
+    "result": "reported_social_attention_only",
+    "cta": "not_reported"
+  },
+  "primary_mechanism": "attention-grammar",
+  "mechanism_dimension": "single_reaction_reveal",
+  "secondary_mechanism": "experience-pov",
+  "invariant_elements": [
+    "one readable reaction beat",
+    "routine context remains legible without product explanation",
+    "brand cue is absent from the source observation"
+  ],
+  "replaceable_surfaces": [
+    "non-intimate parent routine",
+    "fictional or consented adult/prop reaction",
+    "Momcozy-owned visual identity cue"
+  ],
+  "prohibited_surfaces": [
+    "real child likeness without guardian consent",
+    "diaper-change or other intimate-care recreation",
+    "source audio, creator handle or copied edit"
+  ],
+  "social_resonance": {
+    "parent_tension": "care_routine_friction",
+    "recognition_signal": "bounded_inference",
+    "emotional_payoff": "humor_and_affection_hypothesis",
+    "participation_cue": "unknown"
+  },
+  "brand_translation": {
+    "momcozy_role": "understands_parenting_routines",
+    "product_presence": "absent",
+    "product_claim_state": "none",
+    "cta": "none"
+  },
+  "claim_register": [
+    {
+      "claim": "the public record reports approximately 11.1 million TikTok views",
+      "source_ref": "SRC-BV002-ARK-19758",
+      "disposition": "cite"
+    },
+    {
+      "claim": "the reaction mechanism creates brand lift or sales",
+      "source_ref": "SRC-BV002-ARK-19758",
+      "disposition": "reject"
+    }
+  ],
+  "rights_safety": {
+    "source_use": "analysis_only",
+    "music_rights": "unknown",
+    "guardian_consent": "unknown",
+    "likeness_scope": "not_embedded",
+    "child_exposure_risk": "elevated_intimate_care_context"
+  },
+  "commercial_disclosure": "unknown",
+  "media_state": "metadata_only",
+  "social_resonance_map_path": "social-resonance-map.json",
+  "social_resonance_status": "observation_only",
+  "status": "proceed_with_limits",
+  "next_action": "collect_evidence",
+  "proof_level": "reported",
+  "source_url": "https://ark.media/record/19758",
+  "brief_path": "case-record.json",
+  "limitations": [
+    "third_party_record_is_not_original_tiktok_post",
+    "views_are_attention_proxy_not_brand_lift",
+    "interaction_metrics_and_denominator_not_reported",
+    "diaper_change_is_an_intimate_child_care_context",
+    "guardian_consent_likeness_music_and_commercial_disclosure_not_closed",
+    "no_brand_lift_or_sales_claim"
+  ]
+}

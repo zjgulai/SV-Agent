@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Conversion Action"
+  short_description: "Transfer one bounded conversion component"
+  default_prompt: "Use $viral-conversion-action to adapt one conversion component with frozen Product Truth, Promotion, CTA, and action-path boundaries."

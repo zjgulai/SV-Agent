@@ -1,0 +1,33 @@
+{
+  "fixture_id": "VR-P3-005",
+  "scenario": "参考素材可以观看，但来源方、使用范围和发布权限均未确认。",
+  "reference_bundle": {
+    "reference_id": "ref-rights-unknown-001",
+    "source_locator": "https://example.invalid/reference/rights-unknown-001",
+    "source_digest": "sha256:fixture-only-reference-digest",
+    "rights_state": "unknown",
+    "usage_scope": null,
+    "platform": "short_video",
+    "playability": {
+      "initial_playable": true,
+      "refresh_playable": true,
+      "reproducible_capture": true
+    }
+  },
+  "requested_action": "use_reference_audio_and_republish_adapted_cut",
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "rights_state_unknown",
+      "usage_scope_missing",
+      "republish_permission_missing"
+    ],
+    "allowed_next_action": "confirm_analysis_and_adaptation_scope_before_media_use",
+    "must_not": [
+      "download_or_embed_reference_audio",
+      "publish_adapted_cut",
+      "treat_playability_as_permission"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

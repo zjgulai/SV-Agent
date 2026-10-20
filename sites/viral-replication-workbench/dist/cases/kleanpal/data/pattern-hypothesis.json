@@ -1,0 +1,16 @@
+{
+  "schema": "momcozy-pattern-hypothesis/v1",
+  "status": "DRAFT_FOR_DISCUSSION_NOT_APPROVED",
+  "primaryMechanism": "experience-pov",
+  "statement": "用可辨识的生活任务进入，把产品操作放在任务中间，之后继续人物生活，不以功效对比或购买召唤收尾。",
+  "invariants": [
+    "生活任务先于参数宣讲",
+    "产品作为任务的一段动作出现",
+    "产品段之后继续生活序列"
+  ],
+  "replaceableSurface": ["演员与家庭布景", "生活任务道具", "原创或授权音乐", "重新撰写的场景标签", "经事实与说明书核准的操作"],
+  "prohibitedSurfaceCopy": ["原人物与儿童身份", "原音乐录音", "逐镜翻拍独特构图", "未经授权复用源视频", "无事实依据的时间、杀菌、省时或健康说法"],
+  "candidateSingleDimension": "product_use_embedded_in_routine_vs_standalone_demonstration",
+  "futureControlVariant": "同一产品、事实集、时长、演员、文字、音乐与素材数量，只调整产品操作和生活动作的组织关系；本案例未执行因果实验。",
+  "unknowns": ["参考片社交帖身份与表现时间窗", "素材与音乐复用许可", "精细镜头切点与小字", "可迁移到其他产品的稳定性"]
+}

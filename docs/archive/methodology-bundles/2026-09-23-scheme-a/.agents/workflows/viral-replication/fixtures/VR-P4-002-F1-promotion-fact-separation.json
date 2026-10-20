@@ -1,0 +1,43 @@
+{
+  "fixture_id": "VR-P4-002-F1",
+  "scenario": "适配计划将有效的 Promotion Fact 同时放进 selected_fact_ids，借此让 provider 生成优惠与 CTA 文案。",
+  "generation_contract": {
+    "snapshot_id": "snap-conversion-001",
+    "creative_pattern": {
+      "key": "offer_cta",
+      "cta_policy": "server_promotion_final_cta"
+    },
+    "selected_fact_ids": [
+      "fact-product-feature-confirmed",
+      "fact-promotion-confirmed"
+    ],
+    "excluded_fact_ids": [],
+    "promotion_fact_id": "fact-promotion-confirmed",
+    "provider_input_fields": [
+      "selected_facts",
+      "promotion"
+    ]
+  },
+  "promotion_fact": {
+    "id": "fact-promotion-confirmed",
+    "snapshot_id": "snap-conversion-001",
+    "claim_type": "promotion",
+    "status": "confirmed",
+    "activity_state": "active_at_database_time"
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "promotion_fact_in_selected_or_excluded_set",
+      "promotion_must_use_separate_field",
+      "promotion_provider_leakage"
+    ],
+    "allowed_next_action": "从 selected/excluded 集合和 provider input 移除 Promotion Fact，仅通过独立 promotion_fact_id 与服务端最终 CTA 渲染重新建立合同。",
+    "must_not": [
+      "treat_promotion_as_product_claim_context",
+      "send_promotion_to_provider",
+      "let_provider_write_offer_copy"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

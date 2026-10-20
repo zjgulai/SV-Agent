@@ -1,0 +1,23 @@
+{
+  "schema": "momcozy-curated-artifact-index/v1",
+  "case": "kleanpal-pro-replication",
+  "downloadPolicy": "只提供脱敏摘要；原始 JSON、收据、内部路径、哈希与私有链接留在本地案例库。",
+  "artifacts": [
+    { "stage": "P0", "name": "参考准入摘要", "file": "data/case-summary.json", "type": "summary", "status": "published" },
+    { "stage": "P1", "name": "声画时间线与节奏观察", "file": "data/decomposition-map.json", "type": "decomposition", "status": "published" },
+    { "stage": "P1", "name": "模式假设与禁止复制面", "file": "data/pattern-hypothesis.json", "type": "hypothesis", "status": "draft" },
+    { "stage": "P2", "name": "事实候选与排除队列", "file": "data/fact-map.json", "type": "facts", "status": "pending_binding" },
+    { "stage": "P3", "name": "分镜 v2 与范围缩减", "file": "data/storyboard-v2.json", "type": "storyboard", "status": "scope_confirmed" },
+    { "stage": "P4/P5", "name": "精选媒体与审片状态", "file": "data/media-review.json", "type": "media", "status": "screening_only" },
+    { "stage": "P7", "name": "评估边界与下一道门", "file": "data/evaluation-boundary.json", "type": "evaluation", "status": "open" }
+  ],
+  "localOnlyInventory": [
+    { "stage": "P0", "folders": ["official-reference-v1", "reference"], "fileCount": 54 },
+    { "stage": "P1", "folders": ["analysis"], "fileCount": 5 },
+    { "stage": "P2", "folders": ["product"], "fileCount": 10 },
+    { "stage": "P3", "folders": ["storyboard files at case root"], "fileCount": 7 },
+    { "stage": "P4", "folders": ["preproduction", "product-production-v1..v5", "product-repair-v6..v8"], "fileCount": 564 },
+    { "stage": "P5/P6", "folders": ["review-film-v1..v4"], "fileCount": 122 },
+    { "stage": "P7", "folders": ["reference-performance-check-v1"], "fileCount": 17 }
+  ]
+}

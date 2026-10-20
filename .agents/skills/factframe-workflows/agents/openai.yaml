@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Workflows"
+  short_description: "Route FactFrame work to the right domain workflow"
+  default_prompt: "Route this FactFrame task to the smallest matching project workflow and apply its proof boundaries."

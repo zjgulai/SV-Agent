@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Trend Native"
+  short_description: "Transfer one bounded trend component"
+  default_prompt: "Use $viral-trend-native to adapt one observed trend component without claiming source rights, platform execution, or publishing capability."

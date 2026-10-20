@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 import pytest
 from httpx import AsyncClient
 from pydantic import SecretStr
-from sqlalchemy import update
+from sqlalchemy import event, update
 from sqlalchemy.exc import DBAPIError, IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -14,6 +14,11 @@ from app.adapters.db.models import ScriptGenerationRecord, ScriptVersionRecord
 from app.adapters.db.repositories import JobRepository, ProductRepository
 from app.adapters.providers.deterministic import DeterministicScriptProvider
 from app.api.routes import scripts as script_routes
+from app.application.creative_comparison_lab import (
+    CreativeComparisonLab,
+    CreativeComparisonReferenceInvalidError,
+    CreativeComparisonRequest,
+)
 from app.application.generations import GenerationWorker
 from app.domain.jobs.entities import JobState
 from app.domain.products.entities import FactStatus
@@ -523,6 +528,499 @@ async def test_storyboard_preflight_is_blocked_for_an_unacceptable_version(
     assert comparison.json()["changed"] == [
         {"path": "titles[0]", "left": "Fact-led product script · General routine", "right": "A changed title"}
     ]
+
+
+async def test_creative_comparison_lab_projects_an_honest_read_only_comparison(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(client, product_id, key="creative-lab-projection-001")
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    variant = ScriptVersionRecord(
+        id=uuid4(),
+        generation_id=generation_id,
+        parent_version_id=control_id,
+        draft=control.draft,
+        validation_report=control.validation_report,
+    )
+    db_session.add(variant)
+    await db_session.flush()
+
+    first = await CreativeComparisonLab(db_session).inspect(
+        CreativeComparisonRequest(
+            script_id=generation_id,
+            control_version_id=control_id,
+            variant_version_id=variant.id,
+        )
+    )
+    second = await CreativeComparisonLab(db_session).inspect(
+        CreativeComparisonRequest(
+            script_id=generation_id,
+            control_version_id=control_id,
+            variant_version_id=variant.id,
+        )
+    )
+
+    assert first.schema_version == "creative-comparison-view-v1"
+    assert first.readiness.state == "needs_evidence"
+    assert first.readiness.disposition == "collect_evidence"
+    assert first.readiness.single_variable_status == "unverified"
+    assert [item.code for item in first.readiness.evidence_needs] == [
+        "COMPARISON_CONTRACT_UNAVAILABLE",
+        "PERFORMANCE_EVIDENCE_UNAVAILABLE",
+        "EXPERIMENT_EVIDENCE_UNAVAILABLE",
+        "ASSET_EVIDENCE_UNAVAILABLE",
+    ]
+    assert first.product_truth_gate.status == "pass"
+    assert [item.claim for item in first.product_truth_gate.selected_facts] == [
+        "The pouch is resealable"
+    ]
+    assert first.control.version_id == control_id
+    assert first.variant.version_id == variant.id
+    assert first.control.draft.titles == ["Fact-led product script · General routine"]
+    assert first.control.stored_validation_report.acceptable is True
+    assert first.control.live_validation_report.acceptable is True
+    assert first.control.storyboard_readiness == "ready"
+    assert first.differences == []
+    assert first.performance_evidence.availability == "unavailable"
+    assert first.performance_evidence.source_reference == (
+        "docs/research/leap/public-report-evidence.md"
+    )
+    assert first.experiment_evidence.availability == "unavailable"
+    assert first.asset_evidence.availability == "unavailable"
+    assert [item.code for item in first.limitations] == [
+        "COMPARISON_CONTRACT_UNAVAILABLE",
+        "PERFORMANCE_EVIDENCE_UNAVAILABLE",
+        "EXPERIMENT_EVIDENCE_UNAVAILABLE",
+        "ASSET_EVIDENCE_UNAVAILABLE",
+    ]
+    assert first.projection_digest == second.projection_digest
+
+
+async def test_creative_comparison_lab_blocks_a_frozen_title_change(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(client, product_id, key="creative-lab-title-block-001")
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    changed_draft = deepcopy(control.draft)
+    changed_draft["titles"] = ["A relief-first hook"]
+    variant = ScriptVersionRecord(
+        id=uuid4(),
+        generation_id=generation_id,
+        parent_version_id=control_id,
+        draft=changed_draft,
+        validation_report=control.validation_report,
+    )
+    db_session.add(variant)
+    await db_session.flush()
+
+    projection = await CreativeComparisonLab(db_session).inspect(
+        CreativeComparisonRequest(
+            script_id=generation_id,
+            control_version_id=control_id,
+            variant_version_id=variant.id,
+        )
+    )
+
+    assert projection.readiness.state == "blocked"
+    assert projection.readiness.disposition == "revise"
+    assert projection.product_truth_gate.status == "pass"
+    assert [(item.path, item.kind) for item in projection.differences] == [
+        ("titles[0]", "unexpected_change")
+    ]
+
+
+async def test_creative_comparison_keeps_script_fact_mismatch_out_of_truth_gate(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(client, product_id, key="creative-lab-fact-copy-001")
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    changed_draft = deepcopy(control.draft)
+    changed_draft["shots"][0]["voiceover"] = "Unsupported visible copy"
+    variant = ScriptVersionRecord(
+        id=uuid4(),
+        generation_id=generation_id,
+        parent_version_id=control_id,
+        draft=changed_draft,
+        validation_report=control.validation_report,
+    )
+    db_session.add(variant)
+    await db_session.flush()
+
+    projection = await CreativeComparisonLab(db_session).inspect(
+        CreativeComparisonRequest(
+            script_id=generation_id,
+            control_version_id=control_id,
+            variant_version_id=variant.id,
+        )
+    )
+
+    assert projection.readiness.state == "blocked"
+    assert projection.product_truth_gate.status == "pass"
+    assert "FACT_RENDER_MISMATCH" in {
+        item.code for item in projection.readiness.blockers
+    }
+    assert [(item.path, item.kind) for item in projection.differences] == [
+        ("shots[0].voiceover", "fact_binding_change")
+    ]
+
+
+async def test_creative_comparison_blocks_a_frozen_audience_change(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(client, product_id, key="creative-lab-audience-001")
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    changed_draft = deepcopy(control.draft)
+    changed_draft["audience"] = "new_parents"
+    variant = ScriptVersionRecord(
+        id=uuid4(), generation_id=generation_id, parent_version_id=control_id,
+        draft=changed_draft, validation_report=control.validation_report,
+    )
+    db_session.add(variant)
+    await db_session.flush()
+
+    projection = await CreativeComparisonLab(db_session).inspect(
+        CreativeComparisonRequest(
+            script_id=generation_id,
+            control_version_id=control_id,
+            variant_version_id=variant.id,
+        )
+    )
+
+    assert projection.readiness.state == "blocked"
+    assert [(item.path, item.kind) for item in projection.differences] == [
+        ("audience", "unexpected_change")
+    ]
+
+
+async def test_creative_comparison_lab_rejects_the_same_version_on_both_sides(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(client, product_id, key="creative-lab-same-version-001")
+    version_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert version_id is not None
+
+    with pytest.raises(CreativeComparisonReferenceInvalidError):
+        await CreativeComparisonLab(db_session).inspect(
+            CreativeComparisonRequest(
+                script_id=UUID(str(job["result_id"])),
+                control_version_id=version_id,
+                variant_version_id=version_id,
+            )
+        )
+
+
+async def test_creative_comparison_endpoint_returns_the_read_only_projection(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(client, product_id, key="creative-lab-endpoint-001")
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    variant = ScriptVersionRecord(
+        id=uuid4(),
+        generation_id=generation_id,
+        parent_version_id=control_id,
+        draft=control.draft,
+        validation_report=control.validation_report,
+    )
+    db_session.add(variant)
+    await db_session.flush()
+
+    statements: list[str] = []
+    sync_connection = (await db_session.connection()).sync_connection
+
+    def track_statement(
+        _connection: Any,
+        _cursor: Any,
+        statement: str,
+        _parameters: Any,
+        _context: Any,
+        _executemany: bool,
+    ) -> None:
+        statements.append(statement.lstrip().split(maxsplit=1)[0].upper())
+
+    event.listen(sync_connection, "before_cursor_execute", track_statement)
+
+    try:
+        response = await client.get(
+            f"/api/v1/scripts/{generation_id}/creative-comparison"
+            f"?control={control_id}&variant={variant.id}"
+        )
+    finally:
+        event.remove(sync_connection, "before_cursor_execute", track_statement)
+
+    assert response.status_code == 200
+    assert response.json()["schema_version"] == "creative-comparison-view-v1"
+    assert response.json()["readiness"]["state"] == "needs_evidence"
+    assert response.json()["readiness"]["disposition"] == "collect_evidence"
+    assert response.json()["control"]["version_id"] == str(control_id)
+    assert response.json()["variant"]["version_id"] == str(variant.id)
+    assert [item for item in statements if item == "SELECT"] == ["SELECT"] * 4
+    assert not {"INSERT", "UPDATE", "DELETE", "COMMIT"}.intersection(statements)
+
+
+async def test_creative_comparison_rechecks_current_fact_eligibility(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client, lock_fact=False)
+    fact_id = (await ready_fact_ids(client, product_id))[0]
+    job = await _queue_generation(client, product_id, key="creative-lab-fact-gate-001")
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    variant = ScriptVersionRecord(
+        id=uuid4(),
+        generation_id=generation_id,
+        parent_version_id=control_id,
+        draft=control.draft,
+        validation_report=control.validation_report,
+    )
+    db_session.add(variant)
+    await db_session.flush()
+    rejected = await client.patch(
+        f"/api/v1/products/{product_id}/facts/{fact_id}", json={"status": "rejected"}
+    )
+    assert rejected.status_code == 200
+
+    projection = await CreativeComparisonLab(db_session).inspect(
+        CreativeComparisonRequest(
+            script_id=generation_id,
+            control_version_id=control_id,
+            variant_version_id=variant.id,
+        )
+    )
+
+    assert projection.readiness.state == "blocked"
+    assert projection.product_truth_gate.status == "blocked"
+    assert "FACTS_NOT_READY" in {
+        item.code for item in projection.readiness.blockers
+    }
+    assert projection.product_truth_gate.selected_facts[0].availability == "present"
+    assert projection.product_truth_gate.selected_facts[0].status == "rejected"
+
+
+async def test_creative_comparison_fails_closed_for_corrupt_product_truth(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(client, product_id, key="creative-lab-integrity-001")
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    corrupt = ScriptVersionRecord(
+        id=uuid4(),
+        generation_id=generation_id,
+        parent_version_id=control_id,
+        draft={},
+        validation_report=control.validation_report,
+    )
+    db_session.add(corrupt)
+    await db_session.flush()
+
+    response = await client.get(
+        f"/api/v1/scripts/{generation_id}/creative-comparison"
+        f"?control={control_id}&variant={corrupt.id}"
+    )
+
+    assert response.status_code == 500
+    assert response.json()["code"] == "PRODUCT_TRUTH_INTEGRITY_ERROR"
+    assert "draft" not in response.text.lower()
+
+
+async def test_creative_comparison_fails_closed_for_corrupt_stored_validation(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(
+        client, product_id, key="creative-lab-validation-integrity-001"
+    )
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    corrupt = ScriptVersionRecord(
+        id=uuid4(),
+        generation_id=generation_id,
+        parent_version_id=control_id,
+        draft=control.draft,
+        validation_report={},
+    )
+    db_session.add(corrupt)
+    await db_session.flush()
+
+    response = await client.get(
+        f"/api/v1/scripts/{generation_id}/creative-comparison"
+        f"?control={control_id}&variant={corrupt.id}"
+    )
+
+    assert response.status_code == 500
+    assert response.json()["code"] == "PRODUCT_TRUTH_INTEGRITY_ERROR"
+    assert "validation_report" not in response.text.lower()
+
+
+async def test_creative_comparison_rejects_unknown_draft_fields_without_leaking_them(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(client, product_id, key="creative-lab-redaction-001")
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    corrupt_draft = deepcopy(control.draft)
+    corrupt_draft["private_path"] = "/private/tmp/do-not-return"
+    corrupt = ScriptVersionRecord(
+        id=uuid4(), generation_id=generation_id, parent_version_id=control_id,
+        draft=corrupt_draft, validation_report=control.validation_report,
+    )
+    db_session.add(corrupt)
+    await db_session.flush()
+
+    response = await client.get(
+        f"/api/v1/scripts/{generation_id}/creative-comparison"
+        f"?control={control_id}&variant={corrupt.id}"
+    )
+
+    assert response.status_code == 500
+    assert response.json()["code"] == "PRODUCT_TRUTH_INTEGRITY_ERROR"
+    assert "private_path" not in response.text
+    assert "/private/tmp" not in response.text
+
+
+@pytest.mark.parametrize(
+    ("case", "sensitive_value"),
+    [
+        ("absolute-path", "/Users/operator/private/asset.png"),
+        (
+            "signed-url",
+            "https://media.example/asset.png?X-Amz-Signature=do-not-return",
+        ),
+    ],
+)
+async def test_creative_comparison_rejects_sensitive_values_in_typed_fields(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    case: str,
+    sensitive_value: str,
+) -> None:
+    product_id = await create_ready_product(client)
+    job = await _queue_generation(
+        client, product_id, key=f"creative-lab-sensitive-{case}"
+    )
+    generation_id = UUID(str(job["result_id"]))
+    control_id = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(job["id"])))
+    assert control_id is not None
+    control = await db_session.get(ScriptVersionRecord, control_id)
+    assert control is not None
+    corrupt_draft = deepcopy(control.draft)
+    corrupt_draft["titles"] = [sensitive_value]
+    corrupt = ScriptVersionRecord(
+        id=uuid4(), generation_id=generation_id, parent_version_id=control_id,
+        draft=corrupt_draft, validation_report=control.validation_report,
+    )
+    db_session.add(corrupt)
+    await db_session.flush()
+
+    response = await client.get(
+        f"/api/v1/scripts/{generation_id}/creative-comparison"
+        f"?control={control_id}&variant={corrupt.id}"
+    )
+
+    assert response.status_code == 500
+    assert response.json()["code"] == "PRODUCT_TRUTH_INTEGRITY_ERROR"
+    assert sensitive_value not in response.text
+    assert "do-not-return" not in response.text
+
+
+async def test_creative_comparison_rejects_versions_from_another_generation(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    first_product = await create_ready_product(client)
+    first_job = await _queue_generation(client, first_product, key="creative-lab-cross-a")
+    first_version = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(first_job["id"])))
+    assert first_version is not None
+
+    second_product = await create_ready_product(client)
+    second_job = await _queue_generation(client, second_product, key="creative-lab-cross-b")
+    second_version = await GenerationWorker(
+        _worker_factory(db_session), DeterministicScriptProvider()
+    ).run(UUID(str(second_job["id"])))
+    assert second_version is not None
+
+    response = await client.get(
+        f"/api/v1/scripts/{first_job['result_id']}/creative-comparison"
+        f"?control={first_version}&variant={second_version}"
+    )
+
+    assert response.status_code == 409
+    assert response.json()["code"] == "COMPARISON_REFERENCE_INVALID"
 
 
 async def test_generation_requires_ready_facts_and_idempotent_input(client: AsyncClient) -> None:

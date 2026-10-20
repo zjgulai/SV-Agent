@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 
 import { NewProductPage } from "./routes/NewProductPage";
@@ -9,6 +10,10 @@ import { ProductsPage } from "./routes/ProductsPage";
 import { ScriptPage } from "./routes/ScriptPage";
 import { StoryboardPreflightPage } from "./routes/StoryboardPreflightPage";
 import { StoryboardReviewPage } from "./routes/StoryboardReviewPage";
+
+const DecisionWorkbenchPrototypePage = import.meta.env.DEV
+  ? lazy(() => import("./routes/DecisionWorkbenchPrototypePage").then((module) => ({ default: module.DecisionWorkbenchPrototypePage })))
+  : null;
 
 export function AppRoutes() {
   return (
@@ -35,6 +40,7 @@ export function AppRoutes() {
           <Route path="/storyboards/:id" element={<StoryboardReviewPage />} />
           <Route path="/scripts/:id" element={<ScriptPage />} />
           <Route path="/scripts/:id/compare" element={<CompareVersionsPage />} />
+          {DecisionWorkbenchPrototypePage && <Route path="/prototype/momcozy-decision-workbench" element={<Suspense fallback={<div className="state-card">正在打开原型…</div>}><DecisionWorkbenchPrototypePage /></Suspense>} />}
         </Routes>
       </main>
     </div>

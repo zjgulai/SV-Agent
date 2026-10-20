@@ -1,0 +1,4 @@
+interface:
+  display_name: "FactFrame Readiness"
+  short_description: "Select gates and report exactly what FactFrame evidence proves"
+  default_prompt: "Verify this FactFrame change with the smallest sufficient gates and state the proof boundary."

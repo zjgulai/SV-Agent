@@ -1,0 +1,115 @@
+{
+  "schema_version": "viral-video-deep-insight-v1",
+  "status": "proceed_with_limits",
+  "action": "test",
+  "decision_question": "是否值得在同一 Product Snapshot 下测试将产品嵌入日常动作序列的体验机制？",
+  "evidence_level": "Inference",
+  "proof_level": "local",
+  "subject": {
+    "brand": "Synthetic Brand",
+    "market": "US",
+    "product_family": "care-device",
+    "model": "model-x",
+    "variant": "white",
+    "binding_state": "exact_snapshot"
+  },
+  "performance_window": {
+    "platform": "youtube",
+    "start": "2026-08-21",
+    "end": "2026-08-27",
+    "source_ref": "SRC-01",
+    "source_digest": "sha256:synthetic-performance-package"
+  },
+  "observations": [
+    {
+      "id": "OBS-01",
+      "text": "同一有界窗口内，体验型候选获得 1284 views。",
+      "source_ref": "SRC-01",
+      "availability": "observed",
+      "value": 1284
+    },
+    {
+      "id": "OBS-02",
+      "text": "报告的评论字段显示为 0，来源没有将其写成短横线。",
+      "source_ref": "SRC-01",
+      "availability": "observed",
+      "value": 0
+    },
+    {
+      "id": "OBS-03",
+      "text": "付费与自然分发拆分未在来源中报告。",
+      "source_ref": "SRC-01",
+      "availability": "not_reported",
+      "value": null
+    }
+  ],
+  "inferences": [
+    {
+      "id": "INF-01",
+      "text": "产品作为日常动作序列的一段出现，可能降低理解和代入摩擦；这是待测 Creative Signal，不是效果证明。",
+      "supporting_observation_ids": ["OBS-01"],
+      "disposition": "test",
+      "alternative_explanation": "账号基数、发布时间或推荐分发可能解释部分差异。"
+    },
+    {
+      "id": "INF-02",
+      "text": "评论的 observed value=0 只能描述该来源的计数，不代表评论没有被采集到其他地方。",
+      "supporting_observation_ids": ["OBS-02", "OBS-03"],
+      "disposition": "cite",
+      "alternative_explanation": "来源字段可能采用不同的展示口径，需保留平台层级核对。"
+    }
+  ],
+  "primary_mechanism": "experience-pov",
+  "media_gates": [
+    {"key": "artifact_traceability", "state": "not_applicable_pending_artifact", "evidence": "preflight contract digest is frozen; no artifact exists"},
+    {"key": "technical_profile", "state": "not_applicable_pending_artifact", "evidence": "future technical probe is explicitly pending"},
+    {"key": "communicative_surface", "state": "preflight_evidence_collected", "evidence": "script claim map is present; rendered ASR/OCR remains pending"},
+    {"key": "target_identity_continuity", "state": "preflight_evidence_collected", "evidence": "target asset refs are frozen; frame review is pending"},
+    {"key": "source_use_scope", "state": "evidence_collected_pending_artifact_review", "evidence": "analysis-only source scope and target substitutions are recorded"},
+    {"key": "originality_delta", "state": "evidence_collected_pending_artifact_review", "evidence": "source identity exclusions are recorded for the next gate"}
+  ],
+  "dimensions": [
+    {"key": "source_context", "evidence_state": "observed", "transferability": "context_bound", "next_test": "复核同一来源 digest 与捕获时间。"},
+    {"key": "performance_signal", "evidence_state": "observed", "transferability": "context_bound", "next_test": "补齐账号基数与 paid/organic 状态。"},
+    {"key": "audience_tension", "evidence_state": "inferred", "transferability": "portable_function", "next_test": "保持产品事实不变，只改变任务 framing。"},
+    {"key": "attention_grammar", "evidence_state": "observed", "transferability": "portable_function", "next_test": "只改变 reveal cadence，冻结其他节拍。"},
+    {"key": "narrative_transformation", "evidence_state": "unknown", "transferability": "unknown", "next_test": "补齐 Pain/Result 时间锚点。"},
+    {"key": "proof_demonstration", "evidence_state": "unknown", "transferability": "unknown", "next_test": "确认是否存在可观察现象；不存在则标记 not_present。"},
+    {"key": "experience_pov", "evidence_state": "observed", "transferability": "portable_function", "next_test": "建立生活序列 Control/Variant。"},
+    {"key": "conversion_action", "evidence_state": "unknown", "transferability": "context_bound", "next_test": "确认 CTA 是否只是结尾惯例。"},
+    {"key": "trend_native", "evidence_state": "unknown", "transferability": "unknown", "next_test": "检查去掉背景音后主机制是否仍成立。"},
+    {"key": "product_truth", "evidence_state": "observed", "transferability": "portable_function", "next_test": "重跑 claim map 并检查 deny-set。"},
+    {"key": "surface_originality", "evidence_state": "unknown", "transferability": "surface_bound", "next_test": "建立 target substitutions 与 source identity exclusions。"},
+    {"key": "experimentability", "evidence_state": "inferred", "transferability": "portable_function", "next_test": "冻结 contract digest 并登记唯一 changed dimension。"},
+    {"key": "media_integrity", "evidence_state": "unknown", "transferability": "context_bound", "next_test": "在 artifact 产生后分别运行六道 Media Integrity gate。"}
+  ],
+  "claims": [
+    {
+      "id": "CLM-01",
+      "state": "confirmed",
+      "fact_id": "fact-model-x-feature-01",
+      "snapshot_id": "snapshot-model-x-2026-08-27"
+    },
+    {
+      "id": "CLM-02",
+      "state": "not_a_product_claim",
+      "fact_id": null,
+      "snapshot_id": null
+    }
+  ],
+  "changed_creative_dimension": "product_use_embedded_in_routine",
+  "unknowns": [
+    "paid/organic split and account baseline",
+    "reference rights and source-use scope",
+    "target artifact technical and identity review"
+  ],
+  "guardrails": [
+    "不把一次观察写成 winner 或 causal lift。",
+    "只允许同一 Snapshot 的 confirmed/locked Fact 支持目标商品声明。",
+    "技术或本地验证通过不代表权利、平台、发布或 production acceptance。"
+  ],
+  "source_refs": ["SRC-01"],
+  "limitations": [
+    "合成来源未提供完整分发方法，结果只用于 local fixture contract validation。"
+  ]
+}

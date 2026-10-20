@@ -1,0 +1,74 @@
+{
+  "fixture_id": "VR-P4-001-F1",
+  "scenario": "参考内容的 Hook、字幕和揭示节奏可被稳定观察，但留存指标未报告；请求方要求直接证明该结构带来更高留存。",
+  "reference_bundle": {
+    "reference_id": "ref-attention-evidence-001",
+    "source_locator": "https://example.invalid/reference/attention-evidence-001",
+    "source_digest": "sha256:fixture-only-attention-evidence-digest",
+    "platform": "short_video",
+    "captured_at": "2026-09-23T10:00:00Z",
+    "rights_state": "confirmed_for_internal_analysis_only",
+    "playability": {
+      "initial_playable": true,
+      "refresh_playable": true,
+      "reproducible_capture": true
+    },
+    "performance_window": {
+      "view_count": {
+        "value": 120000,
+        "state": "observed",
+        "source_ref": "obs://fixture/performance-card-001"
+      },
+      "retention_rate": {
+        "value": null,
+        "state": "not_reported",
+        "source_ref": null
+      },
+      "account_size": "unknown",
+      "posting_time": "unknown",
+      "paid_distribution": "unknown",
+      "recommendation_effect": "unknown"
+    }
+  },
+  "decomposition_map": {
+    "primary_mechanism": "attention-grammar",
+    "attention_observations": [
+      {
+        "observation_id": "attn-hook-001",
+        "time_range_seconds": [0.0, 1.0],
+        "component": "hook_trigger",
+        "carrier": "visual_and_text",
+        "observed_function": "先展示结果的一部分，再保留完整解释",
+        "surface_class": "replaceable",
+        "source_ref": "obs://fixture/frame-001"
+      },
+      {
+        "observation_id": "attn-caption-001",
+        "time_range_seconds": [1.0, 3.0],
+        "component": "caption_cadence",
+        "carrier": "text",
+        "observed_function": "将解释拆成两个连续字幕单元",
+        "surface_class": "replaceable",
+        "source_ref": "obs://fixture/ocr-002"
+      }
+    ]
+  },
+  "requested_conclusion": "证明该 Hook 直接提高留存，并把它安装为默认 Pattern。",
+  "expected": {
+    "disposition": "proceed_with_limits",
+    "blockers": [
+      "retention_not_reported",
+      "critical_control_variables_unknown",
+      "causal_attention_claim_unsupported",
+      "default_pattern_promotion_unsupported"
+    ],
+    "allowed_next_action": "以 timed attention observations 创建非因果 PatternHypothesis，并用单一 attention component 的 ReplicationContract 进入受限实验。",
+    "must_not": [
+      "state_or_imply_retention_lift",
+      "state_or_imply_view_causality",
+      "promote_reference_structure_to_default_runtime_pattern",
+      "convert_not_reported_to_zero_or_success"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

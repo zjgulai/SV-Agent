@@ -1,0 +1,43 @@
+{
+  "fixture_id": "VR-P4-002-F5",
+  "scenario": "参考主体是量化前后对比实验，最后只有一句普通 CTA；请求方仅因 CTA 存在而把该样本路由为 conversion-action。",
+  "decomposition_map": {
+    "proposed_primary_mechanism": "conversion-action",
+    "proof_observations": [
+      {
+        "time_range_seconds": [
+          0.0,
+          12.0
+        ],
+        "observed_function": "以固定前后条件和可读数值呈现差异",
+        "source_ref": "obs://fixture/proof-comparison-001"
+      }
+    ],
+    "conversion_observations": [
+      {
+        "time_range_seconds": [
+          12.0,
+          15.0
+        ],
+        "component": "cta_invitation",
+        "observed_function": "结束时邀请继续了解",
+        "source_ref": "obs://fixture/incidental-cta-001"
+      }
+    ]
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "primary_mechanism_misrouted",
+      "conversion_component_not_primary",
+      "proof_demonstration_primary"
+    ],
+    "allowed_next_action": "将样本路由至 proof-demonstration；若未来需要独立比较 CTA invitation，冻结 proof mechanism 并建立单独 Variant。",
+    "must_not": [
+      "classify_any_video_with_cta_as_conversion_action",
+      "treat_proof_observation_as_conversion_evidence",
+      "infer_conversion_performance"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

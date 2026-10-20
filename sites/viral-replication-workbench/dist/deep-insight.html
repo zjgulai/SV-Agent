@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta name="description" content="分析一条母婴 TikTok 高表现候选：我们知道什么、不知道什么，以及下一步怎么验证。" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230b1020'/%3E%3Cpath d='M17 18h8v28h-8zm22 0h8v28h-8zM25 30h14v8H25z' fill='%23d9f36d'/%3E%3C/svg%3E" />
+    <title>这条母婴视频为什么值得研究 · Momcozy</title>
+    <style>
+      :root {
+        --ink:#111a2e; --muted:#66738b; --paper:#f7f8fc; --white:#fff; --navy:#0b1020;
+        --navy-2:#151f3b; --line:#dfe4ef; --coral:#ff7058; --coral-soft:#fff0ec;
+        --lime:#d9f36d; --blue:#7c9dff; --blue-soft:#eef2ff; --green:#48bd8b;
+        --amber:#f4bb59; --violet:#8c78ff; --violet-soft:#f1efff;
+        --shadow:0 18px 48px rgba(18,28,53,.11); --radius:22px;
+        font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+        color:var(--ink); background:var(--paper); font-synthesis:none;
+      }
+      *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--paper)}
+      a{color:inherit;text-decoration:none} a:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+      .shell{max-width:1320px;margin:0 auto;padding:0 30px 80px}
+      .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 0;position:sticky;top:0;z-index:10;background:rgba(247,248,252,.93);backdrop-filter:blur(18px);border-bottom:1px solid rgba(223,228,239,.75)}
+      .brand{display:flex;align-items:center;gap:12px}.brand-mark{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--navy);color:var(--lime);font-weight:900;letter-spacing:-.08em}.brand-copy{line-height:1.05}.brand-copy strong{display:block;font-size:14px;letter-spacing:.08em}.brand-copy span{color:var(--muted);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+      .top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.top-actions a{padding:9px 12px;border-radius:10px;color:var(--muted);font-size:13px}.top-actions a:hover{background:var(--white);color:var(--ink);box-shadow:0 6px 18px rgba(18,28,53,.07)}.top-actions .home{background:var(--lime);color:var(--navy);font-weight:900}
+      .hero{display:grid;grid-template-columns:minmax(0,1.13fr) minmax(320px,.87fr);gap:28px;padding:76px 0 48px;align-items:end}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--coral);font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.eyebrow:before{content:"";width:26px;height:3px;background:var(--coral);border-radius:4px}h1{font-size:clamp(45px,7vw,92px);line-height:.92;letter-spacing:-.075em;margin:17px 0 24px;max-width:860px}h1 em{color:var(--coral);font-style:normal}.lede{max-width:740px;color:var(--muted);font-size:17px;line-height:1.72;margin:0}.hero-card{padding:26px;border-radius:26px;color:#fff;background:radial-gradient(circle at 85% 12%,rgba(124,157,255,.52),transparent 34%),linear-gradient(145deg,#101834 0%,#0b1020 72%);box-shadow:var(--shadow);overflow:hidden;position:relative}.hero-card:after{content:"";position:absolute;width:190px;height:190px;right:-60px;bottom:-80px;border:26px solid rgba(217,243,109,.32);border-radius:50%}.hero-card h2{margin:0 0 22px;font-size:15px;color:#dfe6ff;letter-spacing:.04em}.hero-card .quote{font-size:28px;line-height:1.1;letter-spacing:-.04em;max-width:360px;position:relative;z-index:1}.hero-card .meta{margin-top:22px;color:#b9c3dd;font-size:12px;line-height:1.55;position:relative;z-index:1}.tag-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}.tag{display:inline-flex;padding:7px 9px;border-radius:999px;font-size:10px;font-weight:900}.tag.coral{background:rgba(255,112,88,.18);color:#ffc0b3}.tag.lime{background:rgba(217,243,109,.16);color:var(--lime)}.tag.violet{background:rgba(140,120,255,.18);color:#c8c0ff}
+      .section{padding:45px 0;scroll-margin-top:86px}.section-head{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:20px}.section-head h2{margin:0;font-size:clamp(28px,4vw,48px);letter-spacing:-.055em;line-height:1}.section-head p{max-width:590px;margin:0;color:var(--muted);line-height:1.65;font-size:14px}.kicker{color:var(--coral);font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+      .panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 6px 24px rgba(18,28,53,.04)}.panel.pad{padding:24px}.dark{background:linear-gradient(145deg,#151f3b,#0b1020);color:#fff;border-color:#202b50}.dark p,.dark small{color:#b9c3dd}
+      .signal-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.candidate-title{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.candidate-title h3{margin:0;font-size:27px;letter-spacing:-.045em}.state{padding:8px 10px;border-radius:999px;font-size:10px;font-weight:900;white-space:nowrap}.state.limit{background:#fff5df;color:#9b5b13}.state.observed{background:#e8f7f0;color:#177b53}.source-card{margin-top:18px;padding:16px;border-radius:15px;background:#fbfcff;border:1px solid var(--line)}.source-card strong{display:block;font-size:12px}.source-card p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.6}.source-card a{color:#4d3bb5;text-decoration:underline;text-underline-offset:3px}.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}.metric{padding:13px;border-top:1px solid var(--line)}.metric strong{display:block;font-size:24px;letter-spacing:-.05em}.metric span{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.45}.callout{padding:20px;border-radius:18px;background:var(--navy);color:#fff}.callout h3{margin:0 0 11px;font-size:18px;letter-spacing:-.035em}.callout p{margin:0;color:#dbe2f7;font-size:13px;line-height:1.7}.callout strong{color:var(--lime)}
+      .story{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.story-step{min-height:150px;padding:15px;border:1px solid var(--line);border-radius:16px;background:var(--white)}.story-step .num{color:var(--violet);font:800 10px var(--mono)}.story-step h3{margin:15px 0 7px;font-size:14px;letter-spacing:-.03em}.story-step p{margin:0;color:var(--muted);font-size:11px;line-height:1.55}.story-step small{display:block;margin-top:12px;color:#9b5b13;font-size:10px;line-height:1.4}
+      .analysis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.analysis-card{padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--white)}.analysis-card h3{margin:0 0 8px;font-size:16px;letter-spacing:-.035em}.analysis-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.65}.analysis-card .label{display:inline-block;margin-bottom:8px;color:var(--coral);font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.analysis-card ul{margin:11px 0 0;padding-left:18px;color:var(--muted);font-size:12px;line-height:1.65}.analysis-card li+li{margin-top:4px}
+      table{width:100%;border-collapse:collapse;font-size:12px;background:var(--white);border:1px solid var(--line);border-radius:18px;overflow:hidden}th{text-align:left;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:#fbfcff}th,td{padding:12px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}tr:last-child td{border-bottom:0}td:first-child{font-weight:900;color:var(--navy);white-space:nowrap}.pill{display:inline-flex;padding:4px 7px;border-radius:6px;font-size:9px;font-weight:900}.pill.obs{background:#e8f7f0;color:#177b53}.pill.inf{background:var(--violet-soft);color:#4d3bb5}.pill.unk{background:#f1f3f7;color:var(--muted)}
+      .dimensions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.dimension{padding:13px;border:1px solid var(--line);border-radius:14px;background:#fbfcff}.dimension strong{display:block;font:800 11px var(--mono);color:var(--navy)}.dimension span{display:block;margin-top:7px;color:var(--muted);font-size:11px;line-height:1.5}.dimension em{display:inline-block;margin-top:8px;font-style:normal;font-size:9px;font-weight:900;padding:4px 6px;border-radius:6px}.dimension .o{color:#177b53;background:#e8f7f0}.dimension .i{color:#4d3bb5;background:var(--violet-soft)}.dimension .u{color:var(--muted);background:#f1f3f7}
+      .test-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.test-card{padding:21px;border-radius:18px;border:1px solid var(--line);background:var(--white)}.test-card h3{margin:0 0 10px;font-size:17px;letter-spacing:-.035em}.test-card p,.test-card li{color:var(--muted);font-size:12px;line-height:1.65}.test-card ul{margin:9px 0 0;padding-left:18px}.test-card .freeze{padding:12px;margin-top:13px;border-radius:11px;background:#fbfcff;border:1px dashed var(--line);font-size:11px;line-height:1.6}.gate-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gate{padding:13px;border-radius:13px;border:1px solid var(--line);background:#fbfcff}.gate strong{display:block;font:800 10px var(--mono)}.gate span{display:inline-block;margin-top:8px;padding:4px 6px;border-radius:6px;color:#9b5b13;background:#fff5df;font-size:9px;font-weight:900}.gate p{margin:8px 0 0;color:var(--muted);font-size:10px;line-height:1.45}
+      .skill-intro{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}.skill-intro h3{margin:0 0 10px;font-size:22px;letter-spacing:-.045em}.skill-intro p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}.skill-list{display:grid;gap:8px;margin-top:15px}.skill-item{display:grid;grid-template-columns:28px minmax(0,1fr);gap:9px;padding:10px 0;border-top:1px solid rgba(255,255,255,.12)}.skill-item:first-child{border-top:0}.skill-item b{color:var(--lime);font:800 11px var(--mono)}.skill-item strong{display:block;font-size:12px}.skill-item small{display:block;margin-top:3px;color:#b9c3dd;font-size:10px;line-height:1.45}.contract{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.contract div{padding:12px;border-radius:12px;background:#fbfcff;border:1px solid var(--line)}.contract strong{display:block;font-size:11px}.contract span{display:block;margin-top:6px;color:var(--muted);font-size:10px;line-height:1.45}
+      .footnote{padding:17px 19px;border-left:4px solid var(--coral);background:var(--coral-soft);border-radius:0 13px 13px 0;color:#854033;font-size:12px;line-height:1.65}.footer{display:flex;justify-content:space-between;gap:24px;padding-top:35px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.6}.footer p{margin:0;max-width:560px}
+      @media(max-width:900px){.hero,.signal-grid,.skill-intro,.test-grid{grid-template-columns:1fr}.story{grid-template-columns:repeat(2,1fr)}.dimensions{grid-template-columns:repeat(2,1fr)}}
+      @media(max-width:620px){.shell{padding:0 18px 55px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.hero{padding-top:48px}.story,.analysis-grid,.dimensions,.gate-grid,.contract{grid-template-columns:1fr}.section{padding:32px 0}.metric-row{grid-template-columns:1fr}.section-head{display:block}.section-head p{margin-top:12px}.candidate-title{display:block}.candidate-title .state{display:inline-flex;margin-top:12px}.footer{display:block}.footer p+p{margin-top:15px}}
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="返回 Momcozy 爆款复刻工作台"><span class="brand-mark">M·</span><span class="brand-copy"><strong>MOMCOZY</strong><span>Viral Replication OS</span></span></a>
+        <nav class="top-actions" aria-label="本页导航"><a href="index.html">返回工作台</a><a class="home" href="#report">看结论</a><a href="#skill">这套方法</a><a href="#test">下一步怎么测</a></nav>
+      </header>
+
+      <main id="report">
+        <section class="hero">
+          <div>
+            <div class="eyebrow">案例 01 · 母婴高表现内容</div>
+            <h1>这条视频为什么能让<br /><em>父母停下来？</em></h1>
+            <p class="lede">先说结论：值得继续研究，但证据还不够。公开页面显示约 870 万播放。我们可以测试“一个动作处理多件脏活”这个机制；不能把它当成因果结论、产品功效或发布批准。当前状态是 <strong>proceed_with_limits</strong>。</p>
+          </div>
+          <aside class="hero-card" aria-label="报告状态"><h2>已知 1 件事 · 假设 1 个原因 · 只测 1 个变量</h2><div class="quote">一个动作，同时处理宝宝、餐椅和餐盘。观众一眼就能看懂。</div><div class="meta">案例：Kayla Murphy · @kaymurphy13<br />类别：Parenting &amp; Kids · 美国<br />证明范围：local · 机制证据：Inference</div><div class="tag-row"><span class="tag lime">主机制 · proof-demonstration</span><span class="tag amber">可继续测试 · proceed_with_limits</span><span class="tag violet">来源有限 · source-limited</span></div></aside>
+        </section>
+
+        <section class="section" id="case">
+          <div class="section-head"><div><div class="kicker">01 / 先看事实</div><h2>先把事实说清楚</h2></div><p>这里的“爆款”只表示：这是一条值得研究的高表现候选。数据来自第三方公开页面。我们还没有独立确认原始 TikTok 帖子和完整后台数据。</p></div>
+          <div class="signal-grid">
+            <article class="panel pad"><div class="candidate-title"><div><h3>Mum Shows Off Her Cleaning Hack For Messy Eater Baby</h3><p style="color:var(--muted);font-size:12px;line-height:1.6;margin:9px 0 0">晚餐后，Kayla Murphy 把宝宝、餐椅和餐盘一起移到淋浴区，一次完成清洁。视频没有卖产品。它把一组家务变成了一个能看懂的办法。</p></div><span class="state limit">Viral Candidate</span></div><div class="metric-row"><div class="metric"><strong>8.7M</strong><span>第三方页面报告的 TikTok 播放量 · <b>observed</b></span></div><div class="metric"><strong>1</strong><span>主要动作：一次清理多个对象</span></div><div class="metric"><strong>未知</strong><span>点赞、评论、分享、完播率和付费/自然流量均未知</span></div></div><div class="source-card"><strong>证据来源</strong><p>主来源是 <a href="https://ark.media/record/20842" target="_blank" rel="noreferrer">ARK by KOMI · record/20842</a> 的公开记录页。页面将素材归于 <code>@kaymurphy13 via ARK Media</code>，报告约 870 万播放，并标注美国 Springfield、手机竖屏和 Parenting &amp; Kids 分类。</p><p>仍未确认：记录日期与拍摄时间的口径、原始 TikTok URL、完整互动数据、账号规模、采集和排序方法，以及素材复用权。</p><p><a href="cases/maternal-tiktok/data/insight-brief.json" download>下载交接数据（JSON）</a></p></div></article>
+            <aside class="callout"><h3>核心判断</h3><p>我们的首要假设是：传播点不只在“宝宝可爱”。视频用一个动作处理宝宝、餐椅和餐盘，父母一眼就能看懂它省了哪些步骤。</p><p style="margin-top:13px">这仍是待验证的假设。账号分发、编辑精选、场景的新鲜感或平台抽样，也可能影响播放结果。</p></aside>
+          </div>
+        </section>
+
+        <section class="section" id="story">
+          <div class="section-head"><div><div class="kicker">02 / 观众看到的过程</div><h2>观众先看见麻烦，再看见一个简单办法</h2></div><p>视频没有解释“育儿很累”。它直接展示一组要收拾的东西，再给出一个意外但看得懂的处理办法。我们没有拿到原始时间码，下面只分析来源能支持的结构。</p></div>
+          <div class="story">
+            <article class="story-step"><span class="num">01 · HOOK</span><h3>先让人看见要收拾的残局</h3><p>晚餐后，宝宝和餐椅都需要清理。视频直接把问题放进画面。</p><small>证据：来源摘要</small></article>
+            <article class="story-step"><span class="num">02 · TENSION</span><h3>观众马上算出三份工作</h3><p>照顾宝宝、擦餐椅、清餐盘，通常要分开处理。父母很快就能认出这份工作量。</p><small>推断：基于场景</small></article>
+            <article class="story-step"><span class="num">03 · INTERVENTION</span><h3>把整套东西移进淋浴区</h3><p>这个动作打破日常做法，制造“原来还能这样”的停留点。</p><small>证据：来源摘要</small></article>
+            <article class="story-step"><span class="num">04 · PROOF</span><h3>一个动作完成多项清理</h3><p>宝宝、餐椅和餐盘一起处理。观众能直接看见少了哪些步骤。</p><small>主机制：proof-demonstration</small></article>
+            <article class="story-step"><span class="num">05 · CTA</span><h3>没有可验证的销售 CTA</h3><p>来源页没有记录产品 CTA。评论或转发是否承担讨论入口，目前也不知道。</p><small>状态：unknown / not captured</small></article>
+          </div>
+        </section>
+
+        <section class="section" id="analysis">
+          <div class="section-head"><div><div class="kicker">03 / 我们的解释</div><h2>最可能的原因：观众一眼看懂了“少做几步”</h2></div><p>这是需要测试的假设，不是结论。每个判断都要写清替代解释，并说明怎么验证。</p></div>
+          <div class="analysis-grid">
+            <article class="analysis-card"><span class="label">主假设</span><h3>一个动作处理多项任务 · proof-demonstration</h3><p>观众几秒内就能看懂：同一个动作处理了多项脏活。“省力”不靠文案说明，画面自己给出证据。</p><ul><li>我们看到：一个动作对应多个清洁结果。</li><li>也可能：异常场景、编辑精选或账号分发更重要。</li><li>怎么验证：保持创作者、平台、时长与对象不变，只取消“多对象同时处理”，再比较首屏停留和完整观看。</li></ul></article>
+            <article class="analysis-card"><span class="label">辅助信号</span><h3>像真实家庭，不像广告 · experience-pov</h3><p>手机竖屏、家庭空间和宝宝的真实反应，让视频更像日常记录。我们没有完整视频、音频、字幕和留存数据，所以它只能算辅助信号。</p><ul><li>我们看到：手机拍摄、家庭场景和真实育儿任务。</li><li>也可能：真实感来自创作者身份，不是画面结构。</li><li>怎么验证：保留同一动作结构，换成工作室广告风格，再比较可识别性和评论质量。</li></ul></article>
+            <article class="analysis-card"><span class="label">辅助假设</span><h3>不卖产品，观看阻力可能更低</h3><p>来源摘要没有记录 CTA 或产品促销。先展示一个共同的生活问题，可能更容易让父母认同。但没有转化数据，不能推导商业效果。</p><ul><li>我们看到：没有可验证的 CTA。</li><li>也可能：CTA 在原帖 caption 或评论区，只是来源页没有记录。</li><li>怎么验证：Control 保留生活动作；Variant 只在结尾加入一个已绑定事实的 CTA。</li></ul></article>
+            <article class="analysis-card"><span class="label">可迁移部分</span><h3>能复用的是做法，不是淋浴画面</h3><p>不要照搬“把宝宝移进淋浴区”。可以测试的是：把多个常见照护任务安排成一个安全、连续、结果可见的动作。</p><ul><li>保留：多项任务 → 一个可见动作 → 多个结果。</li><li>可以替换：人物、空间、道具、音乐、台词和品牌表层。</li><li>不能做：跳过事实、儿童安全、权利或媒体检查。</li></ul></article>
+          </div>
+        </section>
+
+        <section class="section" id="dimensions">
+          <div class="section-head"><div><div class="kicker">04 / 13 个检查项</div><h2>播放量只说明“有人看”，不说明为什么</h2></div><p>下面列出 13 个判断项。页面展示摘要；机器交接仍以 canonical Insight Brief JSON 为准。</p></div>
+          <div class="dimensions">
+            <div class="dimension"><strong>source_context</strong><span>只有第三方记录。原帖身份、排序方法和使用权仍未知。</span><em class="i">inferred</em></div>
+            <div class="dimension"><strong>performance_signal</strong><span>第三方页面报告约 870 万播放。其他互动数据未知。</span><em class="o">observed</em></div>
+            <div class="dimension"><strong>audience_tension</strong><span>宝宝、餐椅和餐盘带来重复清理工作。</span><em class="i">inferred</em></div>
+            <div class="dimension"><strong>attention_grammar</strong><span>异常空间和多个对象同框，可能构成开场停留点。</span><em class="u">unknown</em></div>
+            <div class="dimension"><strong>narrative_transformation</strong><span>餐后脏乱 → 一次协调清理。</span><em class="i">inferred</em></div>
+            <div class="dimension"><strong>proof_demonstration</strong><span>一个动作带来多个可见的清理结果。</span><em class="i">inferred</em></div>
+            <div class="dimension"><strong>experience_pov</strong><span>手机竖屏、家庭环境和真实育儿任务。</span><em class="o">observed</em></div>
+            <div class="dimension"><strong>conversion_action</strong><span>没有可验证的 CTA 或转化数据。</span><em class="u">unknown</em></div>
+            <div class="dimension"><strong>trend_native</strong><span>没有采集音频、话题或趋势周期。</span><em class="u">unknown</em></div>
+            <div class="dimension"><strong>product_truth</strong><span>这不是产品演示。目标 SKU 尚未绑定 Product Snapshot。</span><em class="u">unknown</em></div>
+            <div class="dimension"><strong>surface_originality</strong><span>源素材只用于内部分析。复用权和原创差异仍待审查。</span><em class="u">unknown</em></div>
+            <div class="dimension"><strong>experimentability</strong><span>可以设计只改变“多项任务是否同时可见”的对照实验。</span><em class="i">inferred</em></div>
+            <div class="dimension"><strong>media_integrity</strong><span>还没有目标 artifact，不能标记为 ready。</span><em class="u">unknown</em></div>
+          </div>
+        </section>
+
+        <section class="section" id="test">
+          <div class="section-head"><div><div class="kicker">05 / 最小测试</div><h2>下一步只测一件事</h2></div><p>不要复刻淋浴场景。只测试一个问题：观众能否从画面中看懂，一个动作同时处理了多项任务。</p></div>
+          <div class="test-grid">
+            <article class="test-card"><h3>对照组和实验组</h3><p><strong>Control：</strong>Momcozy 目标产品只完成一项日常清洁任务。</p><p><strong>Variant：</strong>产品、事实、创作者和时长都不变。只把叙事改成：一个连续动作带来两到三个可见结果。</p><div class="freeze"><strong>只改这一项</strong><br />`proof_demonstration.task_bundle_visibility`<br /><br /><strong>以下都不改：</strong>平台、市场、语言、时长、创作者、音频、产品 snapshot、素材来源、rights scope、CTA 归属和投放口径。</div></article>
+            <article class="test-card"><h3>先约定怎么判断结果</h3><ul><li>首屏理解：不读长文案时，受众能否说出“一个动作解决了哪些任务”。</li><li>观看质量：检查 3 秒停留、完整观看、重复观看或收藏。没有数据时，状态保持 `not_collected`。</li><li>评论质量：评论是否讨论省步骤、可行性和安全，而不只是“宝宝可爱”。</li><li>迁移判断：至少在两个母婴场景中测试。只有一次观察时，明确写 n=1。</li></ul></article>
+          </div>
+          <div class="panel pad" style="margin-top:14px"><h3 style="margin:0 0 13px;font-size:18px">目标媒体还要过 6 道门</h3><div class="gate-grid"><div class="gate"><strong>artifact_traceability</strong><span>not_applicable_pending_artifact</span><p>目前只有研究报告，还没有目标 artifact。</p></div><div class="gate"><strong>technical_profile</strong><span>not_applicable_pending_artifact</span><p>还没有检查目标片的技术参数。</p></div><div class="gate"><strong>communicative_surface</strong><span>preflight_evidence_collected</span><p>已定义要检查的文本、画面和 CTA 边界。</p></div><div class="gate"><strong>target_identity_continuity</strong><span>blocked</span><p>源视频来自创作者家庭场景。目标 SKU 尚未绑定。</p></div><div class="gate"><strong>source_use_scope</strong><span>internal_analysis_only</span><p>源页只支持内部分析，不授予复用权。</p></div><div class="gate"><strong>originality_delta</strong><span>pending_artifact_review</span><p>需要目标 artifact，才能检查原创差异。</p></div></div></div>
+          <div class="footnote" style="margin-top:14px"><strong>下一步：先补证据，再做测试。</strong> 需要补齐原始帖子、完整互动、素材使用范围和目标 Product Snapshot。在此之前，不能宣称“爆款公式”、商业功效或发布结论。</div>
+        </section>
+
+        <section class="section" id="skill">
+          <div class="section-head"><div><div class="kicker">06 / 这套方法</div><h2>这套方法解决什么问题</h2></div><p>它把高表现内容变成可验证的假设。它不会替代参考准入、素材拆解、事实映射、媒体审查或实验执行。</p></div>
+          <div class="skill-intro">
+            <article class="panel pad"><h3>把播放信号变成下一步决定</h3><p>这套方法把问题、证据、假设、替代解释和最小测试串起来。顺序是：先确定范围，再记录观察，提出机制，检查反例，最后决定下一步。</p><p style="margin-top:12px">它要求区分 Fact、Inference 和 Unknown，也区分 local、CI、private、deployment、live 和 production。每份报告只能选择一个主机制，并保留 13 个检查项、6 道媒体门和可校验的 Insight Brief。</p><div class="contract"><div><strong>需要什么</strong><span>ReferenceBundle、表现窗口、素材拆解、产品事实和实验合同。</span></div><div><strong>交付什么</strong><span>Insight Brief、替代解释、未知项、下一步实验和使用边界。</span></div><div><strong>什么时候停</strong><span>主体、数据分母、事实、权利或媒体门不清楚时，状态保持 blocked 或 proceed_with_limits。</span></div></div></article>
+            <article class="panel dark pad"><h3>分析后，只选一个主机制</h3><p>完成分析后，从下面 6 个机制中选择最能解释现象的一个。</p><div class="skill-list"><div class="skill-item"><b>01</b><div><strong>narrative-transformation</strong><small>问题如何变成结果</small></div></div><div class="skill-item"><b>02</b><div><strong>proof-demonstration</strong><small>用比较或动作给出可见证据</small></div></div><div class="skill-item"><b>03</b><div><strong>experience-pov</strong><small>用第一人称和连续动作呈现体验</small></div></div><div class="skill-item"><b>04</b><div><strong>attention-grammar</strong><small>用开场、揭示、剪辑、字幕或声音抓住注意</small></div></div><div class="skill-item"><b>05</b><div><strong>conversion-action</strong><small>处理异议，并给出受事实约束的 CTA</small></div></div><div class="skill-item"><b>06</b><div><strong>trend-native</strong><small>使用平台语境，同时保留原创差异</small></div></div></div></article>
+          </div>
+          <div class="source-card" style="margin-top:14px"><strong>怎么调用</strong><p>项目任务中使用 <code>$viral-video-deep-insight</code>。入口、模板、校验器和 fixture 测试都在 <code>.agents/skills/viral-video-deep-insight/</code>。</p></div>
+        </section>
+
+        <section class="section" id="limits">
+          <div class="section-head"><div><div class="kicker">07 / 当前决定</div><h2>决定：补证据，然后做一次单变量测试</h2></div><p>现在不发布。当前只判断这条线索是否值得继续投入。答案是：值得，但要有限制。</p></div>
+          <div class="panel pad"><table><thead><tr><th>判断项</th><th>当前结论</th><th>为什么</th></tr></thead><tbody><tr><td>status</td><td><span class="pill inf">proceed_with_limits</span></td><td>公开页面记录了高播放，但原帖身份和数据分母还不完整。</td></tr><tr><td>primary_mechanism</td><td><code>proof-demonstration</code></td><td>这是当前最小解释，不是因果证明。experience-pov 只是辅助信号。</td></tr><tr><td>action</td><td><code>collect_evidence → test</code></td><td>先补原帖、权利、Product Snapshot 和测量口径，再测试。</td></tr><tr><td>claim boundary</td><td>当前没有可接受的 Product Claim</td><td>源视频不是 Momcozy 产品证据。产品文案必须重新绑定 confirmed/locked Fact。</td></tr><tr><td>ready gate</td><td>未通过</td><td>目标 artifact、身份连续性、来源使用范围和原创差异仍未确认。</td></tr></tbody></table></div>
+        </section>
+      </main>
+
+      <footer class="footer"><p><strong>Momcozy × Viral Video Deep Insight</strong><br />内部研究简报 · 来源有限 · 未批准发布</p><p>本页只展示公开来源的研究摘要和分析方法。页面不存放原始视频、私有资产、凭据或模型私有推理。高播放和第三方记录不能证明因果效果、商业权利或生产验收。</p></footer>
+    </div>
+  </body>
+</html>

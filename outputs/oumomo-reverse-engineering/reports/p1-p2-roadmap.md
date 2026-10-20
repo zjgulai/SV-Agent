@@ -118,7 +118,7 @@ P2 Preview-first 视频流水线
 - 预览为确定性 HTML animatic：只显示阶段、镜头、事实绑定、口播/字幕、验收描述和既有公开图片索引；不调用 Provider、不生成媒体、不创建 Job，也不出现报价、积分或发布。`0005` 为 storyboard 与 approval event 添加数据库不可变 trigger，审批事件以序列定义最新事件。
 - 已新增两张表、不可变 trigger 与 migration；边界固定为“本地操作者批准”“批准仅进入未来报价前门禁”“无上传素材”。
 
-详细合同和验收标准见 [`docs/superpowers/specs/2026-08-14-storyboard-approval-preview-p2-design.md`](../../../docs/superpowers/specs/2026-08-14-storyboard-approval-preview-p2-design.md)。
+详细合同和验收标准见 [`docs/decisions/2026-08-14-storyboard-approval-preview-p2-design.md`](../../../docs/decisions/2026-08-14-storyboard-approval-preview-p2-design.md)。
 
 ### P2.1 Media contract
 

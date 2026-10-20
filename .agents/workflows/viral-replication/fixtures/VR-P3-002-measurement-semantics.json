@@ -1,0 +1,57 @@
+{
+  "fixture_id": "VR-P3-002",
+  "scenario": "同一观察记录中同时出现真实的 0、未报告、未采集和来源歧义。",
+  "measurement_records": [
+    {
+      "measurement_id": "m-observed-zero",
+      "metric": "visible_count",
+      "value": 0,
+      "state": "observed",
+      "unit": "items",
+      "source_ref": "obs://fixture/frame-014"
+    },
+    {
+      "measurement_id": "m-not-reported",
+      "metric": "retention_rate",
+      "value": null,
+      "state": "not_reported",
+      "unit": "percent",
+      "source_ref": null
+    },
+    {
+      "measurement_id": "m-not-collected",
+      "metric": "surface_temperature",
+      "value": null,
+      "state": "not_collected",
+      "unit": "celsius",
+      "source_ref": null
+    },
+    {
+      "measurement_id": "m-source-ambiguous",
+      "metric": "duration",
+      "value": 10,
+      "state": "source_ambiguous",
+      "unit": "seconds",
+      "source_ref": "model://summary-001"
+    }
+  ],
+  "expected": {
+    "disposition": "proceed_with_limits",
+    "preserve_states": {
+      "m-observed-zero": "observed_zero_is_not_missing",
+      "m-not-reported": "not_reported_is_not_zero",
+      "m-not-collected": "not_collected_is_not_zero",
+      "m-source-ambiguous": "ambiguous_value_cannot_support_claim"
+    },
+    "blockers": [
+      "source_ambiguous_measurement_cannot_enter_claim_mapping"
+    ],
+    "allowed_next_action": "retain_zero_and_missing_semantics_then_request_source_evidence",
+    "must_not": [
+      "convert_null_to_zero",
+      "convert_observed_zero_to_unavailable",
+      "promote_model_summary_to_fact"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

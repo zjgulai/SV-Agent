@@ -2,24 +2,33 @@
 
 ## Before changing code
 
-Read these sources in order:
+Start at `docs/index.md`, then read only the routes relevant to the task:
 
-1. `docs/superpowers/specs/2026-08-10-product-facts-viral-script-p0-design.md`
-2. `docs/superpowers/specs/2026-08-11-oumomo-credit-experiment-system-design.md`
-3. `docs/architecture/p0-architecture.md`
-4. `docs/development/testing.md`
-5. `outputs/oumomo-reverse-engineering/knowledge-base.md` for clean-room experiment work
-6. `docs/superpowers/specs/2026-08-14-reliable-execution-ledger-p15-design.md` when P1.5 reliable execution is explicitly approved
-7. `docs/superpowers/specs/2026-08-14-storyboard-approval-preview-p2-design.md` when P2.0 is explicitly approved
-8. `docs/superpowers/specs/2026-08-14-outbox-dead-letter-retry-p151b-design.md` when P1.5.1b dead-letter recovery is explicitly approved
-9. `docs/superpowers/specs/2026-08-14-client-operation-recovery-p141-design.md` when P1.4.1 client operation recovery is explicitly approved
-10. `docs/superpowers/specs/2026-08-14-fact-bound-script-revision-p12a-design.md` when P1.2a fact-bound script revision is explicitly approved
-11. `docs/superpowers/specs/2026-08-14-pattern-compiler-p13a-design.md` when P1.3a pattern compiler is explicitly approved
-12. `docs/superpowers/specs/2026-08-14-duration-sensitive-storyboard-p13b-design.md` when P1.3b defaults are explicitly approved
-13. `docs/superpowers/specs/2026-08-14-audience-promotion-contract-p13c-design.md` when P1.3c audience slots or Promotion Facts are explicitly approved
-14. `docs/superpowers/specs/2026-08-14-p1-acceptance-closeout-p142-design.md` when P1.4.2 acceptance closeout is explicitly approved
+1. `docs/architecture/project-layout.md` for repository roles, entrypoints and CRAFT-inspired Agent structure.
+2. `docs/architecture/system-overview.md` for current runtime, data flow and scope.
+3. `docs/development/testing.md` for validation commands.
+4. `CONTEXT-MAP.md` and the relevant `docs/contexts/*/CONTEXT.md` when domain language is involved.
+5. `docs/decisions/` for implemented historical contracts and regression boundaries.
+6. `docs/research/oumomo/evidence-index.md` for clean-room experiment work.
+7. `tools/momcozy_assets/README.md` and ADR 0006 plus the local scoped index/report for Momcozy asset or Private Gate work.
+8. `docs/research/leap/public-report-evidence.md` plus the Content Performance Intelligence context for external performance or creative-direction work.
+9. `docs/product/insight-performance-projection-design.md` for the selected compare-bound Decision Brief, subject binding, missing-value semantics and reviewed-package gates.
+10. `docs/product/project-skill-system.md` and `$factframe-workflows` when a task spans multiple capability contexts or needs project workflow routing.
+11. `docs/product/viral-replication-execution.md`, `docs/product/viral-replication-graph-consistency.md` and `.agents/workflows/viral-replication/README.md` when the task concerns viral replication SOPs, skills, fixtures, graph consistency or workflow routing.
+
+`docs/archive/implementation-plans/` records historical execution and blocked work. It is not the current TODO or architecture authority.
 
 Inspect `git status --short --branch` before writes. Preserve unrelated changes. Work on `main`; do not create worktrees. Prefix every local shell command with `rtk`.
+
+## Documentation and capability graph
+
+- Treat the repository as a CRAFT-inspired Agent project: living specifications stay under `docs/`, evidence under `docs/research/` and tracked `outputs/`, reusable instructions under `.agents/`, current delivery tickets under `docs/product/`, and executable products under `apps/`, `tools/`, `infra/`, `migrations/` and `sites/`. Do not create duplicate facade trees.
+- Authority order is code/database/tests, living docs and ADRs, implemented decision contracts, dated research evidence, then archived plans.
+- `.ua/knowledge-graph.json` is generated navigation. It never proves runtime, deployment, data quality or production acceptance by itself.
+- Track `.ua/knowledge-graph.json`, `fingerprints.json`, `meta.json`, `config.json` and `.understandignore`; do not track `.ua/intermediate/`, `.ua/tmp/` or `.ua/.trash-*`.
+- Regenerate the graph after path, module, dependency or long-lived documentation changes. Reject dangling edges and stale `meta.json`.
+- A gitignored path is not automatically garbage. In particular, preserve `outputs/momcozy-content-assets/`, Oumomo artifacts and scoring degradations unless an exact evidence-aware deletion is approved.
+- When moving documents, update `docs/index.md`, cross-links, `AGENTS.md` routing and any relevant graph freshness instructions in the same change.
 
 ## Non-negotiable boundaries
 
@@ -31,6 +40,7 @@ Inspect `git status --short --branch` before writes. Preserve unrelated changes.
 - Do not expose model private reasoning. Persist inputs, typed outputs, validation findings and factual execution state only.
 - URL import is limited to public HTTP/HTTPS Schema.org Product data and must retain SSRF checks.
 - Never commit `.env`, credentials, cookies, private URLs, raw full webpages, databases, Redis state or generated test artifacts.
+- Keep the real Momcozy library in the local Private Gate. Public CI may use only committed Synthetic Fixtures; its success cannot be reported as real-library acceptance. Keep local automation paths, IDs, credentials and receipts out of tracked docs and the capability graph.
 - Do not add account, billing, ranking, video generation or social publishing scope without a new approved design.
 
 ## Development method

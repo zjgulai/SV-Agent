@@ -50,6 +50,23 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Backend dependencies
         run: uv sync --project apps/api --python 3.12 --all-extras --frozen
+      - name: "SV-Agent synthetic — artifact contracts and workflow oracle"
+        timeout-minutes: 5
+        run: |
+          {
+            echo "### SV-Agent synthetic · Batch 1 contract gates"
+            echo "Canonical artifact schema: typed artifacts, references, closed values and cross-artifact invariants."
+            echo "Fixture shape: committed synthetic inputs are readable; this is not canonical artifact validation."
+            echo "Workflow expectations: six synthetic mechanism routes return bounded dispositions and stable finding codes."
+            echo "Scope excludes runtime persistence, providers, real media, publication and approval."
+          } >> "$GITHUB_STEP_SUMMARY"
+          uv run --project apps/api python -m unittest tools.viral_replication.tests.test_artifact_contracts -v
+          uv run --project apps/api python -m unittest tools.viral_replication_oracle.tests.test_oracle -v
+          uv run --project apps/api python -m tools.viral_replication_oracle
+          uv run --project apps/api ruff check tools/viral_replication tools/viral_replication_oracle
+          uv run --project apps/api ruff format --check tools/viral_replication tools/viral_replication_oracle
+          uv run --project apps/api python -m mypy --explicit-package-bases tools/viral_replication tools/viral_replication_oracle
+          echo "Result: all three bounded synthetic gates passed." >> "$GITHUB_STEP_SUMMARY"
       - name: "Momcozy synthetic — Layer 1: contracts and static checks"
         timeout-minutes: 3
         run: |

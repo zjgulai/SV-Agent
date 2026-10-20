@@ -1,0 +1,45 @@
+{
+  "fixture_id": "VR-P4-002-F2",
+  "scenario": "参考的主要机制是限时优惠，但目标 Promotion Fact 在数据库时间上已失效；请求方仍要求将该优惠作为最终 CTA。",
+  "conversion_action_plan": {
+    "primary_mechanism": "conversion-action",
+    "selected_conversion_component": "promotion_contract",
+    "frozen_pattern": {
+      "key": "offer_cta",
+      "cta_policy": "server_promotion_final_cta",
+      "final_cta_role": "cta"
+    }
+  },
+  "promotion_fact": {
+    "id": "fact-promotion-expired",
+    "snapshot_id": "snap-conversion-002",
+    "claim_type": "promotion",
+    "status": "locked",
+    "value": {
+      "schema_version": "promotion-v1",
+      "kind": "percent_off",
+      "percent": "10",
+      "market": "US",
+      "channel": "tiktok_shop",
+      "timezone": "America/Los_Angeles",
+      "effective_from": "2026-01-01T00:00:00-08:00",
+      "effective_to": "2026-01-31T23:59:59-08:00"
+    },
+    "database_time": "2026-09-23T10:00:00Z"
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "promotion_not_active_at_database_time",
+      "expired_promotion_cannot_render",
+      "time_bound_offer_unavailable"
+    ],
+    "allowed_next_action": "保留优惠 observation，等待同一 Snapshot 下 confirmed/locked 且在数据库时间内有效的 Promotion Fact；否则将条款处置为 unavailable，不生成 CTA。",
+    "must_not": [
+      "reuse_expired_offer_text",
+      "validate_against_client_clock",
+      "downgrade_expired_promotion_to_generic_product_claim"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

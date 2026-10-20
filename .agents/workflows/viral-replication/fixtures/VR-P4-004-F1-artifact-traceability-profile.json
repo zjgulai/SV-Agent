@@ -1,0 +1,36 @@
+{
+  "fixture_id": "VR-P4-004-F1",
+  "scenario": "Artifact 被标记为完成，但记录中的 SHA-256 与 frozen contract/config digest 不对应；技术 profile 来自另一份未绑定 Artifact 的探针结果。请求方仍希望继续媒体验收。",
+  "media_integrity_record": {
+    "mode": "artifact_review",
+    "contract_digest": "sha256:fixture-contract-A",
+    "artifact_traceability": {
+      "artifact_id": "artifact-fixture-001",
+      "artifact_sha256": "sha256:fixture-artifact-B",
+      "config_digest": "sha256:fixture-config-B",
+      "terminal_state": "completed",
+      "provenance_state": "source_ambiguous"
+    },
+    "technical_profile": {
+      "observed_artifact_id": "artifact-fixture-002",
+      "probe_status": "ok",
+      "duration_seconds": 12.0,
+      "dimensions": "720x1280"
+    }
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "artifact_contract_digest_mismatch",
+      "artifact_provenance_unreconciled",
+      "technical_profile_not_bound_to_artifact"
+    ],
+    "allowed_next_action": "重新取得与 frozen contract/config digest 对应的 artifact identity、hash、terminal state 与同一 artifact 的技术 profile；在此之前保留媒体状态为 unavailable。",
+    "must_not": [
+      "treat_completed_state_as_artifact_identity",
+      "reuse_probe_result_from_another_artifact",
+      "infer_media_or_rights_acceptance_from_hash_presence"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

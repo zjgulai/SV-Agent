@@ -1,0 +1,23 @@
+{
+  "schema": "momcozy-case-summary/v1",
+  "case": "oumomo-clean-room-reverse-engineering",
+  "title": "Oumomo · 复刻链路黑盒基线",
+  "brand": "Oumomo",
+  "period": "2026-08-11 → 2026-08-14",
+  "status": "ENGINEERING_BASELINE_WITH_CONTENT_FAIL",
+  "goal": "验证配置、异步队列、持久项目与媒体导出的工程链路，同时检查生成内容是否越过输入事实。",
+  "milestones": [
+    { "label": "R-B01", "result": "技术链路 succeeded", "meaning": "一次受控提交、异步进度、项目恢复与本地导出可追踪" },
+    { "label": "M-EX01", "result": "内容验收 fail", "meaning": "出现输入图无法支持的性能/质量口播主张" },
+    { "label": "R3-P01", "result": "blocked", "meaning": "刷新后参考可播放性与报价合同不足以重建稳定复验" }
+  ],
+  "outputs": [
+    { "file": "media/01-existing-replica.mp4", "label": "既有复刻取证" },
+    { "file": "media/02-rb01-controlled-replica.mp4", "label": "R-B01 受控基线" },
+    { "file": "media/03-ub01-paid-output.mp4", "label": "U-B01 付费输出" }
+  ],
+  "technicalReadout": { "durationSeconds": 15.104, "resolution": "720×1280", "fps": 24, "format": "H.264/AAC" },
+  "contentVerdict": "任务技术终态与事实可接受性必须分开记录；本案例不能证明可复现、可商用的爆款复刻能力。",
+  "gaps": ["参考视频刷新后稳定性", "输入事实与口播/字幕一致性", "重复样本与随机性分布", "商业权利、发布与生产验收"],
+  "sitePacket": { "videoCount": 3, "stillCount": 4, "curatedArtifactCount": 4, "redaction": "内部会话、积分、哈希、账号凭据与原始收据未发布" }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Media Integrity"
+  short_description: "Review six independent media gates"
+  default_prompt: "Use $viral-media-integrity to create a fail-closed MediaIntegrityRecord for a frozen replication contract without upgrading local evidence into rights, commercial, platform, publishing, or production approval."

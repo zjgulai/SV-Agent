@@ -20,6 +20,14 @@ htmlcov/
 playwright-report/
 test-results/
 
+# Local agent/editor state and Sites deployment bindings are machine-specific.
+.serena/
+**/.openai/hosting.json
+
+# The viral replication workbench is a reviewed public static release surface.
+!sites/viral-replication-workbench/dist/
+!sites/viral-replication-workbench/dist/**
+
 *.db
 *.sqlite3
 postgres-data/
@@ -30,6 +38,10 @@ outputs/*
 !outputs/oumomo-reverse-engineering/
 !outputs/oumomo-reverse-engineering/**
 
+# Local commercial/evidence data may be ignored but is not disposable. Never
+# use a broad ignored-file clean against outputs/; inspect manifests, hashes,
+# provenance and backup status first.
+
 # Clean-room evidence may retain local generated media for analysis, but raw
 # inputs/outputs are never repository artifacts. Commit only hashes, manifests
 # and written findings from this subtree.
@@ -37,3 +49,8 @@ outputs/oumomo-reverse-engineering/artifacts/*
 !outputs/oumomo-reverse-engineering/artifacts/hashes.csv
 !outputs/oumomo-reverse-engineering/artifacts/scorecards.csv
 outputs/oumomo-reverse-engineering/fixtures/scoring-degradations/
+
+# Understand-Anything: version the final graph and metadata, not scratch data.
+.ua/intermediate/
+.ua/tmp/
+.ua/.trash-*/

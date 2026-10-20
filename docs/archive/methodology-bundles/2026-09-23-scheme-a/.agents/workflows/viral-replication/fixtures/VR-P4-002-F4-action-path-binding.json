@@ -1,0 +1,37 @@
+{
+  "fixture_id": "VR-P4-002-F4",
+  "scenario": "CTA 文案要求直接购买，计划却没有受控 action-path binding，而是把参考的第三方 checkout URL 作为 provider 参数并宣称项目可执行下单。",
+  "conversion_action_plan": {
+    "primary_mechanism": "conversion-action",
+    "selected_conversion_component": "action_path",
+    "cta_invitation": {
+      "final_cta_role": "cta",
+      "policy": "server_generic_no_offer"
+    },
+    "action_path": {
+      "binding_state": "unresolved",
+      "reference_url": "https://fixture.example/checkout",
+      "target_snapshot_id": "snap-conversion-004",
+      "market": "US"
+    },
+    "provider_input_fields": [
+      "action_destination"
+    ]
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "action_path_unresolved",
+      "external_action_out_of_scope",
+      "unmodeled_external_action_destination",
+      "provider_action_destination_leakage"
+    ],
+    "allowed_next_action": "将 action path 标记为 not_applicable，或在独立能力设计中建立经授权、同一 subject/market 的受控 handoff；本 workflow 不执行链接、购买或发布。",
+    "must_not": [
+      "represent_checkout_as_existing_runtime",
+      "send_external_destination_to_provider",
+      "claim_user_completed_action"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

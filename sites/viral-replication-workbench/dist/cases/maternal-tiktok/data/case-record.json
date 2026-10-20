@@ -1,0 +1,94 @@
+{
+  "schema": "brand-awareness-case/v1",
+  "case_id": "bv-001-messy-eater-cleanup",
+  "track": "brand_voice_social",
+  "intent": "brand_awareness_only",
+  "title": "Baby Social Voice · Messy Eater Cleanup",
+  "subject": {
+    "context": "independent_parenting_creator",
+    "market": "US",
+    "language": "English",
+    "audience_context": "Parenting & Kids"
+  },
+  "observation_window": {
+    "platform": "TikTok",
+    "posted_at": "2025-10-10",
+    "capture_at": "2026-10-10",
+    "timezone": "unknown",
+    "window_precision": "source_page_reported"
+  },
+  "source_register": [
+    {
+      "source_ref": "SRC-01",
+      "locator": "https://ark.media/record/20842",
+      "source_kind": "third_party_public_index",
+      "what_it_proves": "source_page_reports_content_summary_and_view_count",
+      "precision": "reported_via_source_page",
+      "rights_scope": "analysis_only",
+      "original_post": "unknown"
+    }
+  ],
+  "metrics": [
+    {
+      "name": "views",
+      "value": 8700000,
+      "state": "reported",
+      "denominator": "not_disclosed",
+      "paid_or_organic": "unknown",
+      "source_ref": "SRC-01"
+    },
+    {
+      "name": "likes_comments_shares_completion_account_size",
+      "value": null,
+      "state": "not_reported",
+      "denominator": "not_applicable",
+      "paid_or_organic": "unknown",
+      "source_ref": "SRC-01"
+    }
+  ],
+  "content_beats": {
+    "hook": "observed_from_source_summary",
+    "tension": "observed_from_parenting_context",
+    "intervention": "observed_task_bundle_visibility",
+    "proof_or_experience": "proof_demonstration_with_experience_pov_secondary",
+    "result": "partially_observed",
+    "cta": "not_reported"
+  },
+  "primary_mechanism": "proof-demonstration.task_bundle_visibility",
+  "secondary_mechanism": "experience-pov",
+  "social_resonance": {
+    "parent_tension": "post_meal_cleanup_burden",
+    "recognition_signal": "hypothesis",
+    "emotional_payoff": "relief_and_surprise_hypothesis",
+    "participation_cue": "unknown"
+  },
+  "brand_translation": {
+    "momcozy_role": "maternal_everyday_support",
+    "product_presence": "absent",
+    "product_claim_state": "none",
+    "cta": "none"
+  },
+  "rights_safety": {
+    "source_use": "analysis_only",
+    "music_rights": "unknown",
+    "guardian_consent": "unknown",
+    "likeness_scope": "not_embedded",
+    "child_exposure_risk": "pending_review"
+  },
+  "commercial_disclosure": "unknown",
+  "media_state": "metadata_only",
+  "social_resonance_map_path": "social-resonance-map.json",
+  "social_resonance_status": "observation_only",
+  "status": "proceed_with_limits",
+  "next_action": "collect_evidence",
+  "proof_level": "local",
+  "report_path": "../../../deep-insight.html",
+  "brief_path": "insight-brief.json",
+  "limitations": [
+    "third_party_record_is_not_original_tiktok_post",
+    "paid_or_organic_status_not_closed",
+    "interaction_metrics_and_denominator_not_reported",
+    "source_use_and_child_safety_not_authorized",
+    "no_brand_lift_or_sales_claim"
+  ]
+}

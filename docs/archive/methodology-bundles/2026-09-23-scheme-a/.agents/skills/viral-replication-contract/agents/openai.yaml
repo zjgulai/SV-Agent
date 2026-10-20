@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Replication Contract"
+  short_description: "Freeze a single-variable replication"
+  default_prompt: "Create a digest-bound Control/Variant contract and fail closed on variable drift."

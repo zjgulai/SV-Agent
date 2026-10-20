@@ -1,0 +1,4 @@
+interface:
+  display_name: "Viral Fact Mapping"
+  short_description: "Bind replication claims to Product Truth"
+  default_prompt: "Audit every visible claim against one Product Snapshot and its confirmed/locked Facts."

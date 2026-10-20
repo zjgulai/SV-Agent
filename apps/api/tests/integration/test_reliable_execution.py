@@ -6,7 +6,6 @@ from sqlalchemy import update
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.adapters.connectors.schema_org import ParsedProduct
 from app.adapters.db.models import ImportAttemptRecord, JobEventRecord, OutboxEventRecord
 from app.adapters.db.repositories import (
     ImportAttemptRepository,
@@ -25,6 +24,7 @@ from app.domain.products.entities import (
     ProductSource,
     SourceType,
 )
+from app.ports.product_connector import ParsedProduct
 from app.worker.tasks import ProductImportWorker
 
 

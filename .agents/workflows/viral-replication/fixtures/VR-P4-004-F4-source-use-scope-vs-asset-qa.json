@@ -1,0 +1,36 @@
+{
+  "fixture_id": "VR-P4-004-F4",
+  "scenario": "target Asset Bundle 结构有效，Aggregate Index 显示 commercial_disposition=approved，Private Gate receipt 也通过；但参考人物、音频和模板只允许内部分析，计划却复用其内容并宣称资产 QA 已经证明可商用。",
+  "media_integrity_record": {
+    "mode": "preflight",
+    "artifact_traceability": {
+      "target_asset_bundle_state": "structurally_valid",
+      "aggregate_index_state": "partial",
+      "commercial_disposition": "approved",
+      "commercial_approval": {"availability": "unknown"},
+      "private_gate_receipt_state": "passed"
+    },
+    "source_use_scope": [
+      {
+        "surface": "reference_person_audio_template",
+        "intended_use": "reuse_and_commercial_distribution",
+        "evidence_state": "confirmed_for_internal_analysis_only"
+      }
+    ]
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "planned_use_exceeds_source_use_scope",
+      "asset_traceability_not_usage_entitlement",
+      "commercial_approval_unavailable"
+    ],
+    "allowed_next_action": "将 target Bundle traceability 与 reference use scope 分开记录；对来源表层采用独立替代，或在所需用途上补齐可回查 evidence。",
+    "must_not": [
+      "treat_asset_bundle_validity_as_reference_permission",
+      "treat_commercial_disposition_as_commercial_approval",
+      "treat_private_gate_receipt_as_reuse_or_publish_license"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

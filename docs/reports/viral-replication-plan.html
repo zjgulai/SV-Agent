@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FactFrame 爆款复刻方案 A｜Workflow Packs</title>
+  <style>
+    :root { --ink:#16202a; --muted:#5d6a75; --line:#d9e1e7; --soft:#f5f8fa; --blue:#1967d2; --teal:#0f766e; --amber:#a16207; --red:#b42318; --green:#166534; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#edf2f5; font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; }
+    main { max-width:1180px; margin:32px auto 64px; padding:0 24px; }
+    .hero { padding:38px 42px; border-radius:20px; color:#fff; background:linear-gradient(135deg,#172b4d,#176b87 62%,#1c8b76); box-shadow:0 16px 36px #15344a25; }
+    .eyebrow { letter-spacing:.12em; text-transform:uppercase; font-size:12px; opacity:.8; }
+    h1 { margin:8px 0 10px; font-size:36px; line-height:1.2; }
+    h2 { margin:42px 0 14px; padding-bottom:8px; border-bottom:2px solid var(--line); font-size:25px; }
+    h3 { margin:26px 0 8px; font-size:19px; }
+    p { margin:8px 0 14px; }
+    a { color:var(--blue); }
+    .hero a { color:#d7f6ff; }
+    .meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+    .pill { display:inline-block; padding:4px 10px; border:1px solid #ffffff55; border-radius:99px; font-size:12px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:14px; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; box-shadow:0 4px 14px #19324d0a; }
+    .card h3 { margin-top:0; }
+    .callout { margin:18px 0; padding:16px 18px; border-left:4px solid var(--blue); background:#eaf3ff; border-radius:8px; }
+    .warning { border-left-color:var(--amber); background:#fff8e7; }
+    .danger { border-left-color:var(--red); background:#fff0ee; }
+    .success { border-left-color:var(--green); background:#eefbf2; }
+    table { width:100%; border-collapse:collapse; margin:14px 0 20px; background:#fff; border:1px solid var(--line); }
+    th,td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:#f3f6f8; font-weight:650; }
+    tr:last-child td { border-bottom:0; }
+    code { padding:1px 5px; border-radius:4px; background:#eef2f5; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.91em; }
+    pre { overflow:auto; padding:16px 18px; background:#17212b; color:#e6edf3; border-radius:10px; line-height:1.55; }
+    ul,ol { padding-left:24px; }
+    li { margin:5px 0; }
+    .status { color:var(--green); font-weight:650; }
+    .blocked { color:var(--red); font-weight:650; }
+    .small { color:var(--muted); font-size:13px; }
+    .checklist { list-style:none; padding-left:0; }
+    .checklist li::before { content:"□"; display:inline-block; width:24px; color:var(--blue); font-size:18px; }
+    footer { margin-top:44px; color:var(--muted); font-size:13px; }
+    @media (max-width:680px) { main { margin-top:0; padding:0 12px; } .hero { padding:28px 24px; border-radius:0 0 16px 16px; } h1 { font-size:29px; } th,td { padding:8px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <div class="eyebrow">FactFrame · Viral Replication Intelligence · Version A</div>
+    <h1>爆款复刻 Workflow Packs 深度萃取与执行方案</h1>
+    <p>把高表现参考内容拆成可验证创意机制，再编译为事实受约束、单变量可比较、可追溯的复刻实验。</p>
+    <div class="meta">
+      <span class="pill">方案 A：共享核心 skills + workflow packs</span>
+      <span class="pill">批准日期：2026-09-23</span>
+      <span class="pill">当前阶段：Wave 0 / P4 机制验证</span>
+      <span class="pill">状态：workflow、fixtures、P4 attention/conversion/trend/media-integrity 与图谱 freshness 已完成本地验证；保留非 critical warnings</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="callout success"><strong>决策：</strong>采用方案 A。canonical skills 放在 <code>.agents/skills/</code> 以保持 Codex 可发现与单一权威；每个 workflow 文件夹只维护一个 <code>SOP.md</code> 与 <code>skill-map.md</code>，不复制 skill 实现。</div>
+    <div class="callout warning"><strong>证明边界：</strong>当前项目已经具备 Product Truth、脚本/分镜、实验和可靠执行骨架，但没有因此获得 RenderJob、视频生成、账号、billing、社交发布或 production acceptance。本方案先沉淀 agent 能力和可验证工作流，不把设计写成 runtime。</div>
+  </section>
+
+  <section>
+    <h2>1. 当前项目能力与缺口</h2>
+    <div class="grid">
+      <article class="card"><h3>已存在的深模块</h3><p>Product Source/Snapshot/Fact、Creative Pattern、Script Version、Storyboard、Job/Outbox/Celery fencing、Creative Comparison、Experiment Evidence、Momcozy Asset Intelligence、Readiness。</p></article>
+      <article class="card"><h3>可复用的事实边界</h3><p>PostgreSQL 是业务事实源；参考内容、外部表现、实验和素材保持 typed evidence plane 分离；只有 confirmed/locked Fact 支持商品声明。</p></article>
+      <article class="card"><h3>已暴露的复刻风险</h3><p>参考不稳定、n=1、技术成功但内容失败、模型扩写功效/包装/促销、删除事实后重新出现，以及多变量漂移。</p></article>
+      <article class="card"><h3>当前缺口</h3><p>ReferenceBundle、机制抽象、复刻合同与复刻结果版本化仍只到文档/agent 能力层；Media Integrity 已定义验收门，但尚未实施真实 ASR/OCR、镜头归一化、媒体生成、版权/商业批准或发布。</p></article>
+    </div>
+    <p>权威入口：<a href="docs/index.md">docs/index.md</a>、<a href="docs/architecture/system-overview.md">系统架构</a>、<a href="docs/product/project-skill-system.md">项目级 Skill 系统</a>、<a href="docs/product/viral-replication-execution.md">执行台账</a>。</p>
+  </section>
+
+  <section>
+    <h2>2. MECE 类型模型</h2>
+    <p>分类依据是“复刻成功最依赖的唯一机制”，不是平台、商品、语言或内容表面。每个 Reference 必须有一个 <code>Primary Replication Mechanism</code>；其他只能是 secondary mechanism，无法分离时拆成 Variant 或 blocked。</p>
+    <table>
+      <thead><tr><th>类型</th><th>主复制对象</th><th>第一批状态</th><th>主要验收</th></tr></thead>
+      <tbody>
+        <tr><td><code>narrative-transformation</code></td><td>问题—摩擦—转折—解决—结果—CTA 的关系</td><td class="status">Wave 1</td><td>叙事关系保持，目标商品声明重新 fact-bind</td></tr>
+        <tr><td><code>proof-demonstration</code></td><td>实验、对比、倒计时、温度、量化或物理演示</td><td class="status">Wave 1</td><td>观察现象与允许结论分离，unsupported proof claim=0</td></tr>
+        <tr><td><code>experience-pov</code></td><td>POV、ASMR、感官触点、动作和情绪体验</td><td class="status">Wave 1</td><td>连续性和身份稳定，体验语言不越权成商品功效</td></tr>
+        <tr><td><code>attention-grammar</code></td><td>Hook、信息揭示/镜头节奏、字幕节拍、视觉反差、声音时序</td><td class="status">Wave 2 / VR-P4-001</td><td>单一 attention component 迁移，表层复制和因果越权受控</td></tr>
+        <tr><td><code>conversion-action</code></td><td>决策异议、商业条款、CTA invitation、行动路径</td><td class="status">Wave 2 / VR-P4-002</td><td>唯一 conversion component、Promotion Fact、数据库时间有效期、CTA ownership 与 action-path 状态完整</td></tr>
+        <tr><td><code>trend-native</code></td><td>趋势信号、共享语境、挑战/模板结构、音频功能</td><td class="status">Wave 3 / VR-P4-003</td><td>唯一 Trend Component、有界观察、冻结准入记录与 target substitution 可复核；权利、平台兼容、原创批准和发布另行过门</td></tr>
+      </tbody>
+    </table>
+    <pre>外部趋势/音频/平台梗？ → trend-native
+促销/异议/CTA/行动？ → conversion-action
+实验/对比/量化/物理演示？ → proof-demonstration
+POV/ASMR/感官/日常情绪？ → experience-pov
+Hook/镜头/字幕/视觉反差？ → attention-grammar
+否则 → narrative-transformation</pre>
+  </section>
+
+  <section>
+    <h2>3. 方案 A 的物理结构</h2>
+    <pre>.agents/
+├── skills/                         # canonical、可发现、单一权威
+│   ├── factframe-*/                 # 既有 FactFrame skills
+│   └── viral-*/                     # 复刻窄 skills
+└── workflows/viral-replication/     # 编排与 SOP
+    ├── README.md
+    ├── routing-decision-tree.md
+    ├── shared-artifact-contracts.md
+    ├── shared-scorecard.md
+    └── &lt;workflow&gt;/
+        ├── SOP.md
+        └── skill-map.md</pre>
+    <p>这个结构在“可发现性”和“局部性”之间取平衡：skill 保持 deep module，小 interface 隐藏复杂判断；SOP 只负责编排、停止条件、completion criteria 和 handoff。workflow 不复制 skill，避免安全规则漂移。</p>
+  </section>
+
+  <section>
+    <h2>4. 共享 artifact 链</h2>
+    <div class="grid">
+      <article class="card"><h3>ReferenceBundle</h3><p>source locator、digest、平台、Performance Window、capture time、playability、rights、metrics、limitations。</p></article>
+      <article class="card"><h3>DecompositionMap</h3><p>时间线、Hook、Pain、Proof、Experience、Visual/Audio/Text grammar、CTA、claim candidates、unknowns。</p></article>
+      <article class="card"><h3>PatternHypothesis</h3><p>invariant、replaceable、prohibited、adaptation constraints、evidence scope、unknowns。</p></article>
+      <article class="card"><h3>ReplicationContract</h3><p>Reference、Control、Variant、唯一 Creative Dimension、Product Snapshot、Facts、配置、预算、停止条件。</p></article>
+      <article class="card"><h3>AdaptationPackage</h3><p>目标商品的事实绑定脚本、Storyboard、视觉/声音适配和表层差异说明。</p></article>
+      <article class="card"><h3>ReplicationFinding</h3><p>Observations、bounded inferences、unknowns、anomalies、next action、evidence level、limitations。</p></article>
+    </div>
+    <pre>ReferenceBundle → DecompositionMap → PatternHypothesis → ReplicationContract
+→ AdaptationPackage → ScriptVersion / Storyboard → Artifact + MediaQA → Finding</pre>
+  </section>
+
+  <section>
+    <h2>5. Skill 目录与串联</h2>
+    <table>
+      <thead><tr><th>层级</th><th>Skill</th><th>职责</th><th>复用的既有能力</th></tr></thead>
+      <tbody>
+        <tr><td>共享</td><td><code>viral-reference-intake</code></td><td>建立有界、digest-linked ReferenceBundle</td><td>Content Performance / Safe Import 边界</td></tr>
+        <tr><td>共享</td><td><code>viral-content-decomposition</code></td><td>建立时间化 DecompositionMap</td><td>Oumomo evidence / AI media SOP</td></tr>
+        <tr><td>共享</td><td><code>viral-pattern-abstraction</code></td><td>从表层复制提取机制假设</td><td>Creative Signal / Comparison</td></tr>
+        <tr><td>共享</td><td><code>viral-replication-contract</code></td><td>冻结单变量 Control/Variant</td><td>Creative Comparison / Experiment Evidence</td></tr>
+        <tr><td>共享</td><td><code>viral-fact-mapping</code></td><td>将声明绑定到 Snapshot Facts</td><td>Product Truth / Script Storyboard</td></tr>
+        <tr><td>横切 gate</td><td><code>viral-media-integrity</code></td><td>拆分 artifact、技术、声画、身份、来源使用范围和原创差异的六道独立门</td><td>Oumomo Media QC / Asset Intelligence / Fact Mapping / Readiness</td></tr>
+        <tr><td>共享</td><td><code>viral-experiment-evaluation</code></td><td>对账 Artifact、ledger、Media QA 和 Finding</td><td>Reliable Execution / Experiment Evidence / Readiness</td></tr>
+        <tr><td>类型</td><td><code>viral-narrative-transformation</code></td><td>迁移问题—结果叙事弧</td><td>Duration-sensitive Pattern</td></tr>
+        <tr><td>类型</td><td><code>viral-proof-demonstration</code></td><td>迁移 proof device 与允许结论</td><td>Claim Audit / Media QA</td></tr>
+        <tr><td>类型</td><td><code>viral-experience-pov</code></td><td>迁移 POV、ASMR 和连续性</td><td>Asset QA / Storyboard</td></tr>
+        <tr><td>类型</td><td><code>viral-attention-grammar</code></td><td>迁移一个 Hook、节奏、字幕、反差或声音 attention component</td><td>Duration Pattern / Fact Mapping / Contract Isolation</td></tr>
+        <tr><td>类型</td><td><code>viral-conversion-action</code></td><td>迁移一个决策异议、商业条款、CTA invitation 或 action-path component</td><td>Product Truth / Script Storyboard / Contract Isolation</td></tr>
+        <tr><td>类型</td><td><code>viral-trend-native</code></td><td>迁移一个有界趋势信号、共享语境、模板结构或音频功能 component</td><td>Trend Admission / Fact Mapping / Contract Isolation</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>6. 首批三个 Workflow SOP</h2>
+    <div class="grid">
+      <article class="card"><h3>01 Narrative Transformation</h3><p><code>intake → decomposition → abstraction → narrative adapter → fact mapping → script/storyboard → contract → media-integrity → evaluation → readiness</code></p><p>阻断：叙事必须依赖未确认功效、第二变量漂移、复制原始台词或目标商品事实不足。</p></article>
+      <article class="card"><h3>02 Proof Demonstration</h3><p><code>intake → proof decomposition → proof adapter → fact mapping → proof storyboard → contract → media-integrity → evaluation</code></p><p>阻断：物理类比越权成效能证明、数字/单位缺证据、n=1 却要求因果结论。</p></article>
+      <article class="card"><h3>03 Experience POV</h3><p><code>intake → POV decomposition → experience adapter → fact mapping → storyboard → contract → media-integrity → evaluation</code></p><p>阻断：体验语言暗示功效、商品 identity 跨镜头变化、音频/素材授权不明。</p></article>
+      <article class="card"><h3>04 Attention Grammar</h3><p><code>intake → timed attention map → abstraction → attention adapter → fact mapping → storyboard → single-component contract → media-integrity → evaluation</code></p><p>阻断：表层复制、趋势音频误路由、多个 attention component/时长/声音漂移，以及把结构写成留存或播放因果。</p></article>
+      <article class="card"><h3>05 Conversion Action</h3><p><code>intake → conversion map → abstraction → conversion adapter → Product Truth → fact mapping → storyboard → single-component contract → media-integrity → evaluation</code></p><p>阻断：Promotion 进入普通 Facts/provider、数据库时间失效、非最终 CTA slot、未绑定外链/下单，以及仅因有 CTA 而误路由。</p></article>
+      <article class="card"><h3>06 Trend Native</h3><p><code>intake → trend map → abstraction → trend adapter → Product Truth → fact mapping → storyboard → single-component contract → media-integrity → evaluation</code></p><p>MECE 组件：趋势信号、共享语境、模板结构、音频功能；TrendAdmissionRecord 把来源观察/替换输入交给 Media Integrity Gate。阻断：趋势表层误路由、未有界的当前热度、来源音频/模板复用、平台兼容/上传/发布越权。</p></article>
+      <article class="card"><h3>07 Media Integrity Gate</h3><p><code>frozen contract + fact-bound storyboard → traceability / technical / surface / identity / source-use / originality → finding → readiness</code></p><p>横切而非第七主类型。每道 gate 独立有证据和 blocker；preflight 的 artifact 项只能是 pending，任何 QA、资产索引或模型审阅均不等于版权、商业、平台或发布许可。</p></article>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. Ticket 与执行波次</h2>
+    <table>
+      <thead><tr><th>批次</th><th>Ticket</th><th>交付物</th><th>完成标准</th></tr></thead>
+      <tbody>
+        <tr><td>P0</td><td><code>VR-P0-001…004</code></td><td>Context、MECE 路由、artifact contracts、existing router seam</td><td>任意样本唯一主类型；不可判定时 blocked 或拆 Variant</td></tr>
+        <tr><td>P1</td><td><code>VR-P1-001…006</code></td><td>六个共享核心 skills、references、UI metadata</td><td>description 可区分、stop conditions 完整、quick validation 通过</td></tr>
+        <tr><td>P2</td><td><code>VR-P2-001…004</code></td><td>三个首批 SOP、skill-map、happy/blocked paths</td><td>能串联共享 skills，目标声明全部重新 fact-bind</td></tr>
+        <tr><td>P3</td><td><code>VR-P3-001…006</code></td><td>adversarial fixtures、forward tests、finding gates</td><td>高风险样本 fail closed，证明边界不被越权</td></tr>
+        <tr><td>P4</td><td><code>VR-P4-001…004</code></td><td>attention、conversion、trend、媒体/权利门</td><td>先有证据和 fixture，再开放 workflow</td></tr>
+      </tbody>
+    </table>
+    <h3>当前 Wave 0 / Wave 1 TODO</h3>
+    <ul class="checklist">
+      <li>已读取 docs、contexts、skills、Oumomo SOP、当前 git 状态。</li>
+      <li>已完成垃圾候选审计，并将明确生成垃圾移入可恢复隔离目录。</li>
+      <li>已写入 Viral Replication context、执行台账和 workflow pack 基础文档。</li>
+      <li>已写入六个共享核心 skills 和三个首批类型 skills，9 个 skill 的 quick validation 全部通过。</li>
+      <li>已更新既有 FactFrame router seam、docs link、context map 和执行台账。</li>
+      <li>已写入五个 adversarial fixtures；独立 VR-P3-006 proof-demonstration forward test 判定为 blocked，blocker 已固化。</li>
+      <li>Understand full pipeline 已完成：283 files、321 internal edges、29 batches；workflow pack 与新增项目文档已进入 graph。</li>
+      <li>当前增量 graph：319 files、1,016 nodes、2,076 edges、8 layers、12-step tour；两项 deterministic validator 均为 0 issues。此前 full graph reviewer 为 approved；本次只证明图谱导航与文件集一致，不证明权利、平台或 production。</li>
+      <li>`.agents/skills/` 按确认继续排除在项目结构 graph 外，由 canonical skill discovery 管理。</li>
+      <li><code>VR-P4-001 attention grammar</code> 已完成 canonical skill、04 workflow、attention component partition、五个 P4 fixture、独立前向测试与图谱 freshness 更新；首次 Pattern anchor blocker 已修正并保留在测试结果中。</li>
+      <li><code>VR-P4-002 conversion action</code> 已完成 canonical skill、05 workflow、决策异议/商业条款/CTA invitation/行动路径的互斥 component partition、五个 P4 fixture、独立前向测试和图谱 freshness 更新；Promotion 的独立字段、数据库时间、最终 CTA slot、provider exclusion 与 action-path 边界均已固化。</li>
+      <li><code>VR-P4-003 trend native</code> 已完成 canonical skill、06 workflow、趋势信号/共享语境/模板结构/音频功能的互斥 component partition、五个 P4 fixture、独立前向测试和图谱 freshness 更新；权利、平台兼容与原创差异已冻结为 <code>TrendAdmissionRecord</code>，明确不等于趋势 API、音频/模板许可、平台模板调用、上传、发布或原创批准。</li>
+      <li><code>VR-P4-004 media integrity</code> 已完成 canonical skill、07 cross-cutting workflow、artifact/技术/声画/身份/来源使用范围/原创差异六道互斥 gate、五个相邻边界 fixture 和本地 preflight 前向复核；它只沉淀 <code>MediaIntegrityRecord</code>，不代表已审阅真实媒体，亦不授予版权、商业、平台、发布或 production 结论。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>8. 验收与停止条件</h2>
+    <table>
+      <thead><tr><th>维度</th><th>必须证明</th><th>失败时</th></tr></thead>
+      <tbody>
+        <tr><td>Reference</td><td>来源、digest、时间窗、可播放/可刷新状态、权限</td><td class="blocked">blocked，不进入拆解</td></tr>
+        <tr><td>Mechanism</td><td>唯一 primary mechanism 和可观察 invariant</td><td class="blocked">要求拆 Variant 或缩小问题</td></tr>
+        <tr><td>Product Truth</td><td>同一 Snapshot 的 confirmed/locked Facts</td><td class="blocked">unsupported claim 阻断</td></tr>
+        <tr><td>Execution</td><td>terminal state、ledger、artifact hash</td><td class="blocked">unknown，不升级结论</td></tr>
+        <tr><td>Media integrity</td><td>artifact 溯源、技术、ASR/OCR、商品 identity、continuity、来源使用范围、原创差异</td><td class="blocked">每道 gate 独立保留 blocker；修复、补证据或有范围人工复核</td></tr>
+        <tr><td>Finding</td><td>Observation、Inference、Unknown、限制和 next action</td><td class="blocked">不得写 winner/causal/production</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>9. 清理记录</h2>
+    <div class="callout success"><strong>已执行：</strong>明确的生成垃圾被移至 <code>/tmp/ai_video-cleanup-20260923/quarantined</code>，约 69MB、24 个精确对象，可恢复。</div>
+    <p>包括 `.ua/.trash-*`、`.ua/intermediate/`、`outputs/.DS_Store`、mypy/Ruff/Pytest cache。没有使用宽泛 `git clean`，没有删除 `outputs/`、Momcozy 私有素材、Oumomo artifacts、`.agents/`、`.ua/` 当前 graph 文件或任何 dirty business file。</p>
+    <p class="small">备注：`.ua/.trash-*` 当前已从仓库工作区隔离，但保留在临时目录；若后续 graph 审计需要恢复，可按目录逐项恢复。</p>
+  </section>
+
+  <section>
+    <h2>10. 当前实施边界</h2>
+    <div class="callout danger">本文件、SOP、skill 和 forward test 的通过，只证明当前本地文档/agent 能力链可用。它们不证明视频已经生成、不证明真实平台表现、不证明版权、不证明商业批准、不证明 deployment/live/production。</div>
+    <p>后续每个 ticket 都必须独立报告：权威来源、实际变更、验证命令、proof level、未完成边界。任何 runtime、数据库 schema、账号、billing、媒体生成、社交发布或真实资产处理都要另开明确 gate。</p>
+  </section>
+
+  <footer>
+    关联执行台账：<a href="docs/product/viral-replication-execution.md">docs/product/viral-replication-execution.md</a> · 领域词汇：<a href="docs/contexts/viral-replication/CONTEXT.md">CONTEXT.md</a> · 生成日期：2026-09-23
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "fixture_id": "VR-P4-003-F5",
+  "scenario": "Plan 仅有竖版 9:16 与 15 秒的本地格式观察，却将其写成已经通过目标平台兼容性，并请求上传、选择平台模板和发布。",
+  "trend_admission": {
+    "platform_compatibility": {
+      "target_platform": "short_video",
+      "market": "US",
+      "locale": "en-US",
+      "observed_constraints": ["vertical_9_16", "duration_15_seconds"],
+      "assessment_state": "platform_compatible",
+      "execution_capability": "not_implemented",
+      "external_action_requested": true,
+      "requested_actions": ["upload", "select_platform_template", "publish"]
+    }
+  },
+  "expected": {
+    "disposition": "blocked",
+    "blockers": [
+      "platform_compatibility_unverified",
+      "platform_execution_capability_not_implemented",
+      "external_platform_action_out_of_scope"
+    ],
+    "allowed_next_action": "将格式约束保留为 observation，并开启明确的外部兼容性或发布 gate；当前 plan 只允许 assessment_state=constraints_observed 或 external_verification_required。",
+    "must_not": [
+      "claim_platform_compatible_from_local_format",
+      "claim_platform_integration_or_upload",
+      "activate_template_or_publish_content"
+    ],
+    "evidence_level": "local_fixture_only"
+  }
+}

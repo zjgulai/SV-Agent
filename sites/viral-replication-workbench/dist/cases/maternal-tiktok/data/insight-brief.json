@@ -1,0 +1,135 @@
+{
+  "schema_version": "viral-video-deep-insight-v1",
+  "status": "proceed_with_limits",
+  "action": "collect_evidence",
+  "decision_question": "这条母婴 TikTok 高表现候选是否值得转译成一个受事实与安全边界约束的 Momcozy 单变量测试？",
+  "evidence_level": "Inference",
+  "proof_level": "local",
+  "subject": {
+    "brand": "Independent creator / source page",
+    "market": "US",
+    "product_family": "Parenting & Kids content",
+    "model": "unknown",
+    "variant": "unknown",
+    "binding_state": "reviewed_family_context"
+  },
+  "performance_window": {
+    "platform": "TikTok",
+    "start": "2025-10-10",
+    "end": "2025-10-10",
+    "source_ref": "SRC-01",
+    "source_digest": "ark-record-20842-captured-2026-10-10"
+  },
+  "observations": [
+    {
+      "id": "OBS-01",
+      "text": "ARK by KOMI reports that the TikTok video gained approximately 8.7 million views.",
+      "source_ref": "SRC-01",
+      "availability": "observed",
+      "value": 8700000
+    },
+    {
+      "id": "OBS-02",
+      "text": "The source page credits @kaymurphy13 via ARK Media and classifies the item as Parenting & Kids.",
+      "source_ref": "SRC-01",
+      "availability": "observed",
+      "value": "present"
+    },
+    {
+      "id": "OBS-03",
+      "text": "The source summary describes moving the baby, high chair and plate into a shower and cleaning them in the same action.",
+      "source_ref": "SRC-01",
+      "availability": "observed",
+      "value": "present"
+    },
+    {
+      "id": "OBS-04",
+      "text": "Likes, comments, shares, completion, paid or organic distribution and account-size context are not reported on the source page.",
+      "source_ref": "SRC-01",
+      "availability": "not_reported",
+      "value": null
+    },
+    {
+      "id": "OBS-05",
+      "text": "The original TikTok post locator, collection and deduplication method, ranking denominator and source-use rights are unresolved.",
+      "source_ref": "SRC-01",
+      "availability": "unknown",
+      "value": null
+    },
+    {
+      "id": "OBS-06",
+      "text": "No independently captured product CTA or conversion event is available for this source-limited brief.",
+      "source_ref": "SRC-01",
+      "availability": "not_collected",
+      "value": null
+    }
+  ],
+  "inferences": [
+    {
+      "id": "INF-01",
+      "text": "The leading bounded hypothesis is that proof-demonstration through visible task compression may support attention and sharing.",
+      "supporting_observation_ids": ["OBS-01", "OBS-03"],
+      "disposition": "test",
+      "alternative_explanation": "Creator distribution, editorial selection, novelty, cross-platform curation or an unobserved trend may account for the performance signal."
+    },
+    {
+      "id": "INF-02",
+      "text": "Experience-pov may be a secondary signal because the reported material is a mobile-shot family routine rather than a specification-led product explanation.",
+      "supporting_observation_ids": ["OBS-02", "OBS-03"],
+      "disposition": "test",
+      "alternative_explanation": "The perceived authenticity may be attributable to the creator identity and distribution context rather than the visual point of view."
+    }
+  ],
+  "primary_mechanism": "proof-demonstration",
+  "dimensions": [
+    {"key": "source_context", "evidence_state": "inferred", "transferability": "context_bound", "next_test": "Resolve the original post, capture time, account size, paid-organic status and source-use scope."},
+    {"key": "performance_signal", "evidence_state": "observed", "transferability": "context_bound", "next_test": "Recompute views and interaction rates from a direct post-level capture."},
+    {"key": "audience_tension", "evidence_state": "inferred", "transferability": "portable_function", "next_test": "Test whether parents identify the bundled cleanup burden without explanatory copy."},
+    {"key": "attention_grammar", "evidence_state": "unknown", "transferability": "unknown", "next_test": "Capture the full video and annotate the first three seconds, text, audio and reveal."},
+    {"key": "narrative_transformation", "evidence_state": "inferred", "transferability": "portable_function", "next_test": "Compare a single-task routine with a visually bundled-task routine."},
+    {"key": "proof_demonstration", "evidence_state": "inferred", "transferability": "portable_function", "next_test": "Change only task_bundle_visibility and pre-register comprehension and retention measures."},
+    {"key": "experience_pov", "evidence_state": "observed", "transferability": "context_bound", "next_test": "Hold the task bundle constant while comparing mobile routine framing with studio product framing."},
+    {"key": "conversion_action", "evidence_state": "unknown", "transferability": "unknown", "next_test": "Collect caption and comment CTA evidence before proposing any commercial action."},
+    {"key": "trend_native", "evidence_state": "unknown", "transferability": "unknown", "next_test": "Record audio, hashtag, trend freshness and platform-native participation at capture time."},
+    {"key": "product_truth", "evidence_state": "unknown", "transferability": "context_bound", "next_test": "Bind any Momcozy expression to one reviewed Product Snapshot with confirmed or locked facts."},
+    {"key": "surface_originality", "evidence_state": "unknown", "transferability": "surface_bound", "next_test": "Create an original storyboard and run source-use and originality review before artifact work."},
+    {"key": "experimentability", "evidence_state": "inferred", "transferability": "portable_function", "next_test": "Freeze platform, creator, duration, audio, product snapshot and rights scope; change one creative dimension."},
+    {"key": "media_integrity", "evidence_state": "unknown", "transferability": "context_bound", "next_test": "Run all six Media Integrity gates after a target artifact exists."}
+  ],
+  "claims": [
+    {
+      "id": "CLM-01",
+      "state": "not_a_product_claim",
+      "source_ref": "SRC-01",
+      "source_disposition": "reported_product_claim_not_used"
+    }
+  ],
+  "media_gates": [
+    {"key": "artifact_traceability", "state": "not_applicable_pending_artifact", "evidence": "No target artifact is included in this research brief."},
+    {"key": "technical_profile", "state": "not_applicable_pending_artifact", "evidence": "No target artifact is included in this research brief."},
+    {"key": "communicative_surface", "state": "preflight_evidence_collected", "evidence": "The report defines claim, CTA and visual-surface checks for a future target artifact."},
+    {"key": "target_identity_continuity", "state": "blocked", "evidence": "The source is an independent creator family routine; no Momcozy target snapshot is bound."},
+    {"key": "source_use_scope", "state": "evidence_collected_for_internal_analysis_only", "evidence": "The public source page supports internal analysis only; it does not grant reuse rights."},
+    {"key": "originality_delta", "state": "evidence_collected_pending_artifact_review", "evidence": "An original target storyboard is required before reviewing the delta."}
+  ],
+  "changed_creative_dimension": "proof_demonstration.task_bundle_visibility",
+  "unknowns": [
+    "Original TikTok post URL and post-level capture are unresolved.",
+    "The exact collection date, ranking denominator and paid-organic mix are unresolved.",
+    "Likes, comments, shares, retention, saves and conversion are not reported.",
+    "Originality, source-use rights and child-safety review are not closed.",
+    "No Momcozy Product Snapshot is bound to the source expression."
+  ],
+  "guardrails": [
+    "Do not call the source a proven causal winner or universal viral formula.",
+    "Do not copy the source scene, child, creator identity or source media.",
+    "Do not introduce Momcozy product claims until the same Product Snapshot has confirmed or locked facts.",
+    "Do not treat a generated or playable artifact as rights, platform or production approval."
+  ],
+  "source_refs": ["SRC-01"],
+  "limitations": [
+    "This is a source-limited local Insight Brief based on a third-party record page.",
+    "The full original video, caption, audio, comments and post-level analytics were not independently captured.",
+    "The brief does not establish medical, safety, performance, commercial or production claims."
+  ]
+}

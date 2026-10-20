@@ -1,0 +1,45 @@
+{
+  "schema": "momcozy-case-summary/v1",
+  "case": "kleanpal-pro-replication",
+  "title": "KleanPal Pro · Evening bottle routine",
+  "brand": "Momcozy",
+  "subject": "KleanPal Pro bottle washer and sterilizer · US White",
+  "period": "2026-10-03 → 2026-10-07",
+  "status": "LOCAL_SCREENING_RESEARCH",
+  "primaryMechanism": "experience-pov",
+  "goal": "把生活任务—产品介入—生活收尾的体验关系，转译成事实绑定、单变量可对照的本地审查片。",
+  "reference": {
+    "kind": "official_brand_video",
+    "durationSeconds": 27.966667,
+    "use": "机制研究与时间线观察",
+    "rights": "未独立核验；不构成商业复用许可"
+  },
+  "finalOutputs": [
+    { "label": "control", "file": "media/06-final-control-review.mp4", "durationSeconds": 22, "resolution": "1080×1920", "fps": 24 },
+    { "label": "variant", "file": "media/07-final-variant-review.mp4", "durationSeconds": 22, "resolution": "1080×1920", "fps": 24 },
+    { "label": "silentControl", "file": "media/08-final-control-silent.mp4", "durationSeconds": 22, "resolution": "1080×1920", "fps": 24 }
+  ],
+  "screeningResult": {
+    "screeningOnlyUsable": true,
+    "finalProductDemoReady": false,
+    "humanVisualReview": "not performed",
+    "publicationAuthorized": false
+  },
+  "knownGaps": [
+    "精确投片、启动状态与洗净效果没有在最终片中演示。",
+    "小字、警示标签与实物身份仍需人工逐项比对。",
+    "源素材权利、商业使用与平台发布权限未核验。",
+    "control / variant 只形成候选变体，没有执行因果或转化实验。"
+  ],
+  "localInventory": {
+    "rawFileCount": 798,
+    "rawSizeApprox": "约 379 MB",
+    "rawHandling": "仍保留在本地 gitignored 案例库；本站只发布精选媒体与脱敏摘要。"
+  },
+  "sitePacket": {
+    "videoCount": 8,
+    "stillCount": 6,
+    "curatedArtifactCount": 8,
+    "redaction": "已移除内部 ID、哈希、原始 URL、凭据、私有收据与模型私有推理。"
+  }
+}

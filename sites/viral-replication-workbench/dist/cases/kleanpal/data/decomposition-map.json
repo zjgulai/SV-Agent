@@ -1,0 +1,19 @@
+{
+  "schema": "momcozy-decomposition-map/v1",
+  "status": "observed_timeline_for_discussion",
+  "durationSeconds": 27.966667,
+  "primaryMechanism": "experience-pov",
+  "evidenceScope": "模型声画观察 + 完整音轨复核；不是效果因果验证或热度证明。",
+  "beats": [
+    { "start": 0, "end": 4, "role": "hook", "observation": "灶台、旋钮区域与折叠龙头的擦拭，粉色布作为连续道具。", "visualGrammar": "中景与手部特写交替" },
+    { "start": 4, "end": 5, "role": "routine_context", "observation": "水槽与餐具处理。", "visualGrammar": "厨房中景" },
+    { "start": 5, "end": 7, "role": "intervention", "observation": "台面器具与手部触控动作，面板亮起。", "visualGrammar": "器具中近景" },
+    { "start": 7, "end": 13, "role": "experience", "observation": "内架中逐步出现倒置容器与配件，装载过程被剪辑压缩。", "visualGrammar": "俯视近景" },
+    { "start": 13, "end": 16, "role": "operation_observation", "observation": "透明罩、控制面板操作与随后可见的水滴。", "visualGrammar": "盖体与面板特写" },
+    { "start": 16, "end": 23, "role": "experience", "observation": "继续处理玻璃器皿并在橱柜处收纳。", "visualGrammar": "洗碗机近景与空间中景交替" },
+    { "start": 23, "end": 25, "role": "routine_transition", "observation": "杯子、水壶与饮品台活动。", "visualGrammar": "杯子特写接空间中景" },
+    { "start": 25, "end": 27.966667, "role": "narrative_ending", "observation": "人物回到生活空间，以抱持与就寝动作收尾。", "visualGrammar": "人物与床的较宽构图" }
+  ],
+  "audioGrammar": ["无口播主线", "轻柔连续音乐承托生活节奏", "不把听感评价升级成静音或性能结论"],
+  "observedNotProved": ["节奏与情绪关系可被观察", "产品被嵌入生活任务", "没有可用于热度或转化因果的测量"]
+}

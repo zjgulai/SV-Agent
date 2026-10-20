@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+<meta name="description" content="Momcozy 内容复刻工作台：看清参考内容的方法，核对事实，再生成可审查的复刻简报。" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230b1020'/%3E%3Cpath d='M17 18h8v28h-8zm22 0h8v28h-8zM25 30h14v8H25z' fill='%23d9f36d'/%3E%3C/svg%3E" />
+    <title>Momcozy · Viral Replication Workbench</title>
+    <style>
+      :root {
+        --ink: #111a2e;
+        --muted: #61708a;
+        --paper: #f7f8fc;
+        --white: #ffffff;
+        --navy: #0b1020;
+        --navy-2: #131d38;
+        --line: #dfe4ef;
+        --coral: #ff7058;
+        --coral-soft: #fff0ec;
+        --lime: #d9f36d;
+        --blue: #7c9dff;
+        --blue-soft: #eef2ff;
+        --amber: #f4bb59;
+        --green: #48bd8b;
+        --violet: #8c78ff;
+        --violet-soft: #f1efff;
+        --shadow: 0 18px 48px rgba(18, 28, 53, 0.11);
+        --radius: 22px;
+        --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        font-synthesis: none;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; background: var(--paper); }
+      button, input, select { font: inherit; }
+      button { cursor: pointer; }
+      button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+        outline: 3px solid var(--lime);
+        outline-offset: 3px;
+      }
+      a { color: inherit; text-decoration: none; }
+
+      .shell { max-width: 1440px; margin: 0 auto; padding: 0 30px 80px; }
+      .topbar {
+        display: flex; align-items: center; justify-content: space-between; gap: 22px;
+        padding: 22px 0; position: sticky; top: 0; z-index: 20;
+        background: rgba(247, 248, 252, 0.91); backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(223, 228, 239, 0.75);
+      }
+      .brand { display: flex; align-items: center; gap: 12px; min-width: max-content; }
+      .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: var(--navy); color: var(--lime); font-weight: 900; letter-spacing: -0.08em; }
+      .brand-copy { line-height: 1.05; }
+      .brand-copy strong { display: block; font-size: 14px; letter-spacing: .08em; }
+      .brand-copy span { color: var(--muted); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+      .nav { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+      .nav button { border: 0; background: transparent; color: var(--muted); font-size: 13px; padding: 9px 12px; border-radius: 10px; }
+      .nav button:hover, .nav button.active { background: var(--white); color: var(--ink); box-shadow: 0 6px 18px rgba(18,28,53,.07); }
+      .nav a { display: inline-flex; align-items: center; color: var(--muted); font-size: 13px; padding: 9px 12px; border-radius: 10px; }
+      .nav a:hover { background: var(--white); color: var(--ink); box-shadow: 0 6px 18px rgba(18,28,53,.07); }
+      .nav .nav-entry { color: var(--navy); background: var(--lime); font-weight: 900; box-shadow: 0 7px 16px rgba(175,203,45,.2); }
+      .nav .nav-entry:hover { background: #e4fb84; }
+      .privacy-pill { border: 1px solid #c6d49a; color: #45530d; background: #f2f9ce; padding: 8px 11px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .05em; white-space: nowrap; }
+
+      .hero { display: grid; grid-template-columns: minmax(0, 1.16fr) minmax(320px, .84fr); gap: 30px; padding: 78px 0 50px; align-items: end; }
+      .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--coral); font-size: 12px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+      .eyebrow::before { content: ""; width: 26px; height: 3px; background: var(--coral); border-radius: 4px; }
+      h1 { font-size: clamp(48px, 7.3vw, 100px); line-height: .91; letter-spacing: -.075em; margin: 17px 0 24px; max-width: 880px; }
+      h1 em { color: var(--coral); font-style: normal; }
+      .hero-lede { max-width: 680px; color: var(--muted); font-size: 17px; line-height: 1.7; margin: 0; }
+      .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 27px; }
+      .primary, .secondary { border-radius: 13px; padding: 13px 17px; font-weight: 800; border: 1px solid transparent; transition: transform .18s ease, box-shadow .18s ease; }
+      .primary { color: var(--navy); background: var(--lime); box-shadow: 0 10px 24px rgba(175,203,45,.26); }
+      .secondary { color: var(--ink); background: var(--white); border-color: var(--line); }
+      .primary:hover, .secondary:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+      .hero-card { min-height: 282px; padding: 26px; border-radius: 26px; color: white; background: radial-gradient(circle at 85% 12%, rgba(124,157,255,.52), transparent 34%), linear-gradient(145deg, #101834 0%, #0b1020 72%); box-shadow: var(--shadow); overflow: hidden; position: relative; }
+      .hero-card::after { content: ""; position: absolute; width: 190px; height: 190px; right: -60px; bottom: -80px; border: 26px solid rgba(217,243,109,.32); border-radius: 50%; }
+      .hero-card h2 { margin: 0 0 30px; font-size: 15px; color: #dfe6ff; letter-spacing: .04em; }
+      .hero-card .quote { font-size: 29px; line-height: 1.08; letter-spacing: -.04em; max-width: 340px; position: relative; z-index: 1; }
+      .hero-card .source { color: #aab6d7; font-size: 12px; margin-top: 22px; position: relative; z-index: 1; }
+      .hero-card .entry-link { display:inline-flex; align-items:center; gap:7px; margin-top:20px; position:relative; z-index:1; border:1px solid rgba(217,243,109,.45); border-radius:10px; padding:9px 11px; color:var(--lime); background:rgba(217,243,109,.08); font-size:11px; font-weight:900; }
+      .hero-card .entry-link:hover { background:rgba(217,243,109,.18); }
+      .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 34px; position: relative; z-index: 1; }
+      .mini-grid div { border-top: 1px solid rgba(255,255,255,.24); padding-top: 9px; }
+      .mini-grid strong { display: block; color: var(--lime); font-size: 19px; }
+      .mini-grid span { color: #aab6d7; font-size: 10px; }
+
+      .section { padding: 52px 0; scroll-margin-top: 84px; }
+      .section-head { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 20px; }
+      .section-head h2 { margin: 0; font-size: clamp(28px, 4vw, 48px); letter-spacing: -.055em; line-height: 1; }
+      .section-head p { max-width: 560px; margin: 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
+      .section-kicker { color: var(--coral); font-size: 11px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+
+      .workbench { display: grid; grid-template-columns: 210px minmax(0, 1fr) 290px; gap: 16px; align-items: start; }
+      .panel { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 6px 24px rgba(18,28,53,.04); }
+      .stages { padding: 18px 12px; position: sticky; top: 82px; }
+      .stages h3 { margin: 0 8px 16px; font-size: 12px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+      .stage { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 9px; text-align: left; border: 0; background: transparent; color: var(--muted); border-radius: 12px; font-size: 12px; }
+      .stage:hover, .stage.active { background: var(--blue-soft); color: var(--ink); }
+      .stage-num { width: 23px; height: 23px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 8px; color: var(--muted); background: #f0f2f7; font-size: 11px; font-weight: 900; }
+      .stage.active .stage-num { color: var(--navy); background: var(--blue); }
+      .router { padding: 25px; }
+      .router-top { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
+      .router h3 { margin: 0; font-size: 24px; letter-spacing: -.045em; }
+      .router-top p { color: var(--muted); margin: 8px 0 0; line-height: 1.55; font-size: 13px; max-width: 590px; }
+      .status { padding: 8px 10px; border-radius: 999px; background: #f3f5f9; color: var(--muted); font-size: 11px; font-weight: 800; white-space: nowrap; }
+      .status.ok { background: #e8f7f0; color: #177b53; }
+      .status.blocked { background: var(--coral-soft); color: #b54532; }
+      .question-list { display: grid; gap: 9px; margin-top: 20px; }
+      .question { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 15px; padding: 13px 14px; }
+      .question p { margin: 0; font-size: 13px; line-height: 1.4; }
+      .question small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+      .choices { display: flex; gap: 5px; }
+      .choice { border: 1px solid var(--line); background: #fbfcff; border-radius: 9px; padding: 7px 10px; color: var(--muted); font-size: 11px; font-weight: 800; }
+      .choice.selected { color: var(--navy); border-color: var(--navy); background: var(--lime); }
+      .route-result { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; margin-top: 18px; padding: 17px; border-radius: 16px; background: var(--navy); color: #fff; }
+      .route-result h4 { margin: 0; font-size: 18px; letter-spacing: -.03em; }
+      .route-result p { margin: 6px 0 0; color: #b9c3dd; font-size: 12px; line-height: 1.55; }
+      .route-result .route-tag { padding: 8px 10px; background: var(--lime); color: var(--navy); border-radius: 9px; font: 800 11px var(--mono); }
+      .route-result.blocked { background: #3b1f27; }
+      .route-result.blocked .route-tag { background: var(--coral); color: white; }
+      .artifact-chain { margin-top: 14px; padding: 14px; border: 1px dashed var(--line); border-radius: 15px; background: #fbfcff; }
+      .artifact-chain-head { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom: 10px; }
+      .artifact-chain-head strong { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+      .artifact-chain-head span { color: var(--muted); font-size: 10px; }
+      .artifact-row { display: grid; grid-template-columns: 26px minmax(0,1fr) auto; gap: 9px; align-items: center; padding: 7px 0; border-top: 1px solid #edf0f6; }
+      .artifact-row:first-of-type { border-top: 0; }
+      .artifact-index { width: 22px; height: 22px; display:grid; place-items:center; border-radius: 7px; background:#eef2ff; color:#5068c6; font: 800 10px var(--mono); }
+      .artifact-row strong { display:block; font-size: 11px; }
+      .artifact-row small { display:block; color:var(--muted); font-size: 10px; margin-top:2px; }
+      .artifact-state { padding: 4px 6px; border-radius: 6px; background:#f1f3f7; color:var(--muted); font: 800 9px var(--mono); white-space:nowrap; }
+      .artifact-state.ready { color:#177b53; background:#e8f7f0; }
+      .artifact-state.blocked { color:#b54532; background:var(--coral-soft); }
+      .brief { padding: 20px; }
+      .brief h3 { margin: 0; font-size: 17px; letter-spacing: -.035em; }
+      .brief .hint { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 7px 0 16px; }
+      label { display: block; color: var(--muted); font-size: 11px; font-weight: 800; margin: 12px 0 6px; }
+      input, select { width: 100%; border: 1px solid var(--line); border-radius: 10px; background: #fbfcff; color: var(--ink); padding: 10px 11px; font-size: 12px; }
+      input::placeholder { color: #a5aec0; }
+      .brief-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 15px; }
+      .brief-actions button { padding: 10px 8px; border-radius: 10px; font-size: 11px; font-weight: 900; border: 1px solid var(--line); background: white; color: var(--ink); }
+      .brief-actions .primary { border-color: transparent; }
+      .brief-output { margin-top: 15px; padding: 12px; border-radius: 12px; background: #f5f7fb; color: var(--muted); font: 11px/1.55 var(--mono); white-space: pre-wrap; max-height: 210px; overflow: auto; }
+      .brief-state { display:flex; align-items:center; justify-content:space-between; margin-top: 12px; font-size: 11px; color: var(--muted); }
+      .dot { width: 8px; height: 8px; display:inline-block; border-radius:50%; background: var(--amber); margin-right: 6px; }
+      .dot.ready { background: var(--green); }
+
+      .fusion-layout { display:grid; grid-template-columns: minmax(0, 1.12fr) minmax(300px, .88fr); gap:14px; align-items:stretch; }
+      .fusion-card { padding:22px; background:white; border:1px solid var(--line); border-radius:20px; }
+      .fusion-card.dark { color:white; background:linear-gradient(145deg, #151d3b 0%, #0b1020 82%); border-color:#202b50; }
+      .fusion-card h3 { margin:0 0 7px; font-size:19px; letter-spacing:-.04em; }
+      .fusion-card > p { margin:0 0 17px; color:var(--muted); font-size:12px; line-height:1.6; }
+      .fusion-card.dark > p { color:#b9c3dd; }
+      .fusion-rail { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:7px; align-items:stretch; }
+      .fusion-node { position:relative; min-height:112px; padding:11px; border:1px solid var(--line); border-radius:13px; background:#fbfcff; }
+      .fusion-node::after { content:"→"; position:absolute; right:-10px; top:44px; color:var(--violet); font-weight:900; z-index:1; }
+      .fusion-node:last-child::after { display:none; }
+      .fusion-node .node-step { color:var(--violet); font:800 10px var(--mono); }
+      .fusion-node strong { display:block; margin-top:8px; font-size:11px; line-height:1.3; }
+      .fusion-node small { display:block; margin-top:6px; color:var(--muted); font-size:10px; line-height:1.4; }
+      .fusion-node .node-source { display:inline-block; margin-top:8px; padding:3px 5px; border-radius:5px; color:#4d3bb5; background:var(--violet-soft); font-size:9px; font-weight:900; }
+      .fusion-matrix { width:100%; border-collapse:collapse; font-size:10px; }
+      .fusion-matrix th { padding:8px 7px; color:#aab6d7; text-align:left; border-bottom:1px solid rgba(255,255,255,.16); font-weight:800; }
+      .fusion-matrix td { padding:9px 7px; color:#e7ebfb; border-bottom:1px solid rgba(255,255,255,.09); vertical-align:top; line-height:1.45; }
+      .fusion-matrix td:first-child { color:var(--lime); font-family:var(--mono); }
+      .fusion-matrix td:last-child { color:#b9c3dd; }
+      .status-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:15px; }
+      .status-tag { display:inline-flex; align-items:center; gap:5px; padding:6px 8px; border-radius:999px; font-size:10px; font-weight:900; }
+      .status-tag.ready { color:#177b53; background:#e8f7f0; }
+      .status-tag.candidate { color:#4d3bb5; background:var(--violet-soft); }
+      .status-tag.hold { color:#9b5b13; background:#fff5df; }
+      .fusion-todo { display:grid; gap:8px; margin-top:14px; }
+      .fusion-todo-item { display:grid; grid-template-columns:36px minmax(0,1fr) auto; gap:9px; align-items:center; padding:10px; border:1px solid var(--line); border-radius:11px; background:#fbfcff; }
+      .fusion-todo-item .todo-id { color:var(--violet); font:800 10px var(--mono); }
+      .fusion-todo-item strong { display:block; font-size:11px; }
+      .fusion-todo-item small { display:block; margin-top:3px; color:var(--muted); font-size:10px; line-height:1.35; }
+      .todo-state { padding:4px 6px; border-radius:6px; background:#f1f3f7; color:var(--muted); font:800 9px var(--mono); white-space:nowrap; }
+      .todo-state.done { color:#177b53; background:#e8f7f0; }
+      .todo-state.next { color:#4d3bb5; background:var(--violet-soft); }
+      .mode-picker { display:grid; gap:7px; margin-top:12px; padding:11px; border:1px solid #dfe4ef; border-radius:12px; background:#fbfcff; }
+      .mode-picker label { margin:0; }
+      .mode-picker select { background:white; }
+      .mode-note { margin:7px 0 0; color:var(--muted); font-size:10px; line-height:1.45; }
+      .layer.reverse { color:#4d3bb5; background:var(--violet-soft); }
+
+      .case-switcher { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+      .case-tab { border:1px solid var(--line); background:white; color:var(--muted); padding:10px 13px; border-radius:11px; font-size:11px; font-weight:900; text-align:left; }
+      .case-tab:hover, .case-tab.active { color:var(--navy); border-color:var(--navy); background:var(--lime); }
+      .case-tab small { display:block; margin-top:3px; color:inherit; opacity:.7; font-size:9px; font-weight:700; }
+      .case-lane-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:-4px 0 18px; }
+      .case-lane-card { display:flex; flex-direction:column; align-items:flex-start; gap:5px; min-height:116px; padding:13px 14px; border:1px solid var(--line); border-radius:14px; background:#fbfcff; color:var(--ink); text-align:left; transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+      .case-lane-card:hover, .case-lane-card[aria-current="true"] { border-color:var(--navy); box-shadow:0 8px 22px rgba(18,28,53,.08); transform:translateY(-1px); }
+      .case-lane-card[aria-current="true"] { background:#f7fbdc; }
+      .case-lane-card .lane-meta { color:var(--violet); font:800 9px var(--mono); letter-spacing:.04em; }
+      .case-lane-card strong { font-size:13px; letter-spacing:-.02em; }
+      .case-lane-card span:not(.lane-meta):not(.lane-state) { color:var(--muted); font-size:10px; line-height:1.4; }
+      .case-lane-card .lane-state { margin-top:auto; color:#177b53; font:800 9px var(--mono); line-height:1.35; }
+      .case-layout { display:grid; grid-template-columns:minmax(235px,.34fr) minmax(0,1fr); gap:14px; align-items:start; }
+      .case-overview { padding:20px; position:sticky; top:82px; }
+      .case-overview h3 { margin:0; font-size:21px; letter-spacing:-.045em; }
+      .case-overview .case-status { display:inline-flex; margin-top:10px; padding:6px 8px; border-radius:7px; color:#177b53; background:#e8f7f0; font:800 9px var(--mono); }
+      .case-overview p { margin:13px 0 0; color:var(--muted); font-size:11px; line-height:1.55; }
+      .case-tag-row { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+      .case-tag { display:inline-flex; padding:4px 6px; border-radius:6px; color:#4d3bb5; background:var(--violet-soft); font:800 9px var(--mono); }
+      .case-tag.warn { color:#9b5b13; background:#fff5df; }
+      .case-tag.safe { color:#177b53; background:#e8f7f0; }
+      .case-report-link { display:inline-flex; margin-top:12px; padding:8px 10px; border-radius:8px; color:var(--navy); background:var(--lime); font-size:10px; font-weight:900; }
+      .case-report-link:hover { background:#e4fb84; }
+      .case-metrics { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:18px; }
+      .case-metric { padding:10px; border-radius:11px; background:#f5f7fb; }
+      .case-metric strong { display:block; font-size:17px; letter-spacing:-.04em; }
+      .case-metric span { display:block; margin-top:3px; color:var(--muted); font-size:9px; line-height:1.3; }
+      .case-boundary { margin-top:14px; padding:11px; border:1px solid #f2d5ce; border-radius:11px; color:#7f3c2f; background:var(--coral-soft); font-size:10px; line-height:1.48; }
+      .case-main { min-width:0; display:grid; gap:14px; }
+      .case-panel { padding:20px; background:white; border:1px solid var(--line); border-radius:20px; }
+      .case-panel h3 { margin:0 0 7px; font-size:19px; letter-spacing:-.04em; }
+      .case-panel > p { margin:0 0 15px; color:var(--muted); font-size:11px; line-height:1.6; }
+      .case-stage-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+      .case-stage { min-height:154px; padding:12px; border:1px solid var(--line); border-radius:13px; background:#fbfcff; }
+      .case-stage .stage-id { color:var(--coral); font:800 10px var(--mono); }
+      .case-stage strong { display:block; margin-top:8px; font-size:12px; }
+      .case-stage p { margin:6px 0 0; color:var(--muted); font-size:10px; line-height:1.45; }
+      .case-stage small { display:block; margin-top:10px; color:#4d3bb5; font:800 9px var(--mono); line-height:1.35; }
+      .case-stage .stage-state { display:inline-block; margin-top:8px; padding:4px 6px; border-radius:6px; background:#f1f3f7; color:var(--muted); font:800 9px var(--mono); }
+      .case-stage .stage-state.ok { color:#177b53; background:#e8f7f0; }
+      .case-stage .stage-state.hold { color:#9b5b13; background:#fff5df; }
+      .case-panel-topline { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+      .case-panel-topline h3 { margin-bottom:7px; }
+      .case-resonance-status { display:inline-flex; padding:5px 7px; border-radius:6px; color:#4d3bb5; background:var(--violet-soft); font:800 9px var(--mono); white-space:nowrap; }
+      .case-resonance-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+      .case-resonance-card { min-height:112px; padding:11px; border:1px solid var(--line); border-radius:12px; background:#fbfcff; }
+      .case-resonance-card strong { display:block; font-size:11px; line-height:1.35; }
+      .case-resonance-card p { margin:6px 0 0; color:var(--ink); font-size:10px; line-height:1.45; }
+      .case-resonance-card small { display:block; margin-top:8px; color:#4d3bb5; font:800 9px var(--mono); line-height:1.35; }
+      .case-resonance-columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:12px; }
+      .case-resonance-list { margin:0; padding:11px 14px 11px 27px; border:1px solid var(--line); border-radius:12px; background:#fbfcff; }
+      .case-resonance-list h4 { margin:0 0 7px; font-size:11px; }
+      .case-resonance-list li { margin:5px 0; color:var(--muted); font-size:10px; line-height:1.45; }
+      .case-resonance-link { display:inline-flex; margin-top:12px; padding:8px 10px; border-radius:8px; color:var(--navy); background:var(--lime); font-size:10px; font-weight:900; }
+      .case-resonance-link:hover { background:#e4fb84; }
+      .case-benchmark-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+      .case-benchmark-card { min-height:112px; padding:11px; border:1px solid #e8d8a6; border-radius:12px; background:#fffaf0; }
+      .case-benchmark-card strong { display:block; font-size:11px; line-height:1.35; }
+      .case-benchmark-card p { margin:6px 0 0; color:var(--ink); font-size:10px; line-height:1.45; }
+      .case-benchmark-card small { display:block; margin-top:8px; color:#9b5b13; font:800 9px var(--mono); line-height:1.35; }
+      .case-track-note { margin:-7px 0 16px; color:var(--muted); font-size:10px; line-height:1.5; }
+      .case-preflight-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+      .case-preflight-card { min-height:126px; padding:11px; border:1px solid #f2d5ce; border-radius:12px; background:#fffaf8; }
+      .case-preflight-card strong { display:block; font-size:11px; line-height:1.35; }
+      .case-preflight-card p { margin:6px 0 0; color:var(--ink); font-size:10px; line-height:1.45; }
+      .case-preflight-card small { display:block; margin-top:8px; color:#9b5b13; font:800 9px var(--mono); line-height:1.35; }
+      .case-preflight-columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:12px; }
+      .case-preflight-card.closed { border-color:#b9dfc9; background:#f7fffa; }
+      .case-preflight-card.closed small { color:#177b53; }
+      .case-media-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+      .case-media-card { overflow:hidden; border:1px solid var(--line); border-radius:14px; background:#fbfcff; }
+      .case-media-card video { display:block; width:100%; aspect-ratio:9 / 13; object-fit:cover; background:#111827; }
+      .case-media-card.landscape video { aspect-ratio:16 / 9; }
+      .case-media-copy { padding:11px; }
+      .case-media-copy strong { display:block; font-size:11px; line-height:1.35; }
+      .case-media-copy p { margin:5px 0 0; color:var(--muted); font-size:10px; line-height:1.45; }
+      .media-chip { display:inline-flex; margin-top:7px; padding:4px 6px; border-radius:6px; color:#4d3bb5; background:var(--violet-soft); font:800 9px var(--mono); }
+      .media-chip.reference { color:#9b5b13; background:#fff5df; }
+      .media-chip.final { color:#177b53; background:#e8f7f0; }
+      .media-chip.rejected { color:#b54532; background:var(--coral-soft); }
+      .case-artifact-list { display:grid; gap:7px; }
+      .case-artifact { display:grid; grid-template-columns:56px minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 11px; border:1px solid var(--line); border-radius:11px; background:#fbfcff; }
+      .case-artifact .artifact-stage { color:var(--violet); font:800 10px var(--mono); }
+      .case-artifact strong { display:block; font-size:11px; }
+      .case-artifact small { display:block; margin-top:3px; color:var(--muted); font-size:10px; line-height:1.35; }
+      .case-artifact a { padding:7px 9px; border-radius:8px; color:var(--navy); background:var(--lime); font-size:10px; font-weight:900; white-space:nowrap; }
+      .case-artifact a:hover { background:#e4fb84; }
+      .case-stills { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px; }
+      .case-still { margin:0; border:1px solid var(--line); border-radius:11px; overflow:hidden; background:#111827; }
+      .case-still img { display:block; width:100%; aspect-ratio:9 / 16; object-fit:cover; }
+      .case-still figcaption { padding:6px 7px; color:#dfe6ff; font:9px var(--mono); }
+      .case-local-only { padding:12px; border:1px dashed #c9d2e4; border-radius:12px; background:#f7f9fd; color:var(--muted); font-size:10px; line-height:1.55; }
+      .case-local-only strong { color:var(--ink); }
+      .case-empty { padding:18px; color:var(--muted); border:1px dashed var(--line); border-radius:12px; font-size:11px; }
+
+      .skill-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+      .skill-toolbar input { flex: 1 1 240px; max-width: 430px; background: white; }
+      .filter { border: 1px solid var(--line); background: white; color: var(--muted); padding: 9px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; }
+      .filter.active { color: var(--navy); border-color: var(--navy); background: var(--lime); }
+      .skill-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      .skill-card { padding: 19px; min-height: 0; display:flex; flex-direction:column; border:1px solid var(--line); background:white; border-radius:18px; transition: transform .18s ease, box-shadow .18s ease; }
+      .skill-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+      .skill-card .skill-meta { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+      .skill-id { color: var(--coral); font: 800 10px var(--mono); }
+      .layer { color: var(--muted); background: #f3f5f9; padding: 5px 7px; border-radius: 7px; font-size: 10px; }
+      .skill-card h3 { font-size: 16px; letter-spacing: -.03em; margin: 16px 0 8px; }
+      .skill-card p { color: var(--muted); font-size: 12px; line-height: 1.55; margin: 0; }
+      .skill-scenario { margin: 13px 0 0; padding: 10px 11px; background: #f7f9fd; border: 1px solid #e4e9f2; border-radius: 11px; color: var(--ink); font-size: 11px; line-height: 1.5; }
+      .skill-scenario strong { display:block; margin-bottom:3px; color: var(--coral); font: 800 9px var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+      .skill-card dl { margin: 14px 0 0; padding-top: 13px; border-top:1px solid #edf0f5; display:grid; grid-template-columns: 46px 1fr; gap: 5px 8px; font-size: 10px; line-height:1.4; }
+      .skill-card dt { color: var(--muted); font-weight: 800; }
+      .skill-card dd { margin: 0; color: var(--ink); }
+      .skill-detail { margin-top: 14px; border-top: 1px solid #edf0f5; }
+      .skill-detail summary { list-style:none; cursor:pointer; padding: 12px 0 2px; color:var(--navy); font-size:10px; font-weight:900; display:flex; justify-content:space-between; gap:10px; }
+      .skill-detail summary::-webkit-details-marker { display:none; }
+      .skill-detail summary::after { content:"⌄"; color:var(--muted); transition:transform .18s ease; }
+      .skill-detail[open] summary::after { transform:rotate(180deg); }
+      .skill-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:10px; }
+      .detail-block { padding:10px; border:1px solid #edf0f5; border-radius:10px; background:#fcfdff; }
+      .detail-block h4 { margin:0 0 5px; color:var(--navy); font-size:10px; }
+      .detail-block p { font-size:10px; line-height:1.5; }
+      .detail-block ul { margin:0; padding-left:15px; color:var(--muted); font-size:10px; line-height:1.5; }
+      .detail-block li + li { margin-top:3px; }
+      .skill-handoff { grid-column:1 / -1; background:#eef6ff; border-color:#d7e7fa; }
+      .skill-handoff strong { color:#3566ac; }
+      .empty { padding: 25px; color: var(--muted); background: white; border: 1px dashed var(--line); border-radius: 15px; }
+
+      .workflow-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+      .workflow-card { background:white; border:1px solid var(--line); border-radius:18px; overflow:hidden; }
+      .workflow-card summary { list-style:none; cursor:pointer; padding: 19px; display:grid; grid-template-columns: 43px 1fr auto; align-items:center; gap:12px; }
+      .workflow-card summary::-webkit-details-marker { display:none; }
+      .workflow-icon { width: 43px; height:43px; display:grid; place-items:center; background: var(--blue-soft); color: #3f5cc7; border-radius: 13px; font-weight: 900; }
+      .workflow-card h3 { font-size: 15px; margin:0 0 4px; letter-spacing: -.03em; }
+      .workflow-card summary p { margin:0; color:var(--muted); font-size:11px; line-height:1.4; }
+      .chevron { color:var(--muted); transition: transform .18s ease; }
+      details[open] .chevron { transform: rotate(180deg); }
+      .workflow-body { padding: 0 19px 20px 74px; }
+      .workflow-body .route-question { color: var(--coral); font-size:11px; font-weight:900; margin-bottom:10px; }
+      .workflow-use { margin: 0 0 14px; padding: 11px 12px; background:#f7f9fd; border:1px solid #e4e9f2; border-radius:11px; color:var(--ink); font-size:11px; line-height:1.5; }
+      .workflow-use strong { display:block; color:var(--coral); font:800 9px var(--mono); letter-spacing:.06em; text-transform:uppercase; margin-bottom:3px; }
+      .workflow-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin: 15px 0 0; }
+      .workflow-detail { padding:10px; border:1px solid #edf0f5; border-radius:10px; background:#fcfdff; }
+      .workflow-detail h4 { margin:0 0 5px; font-size:10px; color:var(--navy); }
+      .workflow-detail p, .workflow-detail li { margin:0; color:var(--muted); font-size:10px; line-height:1.5; }
+      .workflow-detail ul { margin:0; padding-left:15px; }
+      .workflow-detail li + li { margin-top:3px; }
+      .workflow-detail.handoff { grid-column:1 / -1; background:#eef6ff; border-color:#d7e7fa; }
+      .sop { display:grid; gap:7px; padding:0; margin:0; list-style:none; }
+      .sop li { display:flex; gap:8px; color:var(--muted); font-size:11px; line-height:1.45; }
+      .sop li::before { content:"✓"; color:var(--green); font-weight:900; }
+      .guardrail { margin-top:12px; padding:10px 11px; background:#fff8e9; border:1px solid #f3dfae; border-radius:10px; color:#75521a; font-size:10px; line-height:1.45; }
+
+      .evidence-layout { display:grid; grid-template-columns: 1.15fr .85fr; gap: 14px; }
+      .evidence-card { padding:22px; background:var(--navy); color:white; border-radius:20px; }
+      .evidence-card h3 { margin:0 0 18px; font-size:20px; letter-spacing: -.04em; }
+      .evidence-ladder { display:grid; gap:8px; }
+      .evidence-step { display:grid; grid-template-columns: 28px 1fr auto; gap:10px; align-items:center; padding:11px; border:1px solid rgba(255,255,255,.14); border-radius:12px; }
+      .evidence-step span:first-child { width:24px; height:24px; display:grid; place-items:center; border-radius:8px; color:var(--navy); background:var(--lime); font-size:11px; font-weight:900; }
+      .evidence-step strong { font-size:12px; }
+      .evidence-step small { display:block; color:#b9c3dd; font-size:10px; margin-top:3px; }
+      .evidence-step em { font-style:normal; color:#b9c3dd; font:10px var(--mono); }
+      .rules { display:grid; gap:10px; }
+      .rule { padding:16px; background:white; border:1px solid var(--line); border-radius:16px; }
+      .rule strong { display:block; font-size:13px; margin-bottom:5px; }
+      .rule p { margin:0; color:var(--muted); font-size:11px; line-height:1.55; }
+      .rule.warn { border-color:#f2d5ce; background:var(--coral-soft); }
+
+      .footer { border-top:1px solid var(--line); padding-top:22px; display:flex; justify-content:space-between; gap:20px; color:var(--muted); font-size:11px; line-height:1.5; }
+      .footer strong { color:var(--ink); }
+      .toast { position:fixed; left:50%; bottom:26px; transform:translate(-50%, 20px); opacity:0; pointer-events:none; background:var(--navy); color:white; padding:11px 15px; border-radius:11px; font-size:12px; transition:.2s ease; z-index:50; }
+      .toast.show { transform:translate(-50%, 0); opacity:1; }
+
+      @media (max-width: 1080px) {
+        .workbench { grid-template-columns: 180px minmax(0,1fr); }
+        .brief { grid-column: 1 / -1; }
+        .brief { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 16px; }
+        .brief h3, .brief .hint { grid-column: 1 / -1; }
+        .brief-actions, .brief-output, .brief-state { grid-column: 3; }
+        .skill-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        .fusion-layout { grid-template-columns:1fr; }
+        .case-layout { grid-template-columns:1fr; }
+        .case-overview { position:static; }
+        .case-lane-strip { grid-template-columns:repeat(3,minmax(0,1fr)); }
+        .case-stage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .case-resonance-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .case-preflight-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .case-media-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      }
+      @media (max-width: 760px) {
+        .shell { padding: 0 17px 56px; }
+        .topbar { align-items:flex-start; flex-direction:column; gap:12px; }
+        .nav { justify-content:flex-start; width:100%; overflow:auto; flex-wrap:nowrap; }
+        .privacy-pill { position:absolute; right:0; top:21px; }
+        .hero { grid-template-columns:1fr; padding-top:49px; }
+        h1 { font-size: clamp(46px, 15vw, 80px); }
+        .hero-card { min-height:240px; }
+        .workbench, .evidence-layout { grid-template-columns:1fr; }
+        .stages { position:static; display:flex; overflow:auto; gap:4px; padding:10px; }
+        .stages h3 { display:none; }
+        .stage { min-width:max-content; }
+        .router { padding:18px; }
+        .router-top { flex-direction:column; }
+        .question { grid-template-columns:1fr; }
+        .choices { justify-content:flex-start; }
+        .brief { display:block; padding:18px; }
+        .brief-actions { margin-top:15px; }
+        .skill-grid, .workflow-grid { grid-template-columns:1fr; }
+        .skill-detail-grid, .workflow-detail-grid { grid-template-columns:1fr; }
+        .skill-handoff, .workflow-detail.handoff { grid-column:auto; }
+        .fusion-rail { grid-template-columns:1fr; }
+        .case-stage-grid, .case-resonance-grid, .case-benchmark-grid, .case-preflight-grid, .case-media-grid { grid-template-columns:1fr; }
+        .case-lane-strip { grid-template-columns:1fr; }
+        .case-resonance-columns { grid-template-columns:1fr; }
+        .case-preflight-columns { grid-template-columns:1fr; }
+        .case-stills { grid-template-columns:repeat(3,minmax(0,1fr)); }
+        .case-artifact { grid-template-columns:46px minmax(0,1fr); }
+        .case-artifact a { grid-column:2; justify-self:start; }
+        .fusion-node::after { content:"↓"; right:auto; top:auto; bottom:-12px; left:50%; }
+        .fusion-node:last-child::after { display:none; }
+        .section-head { display:block; }
+        .section-head p { margin-top:12px; }
+        .footer { display:block; }
+        .footer p:last-child { margin-top:12px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="回到首页">
+          <span class="brand-mark">M</span>
+          <span class="brand-copy"><strong>MOMCOZY</strong><span>Replication OS</span></span>
+        </a>
+        <nav class="nav" aria-label="主导航">
+          <button class="nav-entry" data-scroll="workbench" aria-label="开始使用：进入复刻工作台">开始使用 →</button>
+          <button data-scroll="workbench">复刻工作台</button>
+          <a class="nav-entry" href="deep-insight.html">母婴内容洞察 ↗</a>
+          <button data-scroll="fusion">证据怎么接入</button>
+          <button data-scroll="cases">案例</button>
+          <button data-scroll="skills">技能</button>
+          <button data-scroll="workflows">工作流</button>
+          <button data-scroll="evidence">能做 / 不能做</button>
+        </nav>
+        <span class="privacy-pill">EVIDENCE-BOUND MVP · PUBLIC DEMO</span>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div>
+            <div class="eyebrow">Momcozy · Viral Replication</div>
+            <h1>先看清内容用了什么方法，<br /><em>再决定怎么复刻。</em></h1>
+            <p class="hero-lede">一次只选一个主机制。再核对来源、产品事实和证据。工作台会把这些内容整理成可审查的复刻简报。它不生成视频，也不负责发布。</p>
+            <div class="hero-actions">
+              <button class="primary" data-scroll="workbench">开始做复刻简报 →</button>
+              <button class="secondary" data-scroll="skills">看有哪些技能</button>
+              <a class="secondary" href="deep-insight.html">看母婴内容洞察 ↗</a>
+            </div>
+          </div>
+          <aside class="hero-card" aria-label="产品定位">
+            <h2>一次只改一个变量</h2>
+            <div class="quote">保留方法，换掉台词、人物和画面。</div>
+            <div class="source">基于项目现有工作流。页面使用演示数据。</div>
+            <button class="entry-link" data-scroll="workbench">创建复刻简报 ↗</button>
+            <div class="mini-grid"><div><strong>18</strong><span>核心技能</span></div><div><strong>8</strong><span>工作流</span></div><div><strong>1</strong><span>每次只选 1 个主机制</span></div></div>
+          </aside>
+        </section>
+
+        <section class="section" id="workbench">
+          <div class="section-head">
+            <div><div class="section-kicker">01 / Replication Studio</div><h2>先选主机制。</h2></div>
+            <p>回答 6 个问题。系统只接受一个主机制。如果多个选项都选“是”，请拆成两个版本分别测试。</p>
+          </div>
+          <div class="workbench">
+            <aside class="panel stages" aria-label="复刻工作流阶段">
+              <h3>复刻流程</h3>
+              <button class="stage active" data-stage="0"><span class="stage-num">01</span>参考内容</button>
+              <button class="stage" data-stage="1"><span class="stage-num">02</span>内容拆解</button>
+              <button class="stage" data-stage="2"><span class="stage-num">03</span>模式抽象</button>
+              <button class="stage" data-stage="3"><span class="stage-num">04</span>事实绑定</button>
+              <button class="stage" data-stage="4"><span class="stage-num">05</span>合同冻结</button>
+              <button class="stage" data-stage="5"><span class="stage-num">06</span>证据评估</button>
+            </aside>
+            <section class="panel router" aria-labelledby="router-title">
+              <div class="router-top">
+                <div><h3 id="router-title">先选这次要复刻什么</h3><p>选择“是”只表示当前判断。它还需要经过来源检查和事实核对。</p></div>
+                <span id="router-status" class="status">等待输入</span>
+              </div>
+              <div id="questions" class="question-list"></div>
+              <div id="route-result" class="route-result" aria-live="polite"></div>
+              <div id="artifact-chain" class="artifact-chain" aria-label="共享产物链"></div>
+            </section>
+            <aside class="panel brief" aria-labelledby="brief-title">
+              <h3 id="brief-title">填写本次任务</h3>
+              <p class="hint">草稿只保存在当前浏览器。产品说法必须经过 `viral-fact-mapping` 核对；这里不会自动编造。</p>
+              <label for="reference">参考内容</label>
+              <input id="reference" placeholder="例如：夜间泵奶的安静切换" />
+              <label for="sourceUrl">来源链接（可选）</label>
+              <input id="sourceUrl" type="url" placeholder="https://… · 仅作为来源记录" />
+              <label for="target">目标产品 / 品牌</label>
+              <input id="target" placeholder="Momcozy · 事实待绑定" />
+              <label for="platform">平台</label>
+              <select id="platform"><option>TikTok</option><option>Instagram Reels</option><option>YouTube Shorts</option><option>其他 / 待定</option></select>
+              <label for="market">市场与语言</label>
+              <input id="market" placeholder="US · English" />
+              <div class="mode-picker">
+                <label for="fusionMode">复刻路径</label>
+                <select id="fusionMode"><option value="standard">标准复刻 · 使用现有流程</option><option value="reverse-enhanced">证据增强 · 加入来源和反例检查</option></select>
+                <p class="mode-note">证据增强模式只提出候选方法和待办。`inverse_engineer` 的 Reverse Core 还没有通过验收，因此不能当成已上线功能。</p>
+                <label for="evidenceMode">证据模式</label>
+                <select id="evidenceMode"><option value="demo-local">演示 / 本地草稿</option><option value="public-readonly">公开只读 · 待适配器</option><option value="private-gated">私有资产 · 需本地 Gate</option><option value="ci-synthetic">CI Synthetic Fixture</option><option value="production">生产验收 · 未开放</option></select>
+              </div>
+              <div class="brief-actions"><button class="primary" id="generate">生成简报</button><button id="copy">复制</button><button id="download">下载 JSON</button><button id="clear">清空草稿</button></div>
+              <div id="brief-output" class="brief-output" aria-live="polite">还没有简报。请先回答上方问题。</div>
+              <div class="brief-state"><span><i id="state-dot" class="dot"></i><span id="state-label">draft · 未生成</span></span><span id="saved-label">未保存</span></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section" id="fusion">
+          <div class="section-head">
+            <div><div class="section-kicker">01.5 / Fusion Architecture</div><h2>先把来源和证据接进来，再谈复刻。</h2></div>
+            <p>`inverse_engineer` 负责记录来源、统计口径和反例。本工作台负责把其中一个方法写成可审查的复刻任务。下方会明确区分“可用”“候选”和“未验收”。</p>
+          </div>
+          <div class="fusion-layout">
+            <article class="fusion-card">
+              <h3>两段流程，各管一件事</h3>
+              <p>第一段把内容整理成有来源的证据。第二段把一个主机制写进 Momcozy 复刻合同。</p>
+              <div class="fusion-rail" aria-label="逆向工程与爆款复刻融合流程">
+                <div class="fusion-node"><span class="node-step">01</span><strong>Scope &amp; Contract</strong><small>先写清输入、目标、权限和统计口径</small><span class="node-source">逆向工程</span></div>
+                <div class="fusion-node"><span class="node-step">02</span><strong>Snapshot &amp; Signals</strong><small>保存来源快照，再记录时间线、format、hook 和 CTA</small><span class="node-source">证据接入</span></div>
+                <div class="fusion-node"><span class="node-step">03</span><strong>Mechanism Route</strong><small>只选一个主机制</small><span class="node-source">复刻路由</span></div>
+                <div class="fusion-node"><span class="node-step">04</span><strong>Fact + Contract</strong><small>只使用 confirmed / locked facts，并冻结 Variant</small><span class="node-source">Momcozy</span></div>
+                <div class="fusion-node"><span class="node-step">05</span><strong>Evaluate &amp; Promote</strong><small>检查反例和 holdout，再由专家审批。未通过就保持候选状态</small><span class="node-source">晋级门</span></div>
+              </div>
+              <div class="status-tags"><span class="status-tag ready">● 已可用：本地草稿与证据边界</span><span class="status-tag candidate">◆ 候选：Reverse Core / Workflow IR</span><span class="status-tag hold">! 未开放：真实连接器与生产验收</span></div>
+            </article>
+            <article class="fusion-card dark">
+              <h3>两个项目的数据怎么对应</h3>
+              <p>这张表只说明字段可以怎样对应。两个项目还没有完成运行时整合。</p>
+              <table class="fusion-matrix">
+                <thead><tr><th>inverse_engineer</th><th>本工作台</th><th>当前状态</th></tr></thead>
+                <tbody>
+                  <tr><td>ArtifactSnapshot</td><td>ReferenceBundle</td><td>概念已经对齐；正式快照接口还没做</td></tr>
+                  <tr><td>EvidenceUnit</td><td>DecompositionMap</td><td>本地结构可用；时间线证据还没接入</td></tr>
+                  <tr><td>CreativeCodingObservation</td><td>PatternHypothesis</td><td>字段可以对应；不能用它推导因果</td></tr>
+                  <tr><td>ProposedClaim / Gap</td><td>Finding</td><td>分别记录观察、有限推断和未知</td></tr>
+                  <tr><td>Workflow IR / Skill Release</td><td>Workflow Pack</td><td>目前只是候选；还要通过 holdout 和专家审批</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+          <div class="fusion-card" style="margin-top:14px">
+            <h3>接下来要做什么</h3>
+            <p>按顺序完成以下工作。任何一步缺少证据，都先停在当前状态。</p>
+            <div class="fusion-todo">
+              <div class="fusion-todo-item"><span class="todo-id">P0</span><div><strong>统一证据字段</strong><small>写清 ArtifactSnapshot、EvidenceUnit 和 ReferenceBundle 的字段、来源、有效期和权限。</small></div><span class="todo-state next">本批完成 UI</span></div>
+              <div class="fusion-todo-item"><span class="todo-id">P1</span><div><strong>完成本地工作台</strong><small>加入证据增强模式、证据类型、对象映射和可下载简报。</small></div><span class="todo-state done">已实现</span></div>
+              <div class="fusion-todo-item"><span class="todo-id">P2</span><div><strong>接入公开来源</strong><small>接入社媒 discover / fetch 前，先检查 credential、scope、commercial_access 和 quota。</small></div><span class="todo-state">待适配器</span></div>
+              <div class="fusion-todo-item"><span class="todo-id">P3</span><div><strong>补齐媒体分析</strong><small>分别实现 ASR、OCR、镜头、音频和节奏分析。人工确认后，结果才能进入脚本和 storyboard。</small></div><span class="todo-state">未实现</span></div>
+              <div class="fusion-todo-item"><span class="todo-id">P4</span><div><strong>用反例检查方法</strong><small>只有 counterexample、ablation、holdout、fresh-agent 和专家审批全部通过，才允许 Skill Release。</small></div><span class="todo-state">未验收</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="cases">
+          <div class="section-head">
+            <div><div class="section-kicker">01.8 / Case Archive</div><h2>一个案例，一条证据链。</h2></div>
+            <p>每个案例都展示阶段、决定、视频、中间产物和停止原因。页面只使用精选且脱敏的材料，不公开本地原始库。</p>
+          </div>
+          <div class="case-switcher" role="tablist" aria-label="案例选择">
+            <button class="case-tab active" data-case-select="kleanpal" role="tab" aria-selected="true">KleanPal Pro · 体验 POV<small>2026-10 · 8 阶段 · 主案例</small></button>
+            <button class="case-tab" data-case-select="oumomo" role="tab" aria-selected="false">Oumomo · 黑盒基线<small>2026-08 · 工程链路 + 内容失败</small></button>
+            <button class="case-tab" data-case-select="maternal-tiktok" role="tab" aria-selected="false">Baby Social Voice · 品牌声量<small>source-limited · 非卖货 · 仅分析</small></button>
+            <button class="case-tab" data-case-select="baby-reaction-diaper-change" role="tab" aria-selected="false">Baby Social Voice · Reaction<small>11.1M reported · attention grammar · 仅分析</small></button>
+            <button class="case-tab" data-case-select="nestle-generations-of-love" role="tab" aria-selected="false">Campaign Benchmark · Nestlé<small>5 markets · UGC + Brand Lift · benchmark-only</small></button>
+          </div>
+          <p class="case-track-note">三类案例分开看：产品复刻、品牌声量和活动参考不能放进同一个播放量排名。</p>
+          <div class="case-lane-strip" aria-label="案例轨道快捷入口">
+            <button class="case-lane-card" data-case-select="kleanpal" aria-current="false"><span class="lane-meta">PRODUCT REPLICATION</span><strong>产品复刻</strong><span>看控制组、测试版本、媒体产物和每道执行门。</span><span class="lane-state">KleanPal / Oumomo · 可复盘案例</span></button>
+            <button class="case-lane-card" data-case-select="baby-reaction-diaper-change" aria-current="false"><span class="lane-meta">BRAND VOICE · BV-002</span><strong>品牌声量</strong><span>研究父母为什么有共鸣。不要照搬儿童、台词或画面。</span><span class="lane-state">仅分析 · analysis-only · awaiting_user_gate</span></button>
+            <button class="case-lane-card" data-case-select="nestle-generations-of-love" aria-current="false"><span class="lane-meta">CAMPAIGN BENCHMARK · CB-001</span><strong>活动参考</strong><span>学习 UGC、媒体组合和 Brand Lift 的设计。不要套用案例中的效果数字。</span><span class="lane-state">仅供参考 · benchmark-reference · metadata-only</span></button>
+          </div>
+          <div class="case-layout">
+            <aside id="case-overview" class="panel case-overview" aria-label="当前案例概要"></aside>
+            <div class="case-main">
+              <section class="case-panel" aria-labelledby="case-timeline-title"><h3 id="case-timeline-title">每一步做了什么</h3><p id="case-timeline-copy">按顺序查看每个阶段的动作、产物和停止位置。</p><div id="case-stage-grid" class="case-stage-grid"></div></section>
+              <section class="case-panel" id="case-resonance-panel" aria-labelledby="case-resonance-title" hidden>
+                <div class="case-panel-topline"><h3 id="case-resonance-title">Social Resonance Map</h3><span id="case-resonance-status" class="case-resonance-status"></span></div>
+                <p id="case-resonance-copy">分别记录父母的压力、识别感、情绪回报和参与提示。没有互动数据时，状态保持 unavailable。</p>
+                <div id="case-resonance-grid" class="case-resonance-grid"></div>
+                <div class="case-resonance-columns"><div class="case-resonance-list"><h4>替代解释</h4><ul id="case-resonance-alternatives"></ul></div><div class="case-resonance-list"><h4>未知 / 未采集</h4><ul id="case-resonance-unknowns"></ul></div></div>
+                <a id="case-resonance-link" class="case-resonance-link" href="#" download>下载 Social Resonance Map JSON</a>
+              </section>
+              <section class="case-panel" id="case-benchmark-panel" aria-labelledby="case-benchmark-title" hidden>
+                <div class="case-panel-topline"><h3 id="case-benchmark-title">Campaign Awareness Benchmark</h3><span id="case-benchmark-status" class="case-resonance-status"></span></div>
+                <p id="case-benchmark-copy">这个活动案例只帮助我们学习媒体组合、时间窗口和衡量方法。案例结果不能当成 Momcozy 的结果。</p>
+                <div id="case-benchmark-grid" class="case-benchmark-grid"></div>
+                <div class="case-resonance-columns"><div class="case-resonance-list"><h4>可复用的设计观察</h4><ul id="case-benchmark-observations"></ul></div><div class="case-resonance-list"><h4>来源限制 / 不可迁移</h4><ul id="case-benchmark-caveats"></ul></div></div>
+                <a id="case-benchmark-link" class="case-resonance-link" href="#" download>下载 Campaign Benchmark JSON</a>
+              </section>
+              <section class="case-panel" id="case-preflight-panel" aria-labelledby="case-preflight-title" hidden>
+                <div class="case-panel-topline"><h3 id="case-preflight-title">BV-GATE-001 Preflight</h3><span id="case-preflight-status" class="case-resonance-status"></span></div>
+                <p id="case-preflight-copy">用户可以启动本地预检。这不代表创作者、监护人、音乐或平台已经授权。</p>
+                <div id="case-preflight-grid" class="case-preflight-grid"></div>
+                <div class="case-preflight-columns"><div class="case-resonance-list"><h4>可证明 / 已有来源</h4><ul id="case-preflight-proven"></ul></div><div class="case-resonance-list"><h4>仍需外部证据</h4><ul id="case-preflight-missing"></ul></div></div>
+                <a id="case-preflight-link" class="case-resonance-link" href="#" download>下载 Preflight Record JSON</a>
+              </section>
+              <section class="case-panel" aria-labelledby="case-media-title"><h3 id="case-media-title">视频和中间版本</h3><p id="case-media-copy">每个视频都会说明用途。“未采用”也要保留，因为它能说明团队为什么停下。</p><div id="case-media-grid" class="case-media-grid"></div></section>
+              <section class="case-panel" aria-labelledby="case-stills-title"><h3 id="case-stills-title">用关键帧定位判断</h3><p id="case-stills-copy">关键帧帮助你找到具体画面。单张图片不能证明完整事实或效果。</p><div id="case-stills" class="case-stills"></div></section>
+              <section class="case-panel" aria-labelledby="case-artifacts-title"><h3 id="case-artifacts-title">下载脱敏后的中间产物</h3><p id="case-artifacts-copy">这里提供可分享的摘要。原始收据、内部 ID、哈希、私有链接和凭据仍留在本地。</p><div id="case-artifacts" class="case-artifact-list"></div><div id="case-local-only" class="case-local-only" style="margin-top:12px"></div></section>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="skills">
+          <div class="section-head">
+            <div><div class="section-kicker">02 / Capability Graph</div><h2>每个技能解决一个问题。</h2></div>
+            <p>先看什么时候用，再看开始前要有什么、完成后得到什么、何时必须停。机制技能负责改内容，共享技能负责检查有没有越界。</p>
+          </div>
+          <div class="skill-toolbar"><input id="skill-search" type="search" placeholder="搜索技能名称、输入或停止条件…" aria-label="搜索技能" /><button class="filter active" data-filter="all">全部</button><button class="filter" data-filter="shared">共享层</button><button class="filter" data-filter="mechanism">机制层</button><button class="filter" data-filter="reverse">逆向层</button><button class="filter" data-filter="gate">完整性门</button></div>
+          <div id="skill-grid" class="skill-grid"></div>
+        </section>
+
+        <section class="section" id="workflows">
+          <div class="section-head">
+            <div><div class="section-kicker">03 / Workflow Packs</div><h2>根据场景选工作流。</h2></div>
+            <p>每条工作流都会说明：什么时候选、最少做哪些步骤、会留下什么产物、什么情况下必须停。证据增强和媒体检查服务于所有工作流，它们不是新的主机制。</p>
+          </div>
+          <div id="workflow-grid" class="workflow-grid"></div>
+        </section>
+
+        <section class="section" id="evidence">
+          <div class="section-head">
+            <div><div class="section-kicker">04 / Evidence Boundary</div><h2>不知道，就写不知道。</h2></div>
+            <p>页面会分开记录四类信息：亲眼看到的内容、有限推断、未知项和未获批准的动作。它不会用一个漂亮分数掩盖缺失证据。</p>
+          </div>
+          <div class="evidence-layout">
+            <div class="evidence-card"><h3>证据分四级</h3><div class="evidence-ladder"><div class="evidence-step"><span>01</span><div><strong>Observed · 亲眼看到</strong><small>能在时间线或素材中直接找到</small></div><em>record</em></div><div class="evidence-step"><span>02</span><div><strong>Bounded inference · 有限推断</strong><small>根据观察提出解释，同时写清范围和限制</small></div><em>hypothesis</em></div><div class="evidence-step"><span>03</span><div><strong>Unknown · 不知道</strong><small>缺少测量、权限或复现条件时，保持 unavailable</small></div><em>hold</em></div><div class="evidence-step"><span>04</span><div><strong>Not approval · 尚未批准</strong><small>Gate receipt、预览和公开 CI 都不代表商业或生产验收</small></div><em>boundary</em></div></div></div>
+            <div class="rules"><div class="rule"><strong>先有事实，再写文案</strong><p>只有 `confirmed` 或 `locked` 的事实才能支持产品说法。其余内容进入排除或待审队列。</p></div><div class="rule"><strong>没有数据，不要填 0</strong><p>没有 retention、conversion 或性能测量时，记录为 `unavailable`。</p></div><div class="rule warn"><strong>这里不能生成或发布视频</strong><p>当前 MVP 只生成可审查的本地复刻简报。它不处理视频生成、社交发布、计费、订单、排名或外部 CTA 跳转。</p></div></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer"><p><strong>Momcozy × Replication OS</strong><br />有证据边界的 MVP · 精选案例 · 证据接入候选方案</p><p>草稿保存在当前浏览器。案例只包含精选媒体和脱敏摘要，不读取完整私有资产库或凭据。<br />Gate 和 evidence 结果不代表商业批准、部署或生产验收。</p></footer>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script>
+      (() => {
+        const STORAGE_KEY = "momcozy-viral-replication-mvp";
+        const routeQuestions = [
+          { id: "trend", title: "拿掉热门音频、模板或平台梗后，这条内容还成立吗？", hint: "不成立：选趋势原生", route: "trend-native" },
+          { id: "conversion", title: "这条内容主要在解决购买顾虑、讲促销或推动点击吗？", hint: "是：选转化动作", route: "conversion-action" },
+          { id: "proof", title: "这条内容主要靠实验、对比、数字或物理演示说服人吗？", hint: "是：选证明演示", route: "proof-demonstration" },
+          { id: "experience", title: "这条内容主要让人感受第一视角、声音、触感或日常情绪吗？", hint: "是：选体验 POV", route: "experience-pov" },
+          { id: "attention", title: "这条内容主要靠开头、剪辑、字幕、对比或声音抓住注意力吗？", hint: "是：选注意力语法", route: "attention-grammar" },
+          { id: "narrative", title: "前面都不是。它主要靠“问题—介入—结果”的故事推进吗？", hint: "是：选叙事转化", route: "narrative-transformation" }
+        ];
+        const routeMeta = {
+          "trend-native": ["趋势原生", "只改一个趋势组件。音频权利、平台许可和原创差异要单独检查。"],
+          "conversion-action": ["转化动作", "只改一项：购买顾虑、促销事实、CTA 或动作路径。促销文案必须先核对事实。"],
+          "proof-demonstration": ["证明演示", "把实验、比较、数字或物理现象写成可观察步骤。看到现象不等于证明产品效果。"],
+          "experience-pov": ["体验 POV", "保留第一视角、声音、触感或情绪功能。人物身份和产品事实不能漂移。"],
+          "attention-grammar": ["注意力语法", "只改开头、揭示、剪辑、字幕、对比或声音提示中的一项。"],
+          "narrative-transformation": ["叙事转化", "保留“问题—介入—结果”的关系。换掉原台词、人物和镜头。"]
+        };
+        const skills = [
+          { id: "viral-reference-intake", name: "参考内容接入", layer: "shared", purpose: "先确认参考内容来自哪里、能否复现、是否值得继续拆解。", when: "手里已有视频、链接或本地素材，需要核对来源、时间范围、可播放性和使用权限时。", signals: ["已经知道要研究哪个主体、平台、市场和时间范围", "需要分清表现数据与参考媒体"], notFor: "不把榜单卡片、iframe、URL 或高排名直接当成 winner；不处理发布授权。", input: "参考定位、Performance Window、平台/市场、复刻问题", output: "ReferenceBundle", steps: ["写清主体、平台、市场、时间范围和研究问题", "记录 digest、抓取时间、播放状态和复现状态", "单独记录使用权限、指标状态和限制"], done: "每个必填项都有真实值或明确写为 unavailable。另一位审阅者能按相同范围复现。", stop: "来源身份、digest、时间范围、权限或复现条件不清楚。", handoff: "→ viral-content-decomposition：只把已接受的 ReferenceBundle 交给时间线拆解。", pitfalls: "排名高不等于 winner。能播放不等于能复用。reported metric 不等于因果证据。" },
+          { id: "viral-content-decomposition", name: "内容拆解", layer: "shared", purpose: "按时间顺序记录视频里发生了什么，并把画面、声音、字幕和产品说法分开。", when: "参考内容已经通过接入检查，需要定位具体镜头、字幕、声音和动作时。", signals: ["需要找到某个镜头、字幕或时间点", "判断依赖顺序、节奏或可见动作"], notFor: "不把模型摘要、主观感受或目标商品文案写成来源观察；不决定 Product Truth。", input: "完整 ReferenceBundle、允许的本地或只读检查面", output: "DecompositionMap", steps: ["按时间记录开头、问题、介入、证明或体验、结果和 CTA", "标出画面、音频、字幕、OCR/ASR 和连续性", "给每个产品说法绑定来源和处理状态"], done: "每个观察都有时间范围、来源和可用状态。缺少的环节明确写为 not_present。", stop: "解释找不到对应时间点、关键声画无法检查，或有人把来源说法当成目标产品事实。", handoff: "→ viral-pattern-abstraction：交付带时间点的观察和表面分类。", pitfalls: "“看起来有效”不是观察。视频里没有的环节不能补写。" },
+          { id: "viral-pattern-abstraction", name: "模式抽象", layer: "shared", purpose: "找出真正可迁移的方法，并标出哪些表面能换、不能抄或还不清楚。", when: "内容已经拆解完，需要从多个做法中选出唯一主机制时。", signals: ["参考内容里同时出现多个机制或明显品牌元素", "需要把人物、台词、音乐和功能拆开"], notFor: "不输出 copied script、prompt、shot list 或“爆款公式”；不代替合同冻结。", input: "ReferenceBundle、DecompositionMap、表现证据范围", output: "PatternHypothesis", steps: ["用不带因果判断的语言重述观察", "只选一个最小主机制", "把内容分成 invariant、replaceable、prohibited 和 unknown，并写清证据限制"], done: "执行者可以换产品、人物和文字，同时保留方法。审阅者能说出唯一变化项。", stop: "主机制无法单独拆出，或缺少权利、主体、证据范围，或方法依赖 unsupported claim。", handoff: "→ 对应机制 skill + viral-fact-mapping：先选工作流，再核对事实。", pitfalls: "把风格、账号、趋势和机制统称为“style”，会一次改变多个变量。" },
+          { id: "viral-replication-contract", name: "复刻合同", layer: "shared", purpose: "把对照版、测试版、唯一变量、配置和停止条件一次写清楚。", when: "主机制和目标产品已经初步对应，准备写脚本、分镜或开始测试时。", signals: ["需要比较 Control 和 Variant", "需要锁定时长、模型、素材、市场和预算"], notFor: "不接受多个主机制、provider 临时改写、自由 promotion 或未经授权的外部动作。", input: "PatternHypothesis、Product Snapshot/Facts、素材与权限、执行配置", output: "ReplicationContract + canonical config digest", steps: ["确认准确主体和唯一变化项", "冻结使用与排除的 Facts、Pattern、时长、平台、模型、素材和预算", "写清终态恢复、Media QA、权利和证据门"], done: "另一位审阅者能算出相同 digest，并列出唯一差异和所有阻断项。", stop: "主体、Snapshot、事实、权限、配置或单变量无法确认。", handoff: "→ factframe-script-storyboard / viral-media-integrity：后续执行必须遵守这份合同。", pitfalls: "UI 进度、provider 结果和局部 QA 都不能改合同。" },
+          { id: "viral-fact-mapping", name: "事实映射", layer: "shared", purpose: "核对每一句产品说法是否有 `confirmed` 或 `locked` 事实支持。", when: "脚本、分镜、字幕、标题、包装或促销信息里开始出现产品说法时。", signals: ["出现功效、比较、安全、价格、数量或 CTA", "需要分清 Promotion Fact 和 Product Fact"], notFor: "不从参考台词、模型输出、物理类比或画面暗示补造事实；不修复缺失事实。", input: "Product Snapshot、Facts、Promotion Facts、参考与目标产品说法", output: "Typed claim map + deny-set report", steps: ["列出配音、字幕、OCR、包装、价格、标题、标签和动作里的所有说法", "逐项标记 exact、approved paraphrase、unsupported、excluded、expired 或 unknown", "检查被排除的说法是否重新出现，并给出下一步证据动作"], done: "所有接受的说法都有事实支持。unsupported 和 excluded 出现次数为 0。", stop: "Snapshot 或 Fact 状态不可用、跨 Snapshot、促销过期，或被排除的说法再次出现。", handoff: "→ factframe-script-storyboard：只交付已经绑定且没有阻断项的 claim map。", pitfalls: "confidence、相似度和参考表现都不能替代 confirmed/locked。" },
+          { id: "viral-experiment-evaluation", name: "实验评估", layer: "shared", purpose: "把合同、执行结果、媒体检查和评分放在一起，决定下一步。", when: "对照版和测试版已经运行，或已有受控产物，需要判断继续、补证据还是停止时。", signals: ["需要核对终态、账务、媒体和实验分数", "样本只有 1 个或数据不完整，必须保留限制"], notFor: "不从一次样本推出 winner、causal lift、商业批准或 production acceptance。", input: "ReplicationContract、timeline、terminal Job、ledger、artifact、Media QA、scorecard", output: "ReplicationFinding / EvaluationReport", steps: ["先核对 contract digest 和单变量是否保持", "再核对终态、报价、消耗、释放和 Artifact 来源", "分开写观察、有限推断、未知、阻断项和下一步"], done: "每个结论都能回到具体观察。proof level 和下一步动作清楚。", stop: "合同发生漂移，终态、账务或摘要缺失，关键 gate unavailable，或请求超出证据范围。", handoff: "→ factframe-readiness：分别报告 local、CI、private、deployment、live 和 production。", pitfalls: "UI 显示完成不等于业务完成。一次观察不等于方法可以迁移。" },
+          { id: "viral-video-deep-insight", name: "视频深度洞察", layer: "shared", purpose: "把“看到了什么、为什么可能有效、下一步怎么测”整理成 Insight Brief。", when: "需要解释一条视频可能为什么有效、哪些方法能迁移，以及下一步如何验证时。", signals: ["需要同时呈现观察、替代解释和行动", "需要把高表现内容当成有边界的候选，而不是已证实爆款"], notFor: "不替代来源准入、时间线拆解、主机制路由、媒体生成、实验执行或发布验收。", input: "decision question、subject/window、Performance Observation、ReferenceBundle、DecompositionMap、Fact 状态", output: "Insight Brief（Question → Scope → Observed → Tension → Hypothesis → Test → Action）", steps: ["核对平台、市场、账号规模、paid/organic、分母和快照时间", "按观察、解释、替代解释和可证伪测试组织故事线", "只选一个主机制，再设计最小单变量测试并标明 proof level"], done: "另一位审阅者能重建主体、时间范围、直接证据、替代解释、不能迁移的部分和下一道门。", stop: "播放量没有分母，主体或时间范围无法复现，主机制不唯一，或有人要求 winner、causal 或 universal 结论。", handoff: "→ viral-reference-intake / viral-content-decomposition / 对应机制 workflow：洞察只负责解释和指路。", pitfalls: "0、not reported、not collected、source ambiguous 和 unavailable 含义不同。“爆款”只表示有边界的候选。" },
+          { id: "viral-narrative-transformation", name: "叙事转化", layer: "mechanism", purpose: "保留“问题—介入—结果”的关系，换掉原台词、人物和品牌表面。", when: "视频主要靠一个清楚的问题、介入和结果推进，而且换产品后这段关系仍然成立时。", signals: ["问题、张力、介入和结果能按时间找到", "这段关系比单个开头、证明或 CTA 更重要"], notFor: "不适合由实验演示、POV/ASMR、促销 CTA 或趋势模板主导的内容。两个机制分不开时也不要选。", input: "带时间点的 DecompositionMap、PatternHypothesis、事实映射", output: "Narrative adaptation + fact-bound Script/Storyboard", steps: ["确认故事各段的时间点和关系", "用目标产品事实替换场景和介入，不继承参考产品说法", "把 narrative 冻结为唯一变化项，再进入合同和媒体检查"], done: "关系得到保留，表面明显不同，所有产品说法都有事实支持。", stop: "结果或功效依赖 unsupported fact，或真正的主机制属于其他工作流。", handoff: "→ viral-replication-contract：冻结 narrative dimension 和 control/variant。", pitfalls: "只换品牌、不换原台词，不算叙事转化。" },
+          { id: "viral-proof-demonstration", name: "证明演示", layer: "mechanism", purpose: "把实验步骤、看到的现象和允许说的结论分开。", when: "视频主要靠实验装置、变量、对比或读数说服观众时。", signals: ["能分出输入、操作、现象和展示结果", "允许说的结论可以单独写清楚"], notFor: "不适合只靠氛围、情绪或趋势推动的内容。物理类比不能自动证明产品功效。", input: "proof-specific DecompositionMap、目标事实、方法/单位/样本限制", output: "Proof protocol + proof storyboard + bounded Finding", steps: ["列出装置、输入、操作、现象和显示结果", "设计最小目标实验，并给每个结论绑定 Fact 或标为 non-claim", "把证明机制冻结为唯一变量，再检查媒体完整性"], done: "每一步都分开写 observed phenomenon 和 allowed conclusion。unsupported proof claim 为 0。", stop: "读数没有来源、单位或方法，主体不清楚，或样本只有 1 个却要求因果或普遍结论。", handoff: "→ viral-media-integrity：分别检查可观察现象、技术和来源使用。", pitfalls: "演示里看到结果，不等于产品性能已经得到证明。" },
+          { id: "viral-experience-pov", name: "体验 POV", layer: "mechanism", purpose: "保留第一视角、声音、触感和动作连续性带来的体验。", when: "视频主要靠动作、声音、触感和日常连续性推进，而不是靠数字或促销时。", signals: ["镜头以 POV、手部或日常动作为主", "沉浸感来自动作和感官连续性"], notFor: "不适合把体验语言当成功效、健康、安全或比较结论。人物或产品身份不连续时也不要选。", input: "POV/sensory DecompositionMap、目标身份、授权素材与事实", output: "POV adaptation + experience Script/Storyboard", steps: ["记录视角、动作、场景、道具、声音、字幕和连续性", "替换受保护的表面元素，同时保留感官功能", "分别检查 ASR/OCR、身份、连续性、权利和实验门"], done: "体验功能得到保留，表面不同，身份连续，没有 unsupported product claim。", stop: "身份发生漂移，关键 ASR/OCR 不可用，或体验被用来暗示未证实功效。", handoff: "→ viral-media-integrity：检查目标身份和所有可见、可听表达。", pitfalls: "沉浸、舒适和情绪感受不能自动升级为性能效果。" },
+          { id: "viral-attention-grammar", name: "注意力语法", layer: "mechanism", purpose: "只改一个注意力组件：开头、揭示、剪辑、字幕、对比或声音提示。", when: "视频主要靠切点、信息揭示、字幕节奏、视觉对比或声音提示抓住注意力时。", signals: ["能在时间线上找到一个注意力组件", "其他机制可以冻结或交给别的工作流"], notFor: "不能用结构直接声称 retention、播放量、转化或因果效果。热门音频或模板主导时应选择 trend-native。", input: "timed DecompositionMap、Pattern anchors、目标事实与声音/素材政策", output: "Attention adaptation plan + anchored Script/Storyboard", steps: ["只选一个组件，并记录时间范围和作用", "换掉原词、人物、音频或品牌元素", "保持其他组件、时长、事实、素材和预算不变"], done: "审阅者能重建组件作用、镜头位置、唯一差异和证据限制。", stop: "关键观察无法复核、同时改变两个组件，或输出性能和因果结论。", handoff: "→ viral-replication-contract：把一个注意力组件写入 canonical diff。", pitfalls: "hook 是可观察的结构，不是留存证明。" },
+          { id: "viral-conversion-action", name: "转化动作", layer: "mechanism", purpose: "只改一项转化动作：购买顾虑、促销事实、CTA 或动作路径。", when: "视频主要在解决购买顾虑、讲清有效促销、邀请动作或引导到受控路径时。", signals: ["购买顾虑、促销、CTA 和路径都能找到来源", "最终 CTA 的角色和服务器规则可以冻结"], notFor: "不处理 checkout、billing、自由 URL、外部平台动作、真实转化或收入测量。", input: "conversion DecompositionMap、Product Snapshot、Promotion Fact、CTA policy", output: "ConversionActionPlan + CTA variant", steps: ["把四类组件分开，一次只选一个", "分别绑定 Fact 和 Promotion，并按数据库时间检查 Promotion", "不要把服务器控制的 CTA、促销和目标地址交给 provider"], done: "唯一变化可以复现，Fact、Promotion、CTA 的责任方和动作路径状态清楚。", stop: "跨 Snapshot、Promotion 过期、同时改变两个组件，或要求真实外部动作。", handoff: "→ viral-media-integrity + viral-experiment-evaluation：检查最终 CTA 和结果边界。", pitfalls: "“点击并获得折扣”常常同时改变促销和 CTA，因此不是单变量。" },
+          { id: "viral-trend-native", name: "趋势原生", layer: "mechanism", purpose: "只迁移一个有来源、有时间窗的趋势组件，并单独检查权利和原创性。", when: "拿掉趋势信号、表达框架、模板或音频后，视频的主要功能就不成立时。", signals: ["趋势信号、平台、市场、语言和抓取时间都有来源", "四类 Trend Component 中能选出唯一变量"], notFor: "只有 hashtag、背景音乐或旧截图时不要选。这些信息也不能证明趋势当前仍热门、可调用或可发布。", input: "Trend-native DecompositionMap、TrendAdmissionRecord、目标事实与 sound policy", output: "TrendNativePlan + frozen admission record", steps: ["记录四类趋势组件和 not_present 状态", "只选一个组件，冻结其他三个和所有目标配置", "把来源使用和原创差异交给 Media Integrity；不要把源音频送给 provider"], done: "观察、目标替换、禁止表面、唯一合同差异和证据限制都完整。", stop: "趋势身份、时间窗或权限缺失，原表面进入目标内容，或有人把限制写成 platform compatible。", handoff: "→ viral-media-integrity：单独检查 source-use 和 originality delta。", pitfalls: "能播放、能看见或带标签，不等于可以复用、获得平台许可或通过原创审查。" },
+          { id: "viral-media-integrity", name: "媒体完整性门", layer: "gate", purpose: "分别检查媒体能否追溯、技术是否合格、表达是否准确、身份是否一致、来源能否使用、内容是否原创。", when: "脚本或分镜已经通过预检，准备审查目标媒体或写完整验收计划时。", signals: ["需要选择 preflight 或 artifact_review 模式", "合同、事实、素材和来源范围都能重建"], notFor: "不渲染媒体、不取得许可、不替代法律、商业、平台或发布批准，也不把 Private Gate 当作其他门。", input: "ReplicationContract、Script/Storyboard、Artifact/provenance、Media QA、target/source evidence", output: "MediaIntegrityRecord（六个独立 gate）", steps: ["先核对 digest、Snapshot、Facts、Pattern、assets 和计划用途", "逐门记录状态、来源、工具或人工替代、未知项和阻断项", "把有边界的处理结果交给 experiment evaluation 和 readiness"], done: "六道门都有独立证据或 pending/unavailable。目标产品说法和来源替换可以复核。", stop: "合同、产物、Fact、身份、来源使用或原创性无法重建，或有人把 QA 和模型相似度当成许可。", handoff: "→ viral-experiment-evaluation：只交付有明确范围的 MediaIntegrityRecord。", pitfalls: "技术通过、Asset Bundle 和 Private Gate receipt 都不能证明权利、商业、平台或发布已经批准。" },
+          { id: "reverse-artifact-calibration", name: "来源与口径校准", layer: "reverse", purpose: "先核对来源、时间窗口、分母、权限和复现条件，再做创意分析。", when: "材料来自公开页面、平台列表或其他项目，需要先确认“看到了什么、数字怎么算”时。", signals: ["来源定位、快照或指标口径不一致", "缺少账号规模、paid/organic、时间范围或排序方法"], notFor: "不做视频解码、ASR/OCR 或趋势发现，也不把高分和榜单当成 winner。", input: "ArtifactSnapshot、platform/market/window、capture context", output: "Calibrated EvidenceUnit", steps: ["固定来源身份、digest、抓取时间和观察范围", "检查分母、排序、采集方法、去重方法和 availability", "记录权利、授权和不能支持的结论"], done: "每个 EvidenceUnit 都能追溯到来源和口径。缺失值明确保持 unavailable。", stop: "来源、口径、权限或复现条件不清楚。", handoff: "→ reverse-creative-signal-coding：只交付有明确范围的证据单元。", pitfalls: "公开可见不等于可以复用。旧快照不等于当前趋势。" },
+          { id: "reverse-creative-signal-coding", name: "创意信号编码", layer: "reverse", purpose: "把形式、主题、开头、CTA 和平台表现分开记录，不把共现写成因果。", when: "需要比较多条候选内容，并分清哪些是内容观察、哪些是表现数据时。", signals: ["候选内容已经有校准后的 EvidenceUnit", "需要结构化比较主题、形式、Hook 和 CTA"], notFor: "不从缺失测量推导效果，不把趋势标签写成主机制，也不替代时间线拆解。", input: "公开只读内容、timed observations、平台表现口径", output: "CreativeCodingObservation", steps: ["按 format、theme、hook、CTA 和 platform-native 字段记录", "给每项信号绑定来源和 availability", "把表现观察和创意机制分栏，并写出替代解释"], done: "字段互不混淆，缺失的表现数据保持 unavailable，所有推断都有证据范围。", stop: "指标口径缺失、字段混成笼统风格，或有人要求 causal 或 winner 结论。", handoff: "→ reverse-counterexample-holdout：把编码结果变成可以被反驳的候选假设。", pitfalls: "“带 CTA 的视频表现好”只说明两者同时出现，不能证明 CTA 导致表现。" },
+          { id: "reverse-counterexample-holdout", name: "反例与留出评估", layer: "reverse", purpose: "用失败样本、删减测试和留出样本判断候选方法能否迁移。", when: "候选方法已经成形，需要主动找失败样本和适用边界时。", signals: ["至少有候选、反例、控制或留出集合", "需要判断哪些条件不可缺少"], notFor: "不把单个高表现样本升级为通用技能，也不替代媒体完整性或业务事实门。", input: "PatternHypothesis、Variants、scorecard、反例与 holdout", output: "EvaluationFinding", steps: ["写清反例和 ablation 预期在哪些条件下失败或保持", "只隔离一个变量，并在 holdout 上检查观察是否保留", "记录支持、反证、未知和下一轮证据动作"], done: "至少测试一个替代解释，并写清可迁移范围和未通过的边界。", stop: "样本、对照、分母或指标状态不足，或有人要求 universal 或 winner 结论。", handoff: "→ reverse-skill-promotion：只有通过 holdout 的候选才能进入晋级审查。", pitfalls: "反例少不等于方法强。ablation 失败也不能自动证明某项条件必不可少。" },
+          { id: "reverse-skill-promotion", name: "技能晋级门", layer: "reverse", purpose: "候选方法只有通过独立复跑、专家审批和发布门后，才能进入团队技能库。", when: "方法已经有结构化产物和反例测试，需要决定能否让团队重复使用时。", signals: ["candidate workflow 有验证记录和版本", "需要分清 candidate、approved 和 released"], notFor: "不把 Reverse Core、Workflow IR 草稿、站内展示或一次成功运行当成已上线能力。", input: "候选方法、验收报告、holdout、fresh-agent 复核、专家决定", output: "SkillReleaseCandidate", steps: ["核对 schema、输入输出、停止条件和可复现实验", "让 fresh-agent 独立执行并记录差异", "只有通过专家审批、版本化和 release gate 后才能改变状态"], done: "候选有明确 evidence level、版本、审批人以及回滚或停用条件。", stop: "缺少 holdout、独立复核、专家决定，或运行时实现还没有通过验收。", handoff: "→ 只能交给 release governance。当前网站继续保持 candidate_only。", pitfalls: "目录里能看到，不等于 runtime 已安装、启用、连接并验证。" }
+        ];
+        const workflows = [
+          { icon: "N", id: "narrative-transformation", name: "叙事转化", question: "当观众跟着“问题—介入—结果”看下去时。", useWhen: "参考内容的关键是一个具体问题如何被处理，并出现可观察的结果。换产品后，这段关系仍然成立。", signals: ["问题、张力、介入、结果和 CTA 能按时间找到", "换掉产品、人物和台词后，故事关系仍然成立"], notFor: "实验、POV/ASMR、促销 CTA 或趋势模板才是主角时不要选。两个机制分不开时也要先拆开。", primaryVariable: "只改故事关系：问题 → 张力 → 介入 → 结果 → CTA", steps: ["写清问题、张力和结果的关系", "给介入和 CTA 绑定产品事实", "换掉表面元素，再重写 Storyboard"], artifacts: ["ReferenceBundle", "DecompositionMap", "PatternHypothesis", "ReplicationContract", "fact-bound Script/Storyboard", "MediaIntegrityRecord", "bounded Finding"], handoff: "先交给 viral-fact-mapping 核对事实，再用 viral-replication-contract 冻结变量，最后进入 viral-media-integrity。", acceptance: "故事关系得到保留，表面明显不同，unsupported claim 为 0。合同只改变 narrative dimension。", guardrail: "不要复制原句、角色或镜头。只能复刻能解释清楚的故事关系。" },
+          { icon: "P", id: "proof-demonstration", name: "证明演示", question: "当实验、对比、数字或物理现象负责说服观众时。", useWhen: "观众需要看到装置、操作、变量或读数。你也能分开写“看到了什么”和“允许说什么”。", signals: ["输入、操作、现象和展示结果都清楚", "单位、方法、样本和目标 Fact 可以核对"], notFor: "只靠氛围、情绪或趋势推动时不要选。物理现象也不能直接当成功效、安全或医疗证明。", primaryVariable: "只改证明方法：装置、操作、可见现象和 allowed conclusion", steps: ["列出可观察变量和测量口径", "冻结 Control 和 Variant", "记录未知项和不能外推的结论"], artifacts: ["proof DecompositionMap", "PatternHypothesis", "proof protocol", "proof storyboard", "MediaIntegrityRecord", "bounded Finding"], handoff: "把演示协议交给 viral-fact-mapping 和 Media Integrity。把结果交给 experiment evaluation。", acceptance: "每一步都分开记录 observed phenomenon 和 allowed conclusion，并保留方法限制和样本范围。", guardrail: "看到演示不等于产品性能已经得到证明。没有测量时保持 unavailable。" },
+          { icon: "E", id: "experience-pov", name: "体验 POV", question: "当第一视角、声音、触感或情绪感受带着观众往下看时。", useWhen: "动作、声音、触感和日常连续性是主要体验。数字证明和促销条款不是重点。", signals: ["POV、手部或日常动作是主视角", "沉浸感来自动作、声音和场景连续性"], notFor: "体验语言会暗示性能、健康或安全时不要选。目标产品或人物身份不连续时也要停。", primaryVariable: "只改体验功能：POV、感官提示、动作连续性和情绪回报", steps: ["标出视角、感官信息和动作连续性", "绑定目标身份和产品事实", "输出体验脚本和镜头节奏"], artifacts: ["experience DecompositionMap", "POV adaptation", "Script/Storyboard", "identity/continuity findings", "MediaIntegrityRecord"], handoff: "把 POV 版本交给身份连续性、ASR/OCR 和 source-use gate。", acceptance: "体验功能得到保留，目标表面不同，身份连续，没有 unsupported product claim。", guardrail: "体验描述不能变成医疗或性能 claim。" },
+          { icon: "A", id: "attention-grammar", name: "注意力语法", question: "当开头、揭示、剪辑、字幕、对比或声音提示抓住注意力时。", useWhen: "你能在时间线上单独找到一个注意力组件，并冻结其他做法。", signals: ["组件有明确的时间范围和镜头位置", "其他机制可以保持不变"], notFor: "热门音频、平台梗、促销 CTA、实验或 POV 才是主角时不要选。也不能用它声称 retention。", primaryVariable: "五选一：只改一个 attention component", steps: ["标出时间点和节奏规则", "只冻结一个 Creative Dimension", "评估时分开记录观察和效果假设"], artifacts: ["timed attention map", "attention adaptation plan", "Pattern anchors", "ReplicationContract", "MediaIntegrityRecord"], handoff: "把唯一组件写进合同，再交给 fact mapping、storyboard 和完整性门。", acceptance: "两位审阅者都能重建组件、作用、表面替换和合同中的唯一差异。", guardrail: "不能只根据内容结构推导 retention、排名或因果效果。" },
+          { icon: "C", id: "conversion-action", name: "转化动作", question: "当购买顾虑、促销事实、CTA 或动作路径是主变量时。", useWhen: "内容主要解决一个购买障碍、讲清有效促销、邀请动作或引导到受控路径。", signals: ["顾虑、促销、CTA 和路径都有来源", "最终 CTA 的角色和服务器规则可以冻结"], notFor: "需要 checkout、billing、自由 URL、账号、外部平台动作、真实转化或收入测量时不要选。", primaryVariable: "四选一：objection_resolution / promotion_contract / cta_invitation / action_path", steps: ["核对促销事实和渠道边界", "只生成一个受限 CTA 版本", "所有外部动作保留人工审批"], artifacts: ["conversion DecompositionMap", "ConversionActionPlan", "Promotion/CTA validation", "Script/Storyboard", "MediaIntegrityRecord"], handoff: "Promotion 和 CTA 只能交给服务器控制的最终 CTA，以及独立完整性和评估门。", acceptance: "唯一组件差异可以复现，Promotion 单独核对，Fact 有效，provider 不接收服务器规则。", guardrail: "当前 MVP 不处理 billing、order、真实外链或发布。" },
+          { icon: "T", id: "trend-native", name: "趋势原生", question: "当热门音频、模板或平台梗决定表达方式时。", useWhen: "拿掉趋势信号、表达框架、模板或音频后，内容的主要功能就会消失。", signals: ["趋势、平台、市场、语言和抓取时间都有来源", "四类 Trend Component 中能选出唯一变量"], notFor: "只有 hashtag、背景音乐、旧截图或可见模板，却没有时间窗、权限和目标替换方案时不要选。", primaryVariable: "四选一：trend_signal_binding / trend_semantic_frame / template_grammar / audio_function", steps: ["记录趋势信号和抓取时间", "检查权利和平台适配", "记录与原内容的差异"], artifacts: ["trend-native DecompositionMap", "TrendNativePlan", "TrendAdmissionRecord", "ReplicationContract", "MediaIntegrityRecord"], handoff: "把 admission record 交给 source-use 和 originality gate。不要把源音频或模板送给 provider。", acceptance: "唯一趋势组件、三个冻结组件、目标替换和平台/权利限制都齐全。", guardrail: "执行能力、使用权利和商业批准必须分别验证。" },
+          { icon: "M", id: "viral-media-integrity", name: "媒体完整性", question: "所有工作流都要经过这道检查。它单独审查最终媒体和来源链。", useWhen: "预检条件已经冻结，或产物已有安全身份和受控审查路径，需要逐门检查时。", signals: ["合同、事实、素材和 source-use 范围可以重建", "能分清 preflight 和 artifact_review"], notFor: "不渲染媒体、不取得法律、商业或平台许可。Asset Bundle、QA 和 Private Gate 也不能代替完整结论。", primaryVariable: "分别检查六道门：traceability / technical / communicative / identity / source-use / originality", steps: ["完成 preflight 和 artifact review", "逐门记录 blocker 和 unknown", "输出 MediaIntegrityRecord"], artifacts: ["MediaIntegrityRecord", "full-surface claim map", "source-use matrix", "originality-delta review", "bounded Finding"], handoff: "把六道门的状态交给 viral-experiment-evaluation 和 factframe-readiness。", acceptance: "六道门都有证据或 pending/unavailable。任何一道门都不能借用另一道门的通过结论。", guardrail: "它负责完整性检查，不是主机制，也不替代发布审批。" },
+          { icon: "R", id: "reverse-enhanced", name: "证据增强", question: "当你需要把公开来源、创意信号和反例接到复刻合同上时。", useWhen: "标准工作流之外，还要核对数据口径、比较创意信号、寻找失败样本，并判断候选方法是否值得继续。", signals: ["已有公开只读 EvidenceUnit 和 Performance Window", "需要把观察、假设、反证和 promotion 分开"], notFor: "不提供真实连接器、视频解码、ASR/OCR、媒体生成、平台发现、Skill Release 或生产能力。", primaryVariable: "它只补证据，不新增创意机制。", steps: ["校准来源和指标口径", "分别记录 format、hook、theme 和 CTA", "用反例和 holdout 决定是否继续"], artifacts: ["Calibrated EvidenceUnit", "CreativeCodingObservation", "EvaluationFinding", "SkillReleaseCandidate（candidate only）"], handoff: "把候选结果送回主机制路由和 ReplicationContract。技能晋级由独立 release governance 处理。", acceptance: "证据范围、反例和 holdout 都清楚。未通过的内容保持 candidate_only。", guardrail: "当前只生成候选工作流。Reverse Core、真实连接器和 Skill Release 还没有通过验收。" }
+        ];
+
+        const caseLibrary = {
+          kleanpal: {
+            title: "KleanPal Pro · Evening bottle routine",
+            subtitle: "Momcozy · experience-pov · 主案例",
+            status: "LOCAL_SCREENING_RESEARCH",
+            intro: "目标很简单：保留官方品牌片里的生活任务关系，换掉表面内容，再做一组只改变一个变量的本地审查片。",
+            period: "2026-10-03 → 2026-10-07",
+            metrics: [["8", "阶段 P0–P7"], ["8", "精选视频"], ["6", "关键帧"], ["22s", "最终片时长"]],
+            boundary: "目前没有权利、商业、平台或发布批准。热度也没有得到证实，因此不能称为“爆款”。这是一项研究，不是广告或教程。",
+            stages: [
+              ["P0", "参考准入", "把官网单品页、官方品牌片和参考帧整理成可以复现的研究包。", "54 个本地文件", "accepted", "来源权利未核验"],
+              ["P1", "拆解声画", "按时间标出开头、生活任务、产品介入、体验和收尾。", "5 个分析工件", "accepted", "观察不是因果"],
+              ["P2", "核对产品事实", "把 9 个候选事实、冲突项和待确认问题分开记录。", "10 个本地文件", "hold", "confirmed/locked 绑定待完成"],
+              ["P3", "确定分镜", "保留 30 秒、8 镜头的 v1，再缩减为 22 秒、6 镜头的 v2。", "7 个根目录工件", "accepted", "范围缩减已确认"],
+              ["P4", "制作媒体", "生活镜头、产品版本 v1–v5 和修复版本 v6–v8 分开保存。", "564 个本地文件", "accepted", "失败候选不删除"],
+              ["P5", "审片与组装", "完成 v1 到 v4 的组装。control 和 variant 只改变镜头区块顺序。", "122 个本地文件", "hold", "人审未完成"],
+              ["P6", "缩小范围并复盘", "删除无法可靠完成的精确投片和启动演示。不要重复相同失败路径。", "追加式复盘", "accepted", "不代表功能缺失已修复"],
+              ["P7", "核对热度", "只读检查公开页面，并保留 captcha 和来源身份缺口。", "17 个本地文件", "hold", "不得声称爆款"]
+            ].map(([id, title, summary, count, state, note]) => ({ id, title, summary, count, state, note })),
+            media: [
+              ["media/01-reference-restored.mp4", "参考片恢复版", "reference", "27.97s · 606×1080 · 30fps", "机制研究入口；源素材权利未核验", "stills/S01.png", false],
+              ["media/02-reference-analysis.mp4", "参考分解演示", "intermediate", "73.13s · 960×540 · 25fps", "时间线/观察层，不是目标成片", "stills/S02.png", true],
+              ["media/03-production-v5-s02.mp4", "production v5 · S02", "intermediate", "5.04s · 1076×1924 · 24fps", "产品镜头迭代样本，保留失败与修复路径", "stills/S02.png", false],
+              ["media/04-repair-v7-s02-accepted.mp4", "repair v7 · S02", "accepted", "5.04s · 1076×1924 · 24fps", "采用的修复候选；仍需人工画面核验", "stills/S02.png", false],
+              ["media/05-repair-v8-s05-not-adopted.mp4", "repair v8 · S05", "not-adopted", "5.08s · 1076×1924 · 24fps", "未采用：过渡读数未独立验证，按决定停止重试", "stills/S04.png", false],
+              ["media/06-final-control-review.mp4", "review film v4 · control", "final", "22s · 1080×1920 · 24fps", "本地筛查片；不代表实验因果或发布资格", "stills/S06.png", false],
+              ["media/07-final-variant-review.mp4", "review film v4 · variant", "final", "22s · 1080×1920 · 24fps", "候选变体；只改变镜头区块顺序", "stills/S07.png", false],
+              ["media/08-final-control-silent.mp4", "review film v4 · silent control", "final", "22s · 1080×1920 · 24fps", "无口播版本；音频与字幕不构成性能证明", "stills/S08.png", false]
+            ].map(([file, label, kind, specs, copy, poster, landscape]) => ({ file, label, kind, specs, copy, poster, landscape })),
+            stills: [
+              ["stills/S01.png", "S01 · routine open"], ["stills/S02.png", "S02 · water / setup"], ["stills/S04.png", "S04 · loading"],
+              ["stills/S06.png", "S06 · life continuation"], ["stills/S07.png", "S07 · life continuation"], ["stills/S08.png", "S08 · return frame"]
+            ],
+            artifacts: [
+              ["P0", "案例概要与公开边界", "data/case-summary.json", "screening_only"],
+              ["P1", "声画时间线与节奏观察", "data/decomposition-map.json", "observed"],
+              ["P1", "模式假设与禁止复制面", "data/pattern-hypothesis.json", "draft"],
+              ["P2", "事实候选与排除队列", "data/fact-map.json", "pending_binding"],
+              ["P3", "分镜 v2 与范围缩减", "data/storyboard-v2.json", "scope_confirmed"],
+              ["P4/P5", "精选媒体与审片状态", "data/media-review.json", "screening_only"],
+              ["P7", "评估边界与下一道门", "data/evaluation-boundary.json", "open"]
+            ],
+            localOnly: "原始案例库约 798 个文件 / 379 MB，包含收据、生成批次、脚本、音频和内部取证。网站只提供 8 个代表性视频、6 个关键帧和 7 个脱敏摘要。"
+          },
+          oumomo: {
+            title: "Oumomo · 复刻链路黑盒基线",
+            subtitle: "工程逆向 · 内容事实失败 · 历史案例",
+            status: "ENGINEERING_BASELINE_WITH_CONTENT_FAIL",
+            intro: "这个案例回答两个问题：工程链路能不能跑通，输出内容是否符合事实。两项结果分开判断。",
+            period: "2026-08-11 → 2026-08-14",
+            metrics: [["3", "代表性视频"], ["3", "关键里程碑"], ["15.1s", "输出时长"], ["FAIL", "内容事实门"]],
+            boundary: "这是本地黑盒研究。它不能证明系统已经具备可复现、可商用的爆款复刻能力。网站也不开放积分、账号、发布或生产验收。",
+            stages: [
+              ["Z00–Z12", "找到所有入口", "逐一记录榜单、脚本、复刻、素材和项目管理入口。", "13 个探针", "accepted", "厂商主张不等于实测"],
+              ["M-EX01", "检查既有视频", "用帧格、ASR/OCR 和事实检查审计已有复刻视频。", "内容 verdict = fail", "hold", "出现输入无法支持的性能口播"],
+              ["R-B01", "跑通受控基线", "完成一次提交，观察异步进度，恢复持久项目并导出本地文件。", "15.104s 输出", "accepted", "n=1，不能估计复现率"],
+              ["R2-I01", "核对输入与报价", "观察合成商品图上传、Mini 配置和提交前报价。", "零积分前置", "accepted", "同参考刷新仍需复验"],
+              ["R3-P01", "检查播放器", "跨域播放器无法独立确认 ready、进度和刷新后的稳定性。", "blocked", "hold", "停止新付费提交"],
+              ["P1", "确定工程优先级", "先做事实工作台、脚本版本和项目/素材工作区，再考虑高成本生成。", "路线建议", "accepted", "不是实施完成证明"]
+            ].map(([id, title, summary, count, state, note]) => ({ id, title, summary, count, state, note })),
+            media: [
+              ["media/01-existing-replica.mp4", "既有复刻取证", "reference", "15.104s · 496×864 · 24fps", "历史输出；用于事实与技术审计", "stills/existing-replica-grid.png", false],
+              ["media/02-rb01-controlled-replica.mp4", "R-B01 · 受控基线", "accepted", "15.104s · 720×1280 · 24fps", "技术链路 succeeded；内容事实仍需单独判定", "stills/rb01-grid.png", false],
+              ["media/03-ub01-paid-output.mp4", "U-B01 · 付费输出", "not-adopted", "15.104s · 720×1280 · 24fps", "作为失败边界样本保留，不当作可发布成片", "stills/ub01-grid.png", false]
+            ].map(([file, label, kind, specs, copy, poster, landscape]) => ({ file, label, kind, specs, copy, poster, landscape })),
+            stills: [
+              ["stills/existing-replica-grid.png", "既有复刻 · frame grid"], ["stills/rb01-grid.png", "R-B01 · frame grid"],
+              ["stills/ub01-grid.png", "U-B01 · frame grid"], ["stills/image-model-2x2-grid.png", "图片模型 · 2×2 对照"]
+            ],
+            artifacts: [
+              ["Z00–Z12", "案例概要与里程碑", "data/case-summary.json", "read_only"],
+              ["M-EX01", "工程与内容失败发现", "data/workflow-findings.json", "content_fail"],
+              ["R-B01", "受控链路基线摘要", "data/case-summary.json", "technical_succeeded"],
+              ["R3-P01", "刷新与播放门禁", "data/workflow-findings.json", "blocked"]
+            ],
+            localOnly: "完整 SOP、实验记录、帧格、ASR/OCR、评分表和原始媒体仍保留在本地。网站只展示可分享的边界摘要和代表性输出。"
+          },
+          "maternal-tiktok": {
+            title: "Baby Social Voice · Messy Eater Cleanup",
+            subtitle: "品牌声量 · brand_voice_social · 非卖货案例",
+            status: "PROCEED_WITH_LIMITS",
+            intro: "这条 TikTok 不卖产品。我们只研究父母为什么会认出这个生活麻烦，以及“少做几步”为什么可能引发共鸣。播放量不能证明销售或因果。",
+            period: "2025-10-10 · source page reported · capture 2026-10-10",
+            metrics: [["8.7M", "第三方记录页 reported views"], ["1", "主机制：task bundle visibility"], ["未知", "互动 / paid-organic / 分母"], ["无", "产品 claim / CTA"]],
+            boundary: "仅分析 · source-limited · analysis-only。网站没有授权原片。原始帖子、完整互动、音乐、儿童肖像和复用权利仍未确认。不能称为已证实爆款、Brand Lift 或商业批准。",
+            track: "brand_voice_social",
+            intent: "brand_awareness_only",
+            proofLevel: "local",
+            tags: ["品牌声量", "非卖货", "source-limited", "analysis-only", "child-safety pending"],
+            reportUrl: "deep-insight.html",
+            briefUrl: "cases/maternal-tiktok/data/insight-brief.json",
+            mediaCopy: "本案例没有获得原始 TikTok 视频、儿童媒体或配乐的授权。这里只展示来源摘要、方法观察和脱敏 JSON。",
+            stillsCopy: "没有授权原片，因此不生成关键帧。完整画面不会进入网站。",
+            artifactsCopy: "可以下载 source-limited 案例摘要和 Insight Brief。原始帖子、媒体、账号信息和权利材料不在网站包内。",
+            resonanceMap: {
+              status: "observation_only",
+              copy: "Social Resonance Map 分开记录生活压力、有限推断、参与信号和缺失数据。它不估算 Brand Lift，也不把互动率当成因果证据。",
+              artifactUrl: "cases/maternal-tiktok/data/social-resonance-map.json",
+              fields: [
+                ["Parent tension", "post_meal_cleanup_burden", "observed · SRC-01"],
+                ["Recognition signal", "parenting_identity_may_recognize_routine", "bounded_inference · test"],
+                ["Emotional payoff", "relief_and_surprise_hypothesis", "bounded_inference · test"],
+                ["Participation cue", "shares / comments / saves / UGC", "not_reported · unavailable"]
+              ],
+              alternatives: [
+                "账号分发、编辑选择或跨平台传播也可能带来部分播放量。我们没有帖子级分母，无法排除这些解释。",
+                "“少做几步”也可能只是场景新奇，不能证明长期品牌记忆。",
+                "没有采集评论和分享，因此不能把共鸣假设写成社区行为事实。"
+              ],
+              unknowns: [
+                "likes、comments、shares、saves、completion、profile visits 和 UGC 数量",
+                "paid / organic / boosted 状态、账号规模、采集与去重方法",
+                "品牌 recall、familiarity、favorability 或 Exposed-vs-Control Brand Lift"
+              ]
+            },
+            stages: [
+              { id: "BV-G0", title: "核对来源", summary: "第三方公开记录页提供内容摘要和 reported views。原始 TikTok 帖子身份仍未知。", count: "source-limited", state: "accepted", note: "不等于原帖证据" },
+              { id: "BV-G1", title: "找出共鸣点", summary: "宝宝、餐椅和餐盘共同呈现了一个父母熟悉的清洁负担。", count: "1 个机制候选", state: "accepted", note: "观察 ≠ 因果" },
+              { id: "BV-G2", title: "判断能否用于品牌", summary: "Momcozy 只表达对母亲日常的理解，不加入产品 claim 或 CTA。", count: "brand awareness only", state: "hold", note: "未形成目标媒体" },
+              { id: "BV-G3", title: "补齐证据", summary: "只有补齐互动口径、paid/organic、来源授权、儿童安全和原创差异，才能讨论本地概念。", count: "collect evidence", state: "hold", note: "外部 gate 未确认" }
+            ],
+            media: [],
+            stills: [],
+            emptyMedia: "没有授权原片。本案例只展示 metadata、完整分析和脱敏后的结构化观察。",
+            artifacts: [
+              ["BV-P0", "Brand Voice 案例投影", "data/case-record.json", "proceed_with_limits"],
+              ["BV-P1", "Social Resonance Map", "data/social-resonance-map.json", "observation_only"],
+              ["Insight", "母婴 TikTok 深度洞察 JSON", "data/insight-brief.json", "source_limited"]
+            ],
+            localOnly: "网站只保留 metadata、脱敏 JSON 和完整分析链接。这里没有原始 TikTok 视频、音频、儿童肖像、凭据、私有 ID 或 hash。"
+          },
+          "baby-reaction-diaper-change": {
+            title: "Baby Social Voice · Diaper Change Reaction",
+            subtitle: "品牌声量 · brand_voice_social · attention grammar / 微瞬间",
+            status: "PROCEED_WITH_LIMITS",
+            intro: "这个案例研究一个很短的婴儿表情。我们想知道：一个清楚的 reaction reveal 能否让父母立刻认出熟悉日常。照护场景、儿童肖像和声音都不能复用。",
+            period: "2025-08-12 · US · source page reported · capture 2026-10-11",
+            metrics: [["11.1M", "第三方记录页 reported views"], ["1", "主机制：attention grammar"], ["未知", "互动 / paid-organic / 分母"], ["无", "产品 claim / CTA"]],
+            boundary: "仅分析 · source-limited · analysis-only · metadata-only。换尿布属于私密照护场景。儿童/监护人、音乐和复用权利仍未确认。不能声称 Brand Lift，也不能直接仿拍。",
+            track: "brand_voice_social",
+            intent: "brand_awareness_only",
+            proofLevel: "reported",
+            tags: ["品牌声量", "微瞬间", "source-limited", "analysis-only", "intimate-care review"],
+            sourceUrl: "https://ark.media/record/19758",
+            briefUrl: "cases/baby-reaction-diaper-change/data/case-record.json",
+            mediaCopy: "没有获得原始 TikTok 视频、儿童媒体或配乐的授权。这里只展示来源登记、方法观察和脱敏 JSON。",
+            stillsCopy: "没有授权原片，因此不生成关键帧。私密照护画面不会进入网站包。",
+            artifactsCopy: "可以下载 evidence-only 案例记录和 Social Resonance Map。原始帖子、账号和权利材料不在网站包内。",
+            resonanceMap: {
+              status: "observation_only",
+              copy: "这张图分开记录父母压力、识别信号、情绪回报和缺失的互动数据。11.1M views 不能证明品牌记忆或社区参与。",
+              artifactUrl: "cases/baby-reaction-diaper-change/data/social-resonance-map.json",
+              fields: [
+                ["Parent tension", "care_routine_friction", "observed_summary · SRC-BV002"],
+                ["Recognition signal", "one readable expression makes a routine moment legible", "bounded_inference · test"],
+                ["Emotional payoff", "humor and affection may invite parent identification", "bounded_inference · test"],
+                ["Participation cue", "comments / shares / saves / reaction remixes", "not_reported · unavailable"]
+              ],
+              alternatives: [
+                "私密照护场景、儿童新奇感、创作者分发或编辑选择，也可能带来部分播放量。",
+                "这个表情可能只属于这个孩子，不能直接变成品牌 cue。",
+                "没有采集评论和分享，因此不能把共鸣假设写成社区行为事实。"
+              ],
+              unknowns: [
+                "原始 TikTok 帖子身份、账号规模、paid / organic 状态和分母。",
+                "likes、comments、shares、saves、completion、profile visits 和 UGC 数量。",
+                "监护人同意、儿童肖像范围、音乐/声音权利和商业披露。",
+                "品牌 recall、familiarity、favorability 或 Exposed-vs-Control Brand Lift。"
+              ]
+            },
+            preflight: {
+              status: "awaiting_user_gate",
+              copy: "用户已经允许准备本地 preflight。这不代表创作者、监护人、音乐或平台已经授权。该候选继续保持 analysis-only。",
+              artifactUrl: "cases/baby-reaction-diaper-change/data/gate-preflight.json",
+              checks: [
+                ["原始帖子身份", "unresolved · third-party index only"],
+                ["创作者 / 监护人许可", "unresolved · no case-specific evidence"],
+                ["音乐 / 声音权利", "unresolved · do not copy audio"],
+                ["儿童安全", "review_required · intimate care"],
+                ["商业披露", "unknown · not reported"],
+                ["connector scope", "not_accessed · no credential"],
+                ["外部行动", "not_approved · no publish / lift"]
+              ],
+              proven: [
+                "ARK 页面能证明公开摘要、source-reported window 和约 11.1M views。它不能证明原帖权利。",
+                "公开 TikTok policy pages 只说明一般规则，不提供这条内容的授权。",
+                "网站保持 metadata-only、analysis-only 和 raw_media_hosted=false。"
+              ],
+              missing: [
+                "原始帖子或正式权利主体、监护人/创作者同意和儿童 likeness 范围。",
+                "音乐/声音商业授权、paid/organic/disclosure 和指标分母。",
+                "市场级儿童安全审查、connector credential/scope/quota 和任何发布/Brand Lift 批准。"
+              ]
+            },
+            stages: [
+              { id: "BV-G0", title: "登记来源", summary: "ARK 公共记录页提供标题、摘要、分类、国家、日期和 reported views。原始 TikTok 帖子仍未知。", count: "source-limited", state: "accepted", note: "不等于原帖证据" },
+              { id: "BV-G1", title: "找出注意力点", summary: "一个清楚的表情把换尿布日常压缩成单一 attention beat。这个微瞬间值得测试。", count: "1 个机制候选", state: "accepted", note: "观察 ≠ 因果" },
+              { id: "BV-G2", title: "判断能否用于品牌", summary: "Momcozy 只表达对父母日常的理解，不加入产品 claim、CTA 或仿拍指令。", count: "brand awareness only", state: "hold", note: "未形成目标媒体" },
+              { id: "BV-G3", title: "补齐证据", summary: "只有补齐互动口径、guardian/likeness/music 权利、儿童安全和原创差异，才能讨论抽象 cue。", count: "collect evidence", state: "hold", note: "外部 gate 未确认" }
+            ],
+            media: [],
+            stills: [],
+            emptyMedia: "没有授权原片。这里只展示 metadata、来源登记和脱敏后的 Social Resonance Map。",
+            artifacts: [
+              ["BV-P1", "Brand Voice 案例投影", "data/case-record.json", "proceed_with_limits"],
+              ["BV-P1", "Social Resonance Map", "data/social-resonance-map.json", "observation_only"],
+              ["BV-GATE", "External Preflight Record", "data/gate-preflight.json", "awaiting_user_gate"]
+            ],
+            localOnly: "网站只保留 metadata 和脱敏 JSON。这里没有原始视频、音频、儿童肖像、凭据、私有 ID 或 hash。"
+          },
+          "nestle-generations-of-love": {
+            title: "Campaign Benchmark · Nestlé Generations of Love",
+            subtitle: "活动 benchmark · campaign_awareness_benchmark · multi-market UGC",
+            status: "BENCHMARK_ONLY",
+            intro: "这个官方 Nestlé TikTok 案例只回答一件事：品牌声量活动可以怎样设计和衡量。我们学习活动窗口、UGC、媒体组合和 Brand Lift 字段，但不会把案例结果当成 Momcozy 的结果。",
+            period: "2024-02-06 → 2024-02-12 · five SEA markets · source page reported",
+            metrics: [["3.9%", "Thailand ad recall lift"], ["7.3%", "Vietnam familiarity lift"], ["1,554", "UGC videos reported"], ["65", "boosted submissions"]],
+            boundary: "仅供参考 · campaign_awareness_benchmark · source-limited · benchmark-only。案例中的百分比、UGC 汇总和 BLS 设计不能变成 Momcozy lift，也不能和自然内容的播放量一起排名。",
+            track: "campaign_awareness_benchmark",
+            intent: "brand_awareness_only",
+            proofLevel: "reported",
+            tags: ["活动 benchmark", "5 markets", "UGC + Brand Lift", "source-limited", "不跨轨道排名"],
+            sourceUrl: "https://ads.tiktok.com/business/en/inspiration/nestle-branded-mission-case-study?redirected=1",
+            briefUrl: "cases/nestle-generations-of-love/data/benchmark-record.json",
+            mediaCopy: "网站不托管广告、创作者视频、品牌素材或儿童媒体。这里只显示公开案例的活动结构和衡量字段。",
+            stillsCopy: "这个参考案例不生成原始素材关键帧。这里只展示媒体组合和 Brand Lift 设计。",
+            artifactsCopy: "可以下载官方案例页的脱敏 benchmark record。reported lift 不能迁移到 Momcozy。",
+            benchmark: {
+              status: "observed_benchmark",
+              copy: "这个案例只帮助设计声量测试。时间窗口、市场、UGC、媒体组合和 Exposed/Control 衡量会分开记录。",
+              artifactUrl: "cases/nestle-generations-of-love/data/benchmark-record.json",
+              fields: [
+                ["Campaign", "Branded Mission + Effect + Hashtag Challenge", "one-week · 5 markets"],
+                ["Audience", "Creators/families expressing gratitude to mothers", "organic participation"],
+                ["Measurement", "Brand Lift Study", "ad recall / familiarity / association / intent"],
+                ["Transfer", "Momcozy result not established", "blocked · benchmark only"]
+              ],
+              observations: [
+                "官方页面记录了一场 2024-02-06 至 02-12 的五市场活动。",
+                "官方报告称，1,554 条视频来自 1,135 位用户，其中 65 条投稿得到 boosted；页面还报告 4.71% boosted engagement rate。",
+                "官方 BLS guidance 说明了随机 Exposed/Control、polling/statistical comparison，并要求 account manager setup。"
+              ],
+              caveats: [
+                "这是 growing-up milk category 的官方 reported case，不是 Momcozy 本地实验。",
+                "页面没有披露市场级 sample、Exposed/Control cell、creative spend/reach 和完整分母。",
+                "intent 指标只作为 source-reported benchmark 保存，不能当成 Momcozy 的品牌声量或销售结论。"
+              ]
+            },
+            preflight: {
+              status: "awaiting_user_gate",
+              copy: "benchmark 证据可以支持活动结构和方法参考。它不能支持 Nestlé 素材复用、Momcozy lift 或任何发布授权。",
+              artifactUrl: "cases/nestle-generations-of-love/data/gate-preflight.json",
+              checks: [
+                ["官方 benchmark 来源", "closed_for_benchmark_reference"],
+                ["广告 / UGC 素材权利", "not_requested · no assets imported"],
+                ["儿童参与与市场规则", "review_required_if_activated"],
+                ["Momcozy Brand Lift 设计", "not_approved · benchmark only"],
+                ["connector scope", "not_accessed · no credential"],
+                ["活动 / 投放 / 发布", "not_approved"]
+              ],
+              proven: [
+                "官方案例页能证明 reported campaign window、五市场结构和 aggregate benchmark metrics。",
+                "官方 Brand Lift guidance 可以作为 Exposed/Control 的方法参考。",
+                "网站只保留 benchmark metadata，不导入原始广告、UGC、音频或创作者素材。"
+              ],
+              missing: [
+                "Nestlé campaign assets、creator permissions 和任何品牌/创作者复用许可。",
+                "Momcozy 独立实验设计、样本、账户 setup、业务批准和 Brand Lift 预算。",
+                "TikTok connector credential/scope/commercial access/quota 与实际发布批准。"
+              ]
+            },
+            stages: [
+              { id: "CB-G0", title: "核对来源", summary: "官方 TikTok for Business 案例页记录了 Nestlé 的活动窗口、市场、做法和 reported results。", count: "official source", state: "accepted", note: "reported case ≠ raw dataset" },
+              { id: "CB-G1", title: "看活动怎么组织", summary: "Branded Mission、Effect、Hashtag Challenge 和部分 UGC boost 共同组成多市场参与机制。", count: "one-week window", state: "accepted", note: "organic / boosted 分开留痕" },
+              { id: "CB-G2", title: "看效果怎么衡量", summary: "Brand Lift Study 记录 ad recall、familiarity、association 和 intent。样本与方法仍是 source-limited。", count: "5 markets", state: "accepted", note: "不能迁移结果" },
+              { id: "CB-G3", title: "明确 Momcozy 边界", summary: "只能学习窗口、UGC、媒体和衡量字段。不能复制 Nestlé claim、素材或 lift 数字。", count: "benchmark only", state: "hold", note: "等待独立设计" }
+            ],
+            media: [],
+            stills: [],
+            emptyMedia: "这个参考案例不托管原始广告或创作者媒体。这里只展示活动 metadata 和测量设计。",
+            artifacts: [
+              ["CB-G0", "Campaign Benchmark Record", "data/benchmark-record.json", "benchmark_only"],
+              ["BV-GATE", "External Preflight Record", "data/gate-preflight.json", "awaiting_user_gate"]
+            ],
+            localOnly: "网站只保留官方案例页的 metadata、脱敏后的衡量结构和来源限制。这里没有原始广告、创作者媒体或平台 connector。"
+          }
+        };
+
+        const state = { answers: {}, filter: "all", stage: 0, brief: { reference: "示例：夜间泵奶的安静切换", sourceUrl: "", target: "Momcozy · 事实待绑定", platform: "TikTok", market: "US · English", fusionMode: "standard", evidenceMode: "demo-local" }, generated: null };
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => [...document.querySelectorAll(selector)];
+        const save = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: state.answers, brief: state.brief, generated: state.generated })); $("#saved-label").textContent = "已保存"; } catch (_) {} };
+        const load = () => { try { const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); if (!parsed) return; Object.assign(state.answers, parsed.answers || {}); Object.assign(state.brief, parsed.brief || {}); state.generated = parsed.generated || null; } catch (_) {} };
+        const toast = (message) => { const node = $("#toast"); node.textContent = message; node.classList.add("show"); window.clearTimeout(window.__toastTimer); window.__toastTimer = window.setTimeout(() => node.classList.remove("show"), 2200); };
+        const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;" }[ch]));
+        const caseKindLabel = (kind) => ({ reference: "reference", intermediate: "intermediate", accepted: "accepted", "intermediate_accepted": "accepted", "not-adopted": "not-adopted", "intermediate_not_adopted": "not-adopted", final: "final" }[kind] || kind);
+        const caseKindClass = (kind) => kind === "reference" ? "reference" : kind === "final" ? "final" : kind.includes("not") || kind.includes("rejected") ? "rejected" : "";
+        const renderCase = (key) => {
+          const item = caseLibrary[key] || caseLibrary.kleanpal;
+          state.caseKey = key;
+          $$("[data-case-select]").forEach((tab) => { const active = tab.dataset.caseSelect === key; tab.classList.toggle("active", active); if (tab.getAttribute("role") === "tab") tab.setAttribute("aria-selected", String(active)); else tab.setAttribute("aria-current", String(active)); });
+          const tags = (item.tags || []).map((tag) => `<span class="case-tag ${tag.includes("pending") || tag.includes("limited") ? "warn" : tag.includes("analysis") || tag.includes("非卖货") ? "safe" : ""}">${escapeHTML(tag)}</span>`).join("");
+          const reportLink = item.reportUrl ? `<a class="case-report-link" href="${escapeHTML(item.reportUrl)}" target="_blank" rel="noreferrer">看完整分析 ↗</a>` : "";
+          const sourceLink = item.sourceUrl ? `<a class="case-report-link" href="${escapeHTML(item.sourceUrl)}" target="_blank" rel="noreferrer">看公开来源 ↗</a>` : "";
+          const overviewLinks = [reportLink, sourceLink].filter(Boolean).join("");
+          $("#case-overview").innerHTML = `<h3>${escapeHTML(item.title)}</h3><span class="case-status">${escapeHTML(item.status)}</span><div class="case-tag-row">${tags}</div><p>${escapeHTML(item.intro)}</p><div class="case-metrics">${item.metrics.map(([value, label]) => `<div class="case-metric"><strong>${escapeHTML(value)}</strong><span>${escapeHTML(label)}</span></div>`).join("")}</div><p><strong>时间范围</strong><br />${escapeHTML(item.period)}</p><div class="case-boundary">${escapeHTML(item.boundary)}</div>${overviewLinks}`;
+          $("#case-timeline-copy").textContent = `${item.subtitle}。这里只写已记录的动作和边界。中间版本不等于最终能力。`;
+          $("#case-stage-grid").innerHTML = item.stages.map((stage) => `<article class="case-stage"><span class="stage-id">${escapeHTML(stage.id)}</span><strong>${escapeHTML(stage.title)}</strong><p>${escapeHTML(stage.summary)}</p><small>${escapeHTML(stage.count)}</small><span class="stage-state ${stage.state === "accepted" ? "ok" : "hold"}">${escapeHTML(stage.note)}</span></article>`).join("");
+          const resonancePanel = $("#case-resonance-panel");
+          if (item.resonanceMap) {
+            resonancePanel.hidden = false;
+            $("#case-resonance-status").textContent = item.resonanceMap.status;
+            $("#case-resonance-copy").textContent = item.resonanceMap.copy;
+            $("#case-resonance-grid").innerHTML = item.resonanceMap.fields.map(([label, value, state]) => `<article class="case-resonance-card"><strong>${escapeHTML(label)}</strong><p>${escapeHTML(value)}</p><small>${escapeHTML(state)}</small></article>`).join("");
+            $("#case-resonance-alternatives").innerHTML = item.resonanceMap.alternatives.map((entry) => `<li>${escapeHTML(entry)}</li>`).join("");
+            $("#case-resonance-unknowns").innerHTML = item.resonanceMap.unknowns.map((entry) => `<li>${escapeHTML(entry)}</li>`).join("");
+            $("#case-resonance-link").href = item.resonanceMap.artifactUrl;
+          } else {
+            resonancePanel.hidden = true;
+            $("#case-resonance-grid").innerHTML = "";
+            $("#case-resonance-alternatives").innerHTML = "";
+            $("#case-resonance-unknowns").innerHTML = "";
+            $("#case-resonance-link").removeAttribute("href");
+          }
+          const benchmarkPanel = $("#case-benchmark-panel");
+          if (item.benchmark) {
+            benchmarkPanel.hidden = false;
+            $("#case-benchmark-status").textContent = item.benchmark.status;
+            $("#case-benchmark-copy").textContent = item.benchmark.copy;
+            $("#case-benchmark-grid").innerHTML = item.benchmark.fields.map(([label, value, state]) => `<article class="case-benchmark-card"><strong>${escapeHTML(label)}</strong><p>${escapeHTML(value)}</p><small>${escapeHTML(state)}</small></article>`).join("");
+            $("#case-benchmark-observations").innerHTML = item.benchmark.observations.map((entry) => `<li>${escapeHTML(entry)}</li>`).join("");
+            $("#case-benchmark-caveats").innerHTML = item.benchmark.caveats.map((entry) => `<li>${escapeHTML(entry)}</li>`).join("");
+            $("#case-benchmark-link").href = item.benchmark.artifactUrl;
+          } else {
+            benchmarkPanel.hidden = true;
+            $("#case-benchmark-grid").innerHTML = "";
+            $("#case-benchmark-observations").innerHTML = "";
+            $("#case-benchmark-caveats").innerHTML = "";
+            $("#case-benchmark-link").removeAttribute("href");
+          }
+          const preflightPanel = $("#case-preflight-panel");
+          if (item.preflight) {
+            preflightPanel.hidden = false;
+            $("#case-preflight-status").textContent = item.preflight.status;
+            $("#case-preflight-copy").textContent = item.preflight.copy;
+            $("#case-preflight-grid").innerHTML = item.preflight.checks.map(([label, state]) => `<article class="case-preflight-card ${state.startsWith("closed") ? "closed" : ""}"><strong>${escapeHTML(label)}</strong><small>${escapeHTML(state)}</small></article>`).join("");
+            $("#case-preflight-proven").innerHTML = item.preflight.proven.map((entry) => `<li>${escapeHTML(entry)}</li>`).join("");
+            $("#case-preflight-missing").innerHTML = item.preflight.missing.map((entry) => `<li>${escapeHTML(entry)}</li>`).join("");
+            $("#case-preflight-link").href = item.preflight.artifactUrl;
+          } else {
+            preflightPanel.hidden = true;
+            $("#case-preflight-grid").innerHTML = "";
+            $("#case-preflight-proven").innerHTML = "";
+            $("#case-preflight-missing").innerHTML = "";
+            $("#case-preflight-link").removeAttribute("href");
+          }
+          $("#case-media-copy").textContent = item.mediaCopy || (key === "kleanpal" ? "把参考片、分析片、中间版本和最终审查片放在一起比较。未采用的 S05 也保留，用来说明停止原因。" : "这个案例同时保留技术 succeeded 和内容 fail。技术跑通不代表内容正确。");
+          $("#case-media-grid").innerHTML = item.media.length ? item.media.map((media) => `<article class="case-media-card ${media.landscape ? "landscape" : ""}"><video controls preload="metadata" playsinline poster="cases/${key}/${escapeHTML(media.poster)}"><source src="cases/${key}/${escapeHTML(media.file)}" type="video/mp4" />你的浏览器不支持视频预览。</video><div class="case-media-copy"><strong>${escapeHTML(media.label)}</strong><p>${escapeHTML(media.specs)}<br />${escapeHTML(media.copy)}</p><span class="media-chip ${caseKindClass(media.kind)}">${escapeHTML(caseKindLabel(media.kind))}</span></div></article>`).join("") : `<div class="case-empty">${escapeHTML(item.emptyMedia || "当前案例没有可展示的媒体产物；请先完成来源、权利和媒体完整性门。")}</div>`;
+          $("#case-stills-copy").textContent = item.stillsCopy || (key === "kleanpal" ? "这些关键帧来自本地研究摘要。它们帮助定位画面，但不能单独证明产品或性能。" : "帧格把技术连续性、内容问题和模型输出差异放在一起比较。");
+          $("#case-stills").innerHTML = item.stills.length ? item.stills.map(([file, label]) => `<figure class="case-still"><img src="cases/${key}/${escapeHTML(file)}" loading="lazy" alt="${escapeHTML(label)}" /><figcaption>${escapeHTML(label)}</figcaption></figure>`).join("") : `<div class="case-empty">没有授权关键帧；此案例仅展示 metadata、报告和脱敏结构化观察。</div>`;
+          $("#case-artifacts-copy").textContent = item.artifactsCopy || (key === "kleanpal" ? "先下载摘要，再回到对应阶段看视频。原始收据和版本继续保存在本地。" : "历史案例只发布可复盘的摘要。黑盒服务、账号、积分和内部接口不属于可复制能力。");
+          $("#case-artifacts").innerHTML = item.artifacts.map(([stage, name, file, status]) => `<div class="case-artifact"><span class="artifact-stage">${escapeHTML(stage)}</span><div><strong>${escapeHTML(name)}</strong><small>${escapeHTML(status)} · 脱敏 JSON 摘要</small></div><a href="cases/${key}/${escapeHTML(file)}" download>下载 JSON</a></div>`).join("");
+          $("#case-local-only").innerHTML = `<strong>没有公开的内容：</strong> ${escapeHTML(item.localOnly)}`;
+        };
+        const route = () => { const yes = routeQuestions.filter((q) => state.answers[q.id] === "yes"); if (yes.length > 1) return { status: "blocked", key: null, title: "请拆成两个测试版本", description: "你选了多个主机制。请为每个机制各建一份合同，不要把它们混在同一个版本里。", tag: "primary_mechanism_ambiguous" }; if (yes.length === 1) { const key = yes[0].route; return { status: "ok", key, title: routeMeta[key][0], description: routeMeta[key][1], tag: key }; } if (state.answers.narrative === "no" && Object.values(state.answers).length === routeQuestions.length) return { status: "blocked", key: null, title: "还没有主机制", description: "请回到参考内容，找出一个能直接观察的创意变化。", tag: "mechanism_required" }; return { status: "pending", key: null, title: "请先选一个“是”", description: "一次只选一个主机制。如果两个都成立，请分成两个版本。", tag: "pending" }; };
+        const artifactChain = [
+          ["ReferenceBundle", "参考定位、平台、权限与可复现状态"],
+          ["DecompositionMap", "时间化的 hook、张力、证明、体验、语法与 CTA"],
+          ["PatternHypothesis", "不变量、可替换表面、禁止复制与未知"],
+          ["FactMap", "Product Snapshot 与 confirmed/locked facts"],
+          ["ReplicationContract", "Control / Variant 与唯一 Creative Dimension"],
+          ["MediaIntegrityRecord", "六道媒体完整性 gate"],
+          ["Finding", "observations、bounded inferences、unknowns 与 next action"]
+        ];
+        const renderArtifactChain = () => { const result = route(); const hasReference = Boolean(state.brief.reference.trim()); const rows = artifactChain.map(([name, hint], index) => { let status = "pending"; let next = "等待上一步"; if (index === 0 && hasReference) { status = "draft"; next = "补充来源和复现证据"; } if (index === 1 && result.status === "ok") { status = "pending"; next = "按时间记录观察"; } if (index === 2 && result.status === "ok") { status = "pending"; next = "只选一个主机制"; } if (index === 3) next = "核对事实后才能继续"; if (index === 4 && result.status === "ok") { status = "draft"; next = "冻结合同和停止条件"; } if (index === 5) next = "有媒体产物后再审查"; if (index === 6) next = "完成评估后再下结论"; if (result.status === "blocked" && index > 0) { status = "blocked"; next = "先解决上方问题"; } const label = status === "draft" ? "draft" : status === "blocked" ? "blocked" : "pending"; return `<div class="artifact-row"><span class="artifact-index">${String(index + 1).padStart(2, "0")}</span><div><strong>${name}</strong><small>${hint} · ${next}</small></div><span class="artifact-state ${status === "blocked" ? "blocked" : status === "draft" ? "ready" : ""}">${label}</span></div>`; }).join(""); $("#artifact-chain").innerHTML = `<div class="artifact-chain-head"><strong>这份简报要留下 7 个产物</strong><span>当前状态只代表本地草稿</span></div>${rows}`; };
+        const renderQuestions = () => { $("#questions").innerHTML = routeQuestions.map((q) => `<div class="question"><div><p>${q.title}</p><small>${q.hint}</small></div><div class="choices"><button class="choice ${state.answers[q.id] === "yes" ? "selected" : ""}" data-answer="yes" data-question="${q.id}">是</button><button class="choice ${state.answers[q.id] === "no" ? "selected" : ""}" data-answer="no" data-question="${q.id}">否</button></div></div>`).join(""); $$("[data-question]").forEach((button) => button.addEventListener("click", () => { state.answers[button.dataset.question] = button.dataset.answer; save(); renderQuestions(); renderRoute(); })); };
+        const renderRoute = () => { const result = route(); const status = $("#router-status"); status.className = `status ${result.status === "ok" ? "ok" : result.status === "blocked" ? "blocked" : ""}`; status.textContent = result.status === "ok" ? "可进入事实绑定" : result.status === "blocked" ? "已阻断" : "等待输入"; const panel = $("#route-result"); panel.className = `route-result ${result.status === "blocked" ? "blocked" : ""}`; panel.innerHTML = `<div><h4>${result.title}</h4><p>${result.description}</p></div><span class="route-tag">${result.tag}</span>`; renderArtifactChain(); renderBriefOutput(false); };
+        const briefPayload = () => { const result = route(); const generatedAt = new Date().toISOString(); const chain = artifactChain.map(([name], index) => ({ artifact: name, status: index === 0 && state.brief.reference.trim() ? "draft" : index === 4 && result.status === "ok" ? "draft" : result.status === "blocked" && index > 0 ? "blocked" : "pending", nextAction: index === 0 ? "capture_reference" : index === 1 ? "build_timed_map" : index === 2 ? "write_pattern_hypothesis" : index === 3 ? "bind_confirmed_facts" : index === 4 ? "freeze_contract" : index === 5 ? "review_media_integrity" : "evaluate_finding" })); const reverseEnhanced = state.brief.fusionMode === "reverse-enhanced"; return { schema: "viral-replication-brief/v2", status: result.status === "ok" ? "draft" : "blocked", reference: state.brief.reference.trim() || "未填写", sourceUrl: state.brief.sourceUrl.trim() || null, target: state.brief.target.trim() || "Momcozy · 事实待绑定", platform: state.brief.platform, market: state.brief.market.trim() || "待定", fusionMode: state.brief.fusionMode, evidenceMode: state.brief.evidenceMode, primaryMechanism: result.key || null, workflowPack: result.key ? `viral-${result.key}` : null, artifactChain: chain, fusion: { sourceSystem: "inverse_engineer", status: reverseEnhanced ? "candidate_only" : "not_selected", stages: ["scope_contract", "snapshot_signal_coding", "mechanism_route", "fact_contract", "counterexample_holdout", "expert_approval"], boundaries: ["当前站点仅生成本地候选简报", "Reverse Core / Workflow IR 尚未验收", "真实连接器、媒体分析与 Skill Release 不在本次范围"] }, contract: { control: "待绑定：参考内容的可复现版本", variant: "待生成：只改变一个 Creative Dimension", productFacts: "必须通过 viral-fact-mapping 绑定 confirmed/locked facts", evidence: "观察、有限推断与未知分开记录", externalActions: "未授权：不发布、不计费、不跳转" }, evidenceBoundary: ["演示数据，不代表真实性能", "缺失测量保持 unavailable", "不代表商业批准、部署或生产验收"], generatedAt }; };
+        const renderBriefOutput = (force) => { const payload = force ? (state.generated = briefPayload()) : state.generated; const output = $("#brief-output"); if (!payload) { output.textContent = "还没有简报。请先回答上方问题。"; $("#state-label").textContent = "draft · 未生成"; $("#state-dot").className = "dot"; return; } output.textContent = JSON.stringify(payload, null, 2); $("#state-label").textContent = `${payload.status} · ${payload.primaryMechanism || "主机制待定"}`; $("#state-dot").className = `dot ${payload.status === "draft" && payload.primaryMechanism ? "ready" : ""}`; };
+        const listMarkup = (items) => `<ul>${items.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}</ul>`;
+        const renderSkills = () => {
+          const query = $("#skill-search").value.trim().toLowerCase();
+          const visible = skills.filter((skill) => (state.filter === "all" || skill.layer === state.filter) && JSON.stringify(skill).toLowerCase().includes(query));
+          const layerName = (layer) => layer === "shared" ? "共享层" : layer === "mechanism" ? "机制层" : layer === "reverse" ? "逆向层" : "完整性门";
+          $("#skill-grid").innerHTML = visible.length ? visible.map((s) => `<article class="skill-card"><div class="skill-meta"><span class="skill-id">${escapeHTML(s.id)}</span><span class="layer ${s.layer === "reverse" ? "reverse" : ""}">${layerName(s.layer)}</span></div><h3>${escapeHTML(s.name)}</h3><p>${escapeHTML(s.purpose)}</p><div class="skill-scenario"><strong>什么时候用</strong>${escapeHTML(s.when)}</div><dl><dt>开始前要有</dt><dd>${escapeHTML(s.input)}</dd><dt>完成后得到</dt><dd>${escapeHTML(s.output)}</dd><dt>遇到这些情况先停</dt><dd>${escapeHTML(s.stop)}</dd></dl><details class="skill-detail"><summary>展开：怎么判断、怎么做、交给谁</summary><div class="skill-detail-grid"><div class="detail-block"><h4>怎么判断适用</h4>${listMarkup(s.signals)}</div><div class="detail-block"><h4>这项技能不处理</h4><p>${escapeHTML(s.notFor)}</p></div><div class="detail-block"><h4>怎么做</h4>${listMarkup(s.steps)}</div><div class="detail-block"><h4>做到什么算完成</h4><p>${escapeHTML(s.done)}</p></div><div class="detail-block"><h4>什么时候必须停</h4><p>${escapeHTML(s.stop)}</p></div><div class="detail-block"><h4>别这样理解</h4><p>${escapeHTML(s.pitfalls)}</p></div><div class="detail-block skill-handoff"><h4>下一步交给谁</h4><p>${escapeHTML(s.handoff)}</p></div></div></details></article>`).join("") : `<div class="empty">没有匹配的技能。可以搜索“事实”或“media”。</div>`;
+        };
+        const renderWorkflows = () => {
+          $("#workflow-grid").innerHTML = workflows.map((w, i) => `<details class="workflow-card" ${i === 0 ? "open" : ""}><summary><span class="workflow-icon">${escapeHTML(w.icon)}</span><span><h3>${escapeHTML(w.name)}</h3><p>${escapeHTML(w.question)}</p></span><span class="chevron">⌄</span></summary><div class="workflow-body"><div class="route-question">ROUTE · ${escapeHTML(w.id)}</div><div class="workflow-use"><strong>什么时候选它</strong>${escapeHTML(w.useWhen)}</div><div class="workflow-detail-grid"><div class="workflow-detail"><h4>怎么判断适用</h4>${listMarkup(w.signals)}</div><div class="workflow-detail"><h4>什么情况下别选</h4><p>${escapeHTML(w.notFor)}</p></div><div class="workflow-detail"><h4>这次只改什么</h4><p>${escapeHTML(w.primaryVariable)}</p></div><div class="workflow-detail"><h4>会留下什么</h4>${listMarkup(w.artifacts)}</div><div class="workflow-detail handoff"><h4>下一步交给谁</h4><p>${escapeHTML(w.handoff)}</p></div></div><h4 style="margin:16px 0 8px;font-size:10px;color:var(--navy)">最少要做的步骤</h4><ul class="sop">${w.steps.map((step) => `<li>${escapeHTML(step)}</li>`).join("")}</ul><div class="workflow-detail" style="margin-top:14px"><h4>怎么判断做完</h4><p>${escapeHTML(w.acceptance)}</p></div><div class="guardrail">红线：${escapeHTML(w.guardrail)}</div></div></details>`).join("");
+        };
+        const bindInputs = () => { ["reference", "sourceUrl", "target", "platform", "market", "fusionMode", "evidenceMode"].forEach((id) => { const node = $("#" + id); node.value = state.brief[id] || (id === "fusionMode" ? "standard" : id === "evidenceMode" ? "demo-local" : ""); node.addEventListener("input", () => { state.brief[id] = node.value; save(); }); node.addEventListener("change", () => { state.brief[id] = node.value; save(); }); }); $("#generate").addEventListener("click", () => { state.generated = briefPayload(); save(); renderBriefOutput(false); toast(state.generated.status === "draft" ? "简报已生成。下一步：核对产品事实" : "简报已生成，但当前有阻断项"); }); $("#clear").addEventListener("click", () => { state.answers = {}; state.generated = null; state.brief = { reference: "", sourceUrl: "", target: "", platform: "TikTok", market: "", fusionMode: "standard", evidenceMode: "demo-local" }; ["reference", "sourceUrl", "target", "platform", "market", "fusionMode", "evidenceMode"].forEach((id) => { $("#" + id).value = state.brief[id]; }); save(); renderQuestions(); renderRoute(); toast("本地草稿已清空"); }); $("#copy").addEventListener("click", async () => { const text = $("#brief-output").textContent; if (!state.generated) { toast("请先生成简报"); return; } try { await navigator.clipboard.writeText(text); toast("简报 JSON 已复制"); } catch (_) { toast("浏览器不允许复制。请下载 JSON"); } }); $("#download").addEventListener("click", () => { if (!state.generated) { toast("请先生成简报"); return; } const blob = new Blob([JSON.stringify(state.generated, null, 2)], { type: "application/json" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "momcozy-replication-brief.json"; link.click(); URL.revokeObjectURL(url); toast("JSON 已下载"); }); };
+        const bindNavigation = () => { $$('[data-scroll]').forEach((button) => button.addEventListener("click", () => document.getElementById(button.dataset.scroll)?.scrollIntoView({ behavior: "smooth", block: "start" }))); $$(".stage").forEach((button) => button.addEventListener("click", () => { state.stage = Number(button.dataset.stage); $$(".stage").forEach((item) => item.classList.toggle("active", item === button)); const section = state.stage === 0 ? "workbench" : state.stage < 3 ? "skills" : state.stage < 5 ? "workflows" : "evidence"; document.getElementById(section)?.scrollIntoView({ behavior: "smooth", block: "start" }); })); $$("[data-case-select]").forEach((button) => button.addEventListener("click", () => { renderCase(button.dataset.caseSelect); history.replaceState(null, "", `?view=cases&case=${button.dataset.caseSelect}`); })); };
+        const openSharedEntry = () => { const params = new URLSearchParams(window.location.search); const view = params.get("view"); if (["workbench", "fusion", "cases", "skills", "workflows", "evidence"].includes(view)) window.requestAnimationFrame(() => document.getElementById(view)?.scrollIntoView({ block: "start" })); if (params.get("case") && caseLibrary[params.get("case")]) renderCase(params.get("case")); };
+        load(); renderWorkflows(); renderSkills(); renderQuestions(); renderRoute(); renderCase("kleanpal"); bindInputs(); bindNavigation(); openSharedEntry(); $("#skill-search").addEventListener("input", renderSkills); $$(".filter").forEach((button) => button.addEventListener("click", () => { state.filter = button.dataset.filter; $$(".filter").forEach((item) => item.classList.toggle("active", item === button)); renderSkills(); }));
+      })();
+    </script>
+  </body>
+</html>
