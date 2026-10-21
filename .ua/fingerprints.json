@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "ea0be38aa7815f39c1d93d2277f660dc283127a9",
-  "generatedAt": "2026-10-21T11:53:38.889Z",
+  "gitCommitHash": "fa0d9f89154e7cfcc0868c0de33a9a62296c8231",
+  "generatedAt": "2026-10-21T12:41:37.633Z",
   "files": {
     ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md": {
       "filePath": ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md",
@@ -665,12 +665,12 @@
     },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
-      "contentHash": "2ade920779ba92425f2bf04bdf67fa9ed916fb46514626842382cb436beddb4b",
+      "contentHash": "6e7856eb481e06b24266ca6606151f9dd47211b984f7bfe6646fd9eb75db4c58",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 54,
+      "totalLines": 56,
       "hasStructuralAnalysis": true
     },
     "CONTEXT-MAP.md": {
@@ -11114,6 +11114,16 @@
         "validate_script"
       ],
       "totalLines": 501,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/app/domain/sv_agent/AGENTS.md": {
+      "filePath": "apps/api/app/domain/sv_agent/AGENTS.md",
+      "contentHash": "3bbca6541afd7533bb69b9ddce8edcd11ea2594f79484358faff8559faef43da",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/domain/sv_agent/__init__.py": {
@@ -22360,6 +22370,16 @@
       "totalLines": 95,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/features/sv-agent/AGENTS.md": {
+      "filePath": "apps/web/src/features/sv-agent/AGENTS.md",
+      "contentHash": "638612b28ac0bbf447d50d9117c947cef02fb3d0795f6d2579a44e783223dd66",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts": {
       "filePath": "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
       "contentHash": "7e53299b87eecb0d8ab54b1cd239cd7c31e48bfa4b074087fd20eb8a86cbf6e6",
@@ -24358,12 +24378,12 @@
     },
     "docs/architecture/sv-agent-project-layout-proposal.md": {
       "filePath": "docs/architecture/sv-agent-project-layout-proposal.md",
-      "contentHash": "960f4d43e2f09f7a7e6f79e3814a2d7df0fa336e19d8e79eabfc74de02aedff5",
+      "contentHash": "0628d90c77b261a321dd70da2fb3650c92dde79eee239fba8c697588d054b24c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 314,
+      "totalLines": 317,
       "hasStructuralAnalysis": true
     },
     "docs/architecture/system-overview.md": {
@@ -24568,12 +24588,12 @@
     },
     "docs/index.md": {
       "filePath": "docs/index.md",
-      "contentHash": "57c99f906af46a535404d0313ab9defcee8222dc284cdd78869c5d94a87aabe7",
+      "contentHash": "8b069a684fd165d0263fbf2812f78976a728a888bfa02f7e6505163647390dfb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 64,
+      "totalLines": 65,
       "hasStructuralAnalysis": true
     },
     "docs/product/capability-comparison.md": {
@@ -24784,6 +24804,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 118,
+      "hasStructuralAnalysis": true
+    },
+    "migrations/AGENTS.md": {
+      "filePath": "migrations/AGENTS.md",
+      "contentHash": "6d335d02a3886bd077af7dcb7d7da2a1c843dab6478fef573245a538278f8528",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
       "hasStructuralAnalysis": true
     },
     "migrations/env.py": {
@@ -26187,6 +26217,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "tools/momcozy_assets/AGENTS.md": {
+      "filePath": "tools/momcozy_assets/AGENTS.md",
+      "contentHash": "8d5cf37b8dd274953494409d21582d3dbcaaf715191adc001b812552f6f90345",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
       "hasStructuralAnalysis": true
     },
     "tools/momcozy_assets/README.md": {

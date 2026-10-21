@@ -32,8 +32,8 @@
       "Vitest"
     ],
     "description": "以 PostgreSQL 产品事实与不可变版本为底座的 evidence-first AI 视频工作台；SV-Agent 在其上增加爆款复刻 Task/Run 合同、能力工作流、只读 Native Shell、审计前沿与人工门边界。",
-    "analyzedAt": "2026-10-21T11:53:32Z",
-    "gitCommitHash": "ea0be38aa7815f39c1d93d2277f660dc283127a9"
+    "analyzedAt": "2026-10-21T12:41:28Z",
+    "gitCommitHash": "fa0d9f89154e7cfcc0868c0de33a9a62296c8231"
   },
   "nodes": [
     {
@@ -7663,20 +7663,6 @@
       "complexity": "simple"
     },
     {
-      "id": "document:AGENTS.md",
-      "type": "document",
-      "name": "AGENTS.md",
-      "filePath": "AGENTS.md",
-      "summary": "项目 Agent 指南，规定文档路由、能力图谱维护、事实与运行时边界、SV-Agent 目录、UI 与视频 provider 研究入口以及开发验证方法。",
-      "tags": [
-        "documentation",
-        "agent-guidance",
-        "governance",
-        "development"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "document:CONTEXT-MAP.md",
       "type": "document",
       "name": "CONTEXT-MAP.md",
@@ -8060,20 +8046,6 @@
         "regression-boundary"
       ],
       "complexity": "moderate"
-    },
-    {
-      "id": "document:docs/index.md",
-      "type": "document",
-      "name": "index.md",
-      "filePath": "docs/index.md",
-      "summary": "项目文档总入口，按当前系统、领域决策、研究证据、报告和历史资料组织阅读路径，并路由 SV-Agent 目录、UI/UX 与视频模型方案。",
-      "tags": [
-        "documentation",
-        "entry-point",
-        "navigation",
-        "authority-order"
-      ],
-      "complexity": "simple"
     },
     {
       "id": "document:docs/product/capability-comparison.md",
@@ -29549,21 +29521,6 @@
       "complexity": "simple"
     },
     {
-      "id": "document:docs/architecture/sv-agent-project-layout-proposal.md",
-      "type": "document",
-      "name": "sv-agent-project-layout-proposal.md",
-      "filePath": "docs/architecture/sv-agent-project-layout-proposal.md",
-      "summary": "定义 SV-Agent 的 CRAFT-inspired 目录边界、分阶段迁移 tickets、验证门与回滚方式，并记录 application modules 收拢后的当前落点。它明确禁止重复门面树，并把 adapter、Web 与 checkout 变更留在独立批准门。",
-      "tags": [
-        "documentation",
-        "architecture",
-        "agent-structure",
-        "migration-plan",
-        "sv-agent"
-      ],
-      "complexity": "complex"
-    },
-    {
       "id": "document:docs/architecture/system-overview.md",
       "type": "document",
       "name": "system-overview.md",
@@ -29701,6 +29658,105 @@
         "verification"
       ],
       "complexity": "complex"
+    },
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "项目级 Agent 入口，规定文档路由、事实与安全边界、开发方法，并把四个高风险子目录导向各自的 scoped guide。",
+      "tags": [
+        "documentation",
+        "agent-governance",
+        "task-routing",
+        "safety-boundary"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:apps/web/src/features/sv-agent/AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "apps/web/src/features/sv-agent/AGENTS.md",
+      "summary": "为 SV-Agent Web feature 提供局部 Agent 指引，约束 GET-only 投影、版本化 sessionStorage 草稿、人工审批边界与跨视口验证。它链接产品规格、UI/UX 审计和测试入口，而不复制根规则。",
+      "tags": [
+        "documentation",
+        "agent-guide",
+        "sv-agent",
+        "web-boundary"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/architecture/sv-agent-project-layout-proposal.md",
+      "type": "document",
+      "name": "sv-agent-project-layout-proposal.md",
+      "filePath": "docs/architecture/sv-agent-project-layout-proposal.md",
+      "summary": "SV-Agent 目录整理与分阶段实施方案，记录已完成的 application locality 和 scoped guides，并为可选 adapter、Web 与导航清理门定义边界、验证和回滚。",
+      "tags": [
+        "documentation",
+        "architecture",
+        "migration-plan",
+        "agent-governance",
+        "sv-agent"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:apps/api/app/domain/sv_agent/AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "apps/api/app/domain/sv_agent/AGENTS.md",
+      "summary": "为 SV-Agent 纯领域 Module 提供局部 Agent 指引，固化 Task/Run/Job、closed contracts、immutable factual state 与 private-reasoning 禁区。它把持久化相关变更路由到 ADR、领域上下文和 PostgreSQL 测试门。",
+      "tags": [
+        "documentation",
+        "agent-guide",
+        "sv-agent",
+        "domain-boundary"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/index.md",
+      "type": "document",
+      "name": "index.md",
+      "filePath": "docs/index.md",
+      "summary": "项目文档与 authority 总入口，按当前系统、领域决策、研究证据、报告和历史材料路由阅读，并提供高风险目录的 scoped Agent guide 入口。",
+      "tags": [
+        "documentation",
+        "project-navigation",
+        "authority-routing",
+        "agent-guide"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:migrations/AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "migrations/AGENTS.md",
+      "summary": "为 Alembic migration 目录定义 append-only 历史、expand-first schema 变更、disposable PostgreSQL downgrade 验证及 production forward-only 边界。",
+      "tags": [
+        "documentation",
+        "migration",
+        "database",
+        "agent-guide"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:tools/momcozy_assets/AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "tools/momcozy_assets/AGENTS.md",
+      "summary": "为 Momcozy 素材工具定义真实库 Private Gate、公开 synthetic CI、baseline/current release 与安全 receipt 的局部操作边界，并区分只读验证和有写入效果的聚合或归档入口。",
+      "tags": [
+        "documentation",
+        "private-gate",
+        "synthetic-ci",
+        "asset-governance"
+      ],
+      "complexity": "simple"
     }
   ],
   "edges": [
@@ -30111,13 +30167,6 @@
       "weight": 0.5
     },
     {
-      "source": "document:AGENTS.md",
-      "target": "document:CONTEXT-MAP.md",
-      "type": "documents",
-      "direction": "forward",
-      "weight": 0.5
-    },
-    {
       "source": "document:docs/adr/0001-semantic-fusion-with-physical-isolation.md",
       "target": "document:docs/adr/0002-business-facts-remain-postgresql-authoritative.md",
       "type": "related",
@@ -30373,13 +30422,6 @@
       "source": "document:outputs/oumomo-reverse-engineering/skills/oumomo-clean-room-experiment-runner/SKILL.md",
       "target": "document:outputs/oumomo-reverse-engineering/skills/oumomo-clean-room-experiment-runner/references/feature-playbooks.md",
       "type": "documents",
-      "direction": "forward",
-      "weight": 0.5
-    },
-    {
-      "source": "document:README.md",
-      "target": "document:AGENTS.md",
-      "type": "related",
       "direction": "forward",
       "weight": 0.5
     },
@@ -48003,20 +48045,6 @@
       "weight": 0.7
     },
     {
-      "source": "document:docs/index.md",
-      "target": "document:docs/product/sv-agent-ui-ux-taste-audit.md",
-      "type": "documents",
-      "direction": "forward",
-      "weight": 0.5
-    },
-    {
-      "source": "document:docs/index.md",
-      "target": "document:docs/research/sv-agent-video-model-selection.md",
-      "type": "documents",
-      "direction": "forward",
-      "weight": 0.5
-    },
-    {
       "source": "document:docs/product/sv-agent-ui-ux-taste-audit.md",
       "target": "file:apps/web/src/App.tsx",
       "type": "documents",
@@ -52994,13 +53022,6 @@
       "weight": 0.8
     },
     {
-      "source": "document:docs/architecture/sv-agent-project-layout-proposal.md",
-      "target": "file:apps/api/app/application/sv_agent/orchestration.py",
-      "type": "documents",
-      "direction": "forward",
-      "weight": 0.5
-    },
-    {
       "source": "document:docs/architecture/system-overview.md",
       "target": "file:apps/api/app/main.py",
       "type": "documents",
@@ -53077,6 +53098,216 @@
       "direction": "forward",
       "weight": 0.7,
       "recoveredFromImportMap": true
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "document:docs/architecture/project-layout.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "document:docs/development/testing.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:apps/web/src/features/sv-agent/AGENTS.md",
+      "target": "document:AGENTS.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:apps/web/src/features/sv-agent/AGENTS.md",
+      "target": "document:docs/product/sv-agent-native-agent-spec.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:apps/web/src/features/sv-agent/AGENTS.md",
+      "target": "document:docs/product/sv-agent-ui-ux-taste-audit.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:apps/web/src/features/sv-agent/AGENTS.md",
+      "target": "document:docs/development/testing.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/architecture/sv-agent-project-layout-proposal.md",
+      "target": "document:docs/architecture/project-layout.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/architecture/sv-agent-project-layout-proposal.md",
+      "target": "file:apps/api/app/application/sv_agent/orchestration.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/architecture/sv-agent-project-layout-proposal.md",
+      "target": "document:docs/development/testing.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:apps/api/app/domain/sv_agent/AGENTS.md",
+      "target": "document:AGENTS.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:apps/api/app/domain/sv_agent/AGENTS.md",
+      "target": "document:docs/adr/0007-sv-agent-task-runtime-and-authorization.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:apps/api/app/domain/sv_agent/AGENTS.md",
+      "target": "document:docs/contexts/viral-replication/CONTEXT.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:apps/api/app/domain/sv_agent/AGENTS.md",
+      "target": "document:docs/development/testing.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/index.md",
+      "target": "document:docs/architecture/project-layout.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/index.md",
+      "target": "document:docs/architecture/sv-agent-project-layout-proposal.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/index.md",
+      "target": "document:migrations/AGENTS.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:migrations/AGENTS.md",
+      "target": "file:migrations/env.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:migrations/AGENTS.md",
+      "target": "file:migrations/versions/0012_sv_agent_persistence.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:migrations/AGENTS.md",
+      "target": "document:docs/development/testing.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tools/momcozy_assets/AGENTS.md",
+      "target": "file:tools/momcozy_assets/private_gate.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tools/momcozy_assets/AGENTS.md",
+      "target": "file:tools/momcozy_assets/aggregate_index.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tools/momcozy_assets/AGENTS.md",
+      "target": "file:tools/momcozy_assets/archive_batch.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tools/momcozy_assets/AGENTS.md",
+      "target": "document:docs/adr/0006-separate-public-synthetic-ci-from-private-asset-validation.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tools/momcozy_assets/AGENTS.md",
+      "target": "document:docs/development/testing.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:migrations/AGENTS.md",
+      "target": "document:AGENTS.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:migrations/AGENTS.md",
+      "target": "document:docs/architecture/system-overview.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:migrations/AGENTS.md",
+      "target": "document:docs/adr/0007-sv-agent-task-runtime-and-authorization.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tools/momcozy_assets/AGENTS.md",
+      "target": "document:AGENTS.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tools/momcozy_assets/AGENTS.md",
+      "target": "document:tools/momcozy_assets/README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tools/momcozy_assets/AGENTS.md",
+      "target": "document:docs/contexts/momcozy-asset-intelligence/CONTEXT.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
     }
   ],
   "layers": [
@@ -53099,6 +53330,7 @@
         "document:sites/viral-replication-workbench/docs/tickets/brand-voice-social/05-bv-p1-001-social-resonance-map.md",
         "document:sites/viral-replication-workbench/docs/tickets/brand-voice-social/06-bv-p1-002-candidate-benchmark-lane.md",
         "document:sites/viral-replication-workbench/docs/tickets/brand-voice-social/07-bv-gate-001-external-preflight.md",
+        "document:apps/web/src/features/sv-agent/AGENTS.md",
         "file:apps/web/index.html",
         "file:apps/web/src/App.tsx",
         "file:apps/web/src/api/client.ts",
@@ -53214,6 +53446,7 @@
         "file:apps/api/app/domain/scripts/patterns.py",
         "file:apps/api/app/domain/scripts/storyboard.py",
         "file:apps/api/app/domain/scripts/validation.py",
+        "document:apps/api/app/domain/sv_agent/AGENTS.md",
         "file:apps/api/app/domain/sv_agent/__init__.py",
         "file:apps/api/app/domain/sv_agent/artifact_contracts.py",
         "file:apps/api/app/domain/sv_agent/entities.py",
@@ -53248,6 +53481,7 @@
         "file:apps/api/app/adapters/providers/__init__.py",
         "file:apps/api/app/adapters/providers/deterministic.py",
         "file:apps/api/app/adapters/providers/openai_compatible.py",
+        "document:migrations/AGENTS.md",
         "file:migrations/env.py",
         "file:migrations/versions/0001_p0_core.py",
         "file:migrations/versions/0002_integrity_guards.py",
@@ -53386,6 +53620,7 @@
         "file:outputs/oumomo-reverse-engineering/experiments/experiment-manifest.jsonl",
         "file:outputs/oumomo-reverse-engineering/experiments/job-state-events.jsonl",
         "file:outputs/oumomo-reverse-engineering/skills/oumomo-clean-room-experiment-runner/scripts/validate_evidence.py",
+        "document:tools/momcozy_assets/AGENTS.md",
         "file:tools/momcozy_assets/__init__.py",
         "file:tools/momcozy_assets/aggregate_index.py",
         "file:tools/momcozy_assets/archive_batch.py",
@@ -53575,166 +53810,166 @@
   "tour": [
     {
       "order": 1,
-      "title": "项目入口与权威",
-      "description": "先从 README 了解 SV-Agent 的 evidence-first 爆款复刻定位，再用 AGENTS.md 和文档索引确认代码、数据库、Living Specs 与研究证据之间的权威顺序。这个起点也明确能力图谱只是导航，不代表部署、真实素材验收或商业批准。",
+      "title": "项目定位与阅读地图",
+      "description": "从项目 README 先建立 SV-Agent 的 evidence-first viral replication 定位，理解它要解决什么问题。随后用文档索引辨认不同知识的权威层级，再以系统概览连接 API、worker、PostgreSQL、Redis/Celery、Web 与证据平面。这个起点让后续每个模块都能放回同一张运行地图中理解。",
       "nodeIds": [
         "document:README.md",
-        "document:AGENTS.md",
-        "document:docs/index.md"
+        "document:docs/index.md",
+        "document:docs/architecture/system-overview.md"
       ]
     },
     {
       "order": 2,
-      "title": "双端运行入口",
-      "description": "FastAPI 组合根注册统一错误处理与业务 routes，React App 则把既有 FactFrame 页面和 SV-Agent Native Shell 组织在同一客户端。先看这两个入口，可以建立请求从浏览器进入 API、再落到应用层的整体方向。",
+      "title": "根规则与局部增量",
+      "description": "根 AGENTS.md 是全项目 authority，规定文档路由、事实边界、安全边界与开发方法。四个 scoped guides 分别为 Web feature、SV-Agent domain、migrations 和 Momcozy tooling 增加更严格的局部规则，但它们只做 local increment，不覆盖根规则。理解这组继承关系后，才能在高风险目录中判断哪一层约束同时生效。",
       "nodeIds": [
-        "file:apps/api/app/main.py",
-        "file:apps/web/src/App.tsx"
-      ],
-      "languageLesson": "FastAPI 的 application factory 和 React Router 都是 composition root：它们负责装配依赖与路由，不承载领域判断。"
+        "document:AGENTS.md",
+        "document:apps/web/src/features/sv-agent/AGENTS.md",
+        "document:apps/api/app/domain/sv_agent/AGENTS.md",
+        "document:migrations/AGENTS.md",
+        "document:tools/momcozy_assets/AGENTS.md"
+      ]
     },
     {
       "order": 3,
-      "title": "商品事实底座",
-      "description": "产品实体定义 source、immutable snapshot 与 fact ledger，canonical 工具保证稳定摘要，PostgreSQL models 与 repositories 则持久化并还原这些领域对象。后续脚本、任务和 Agent 投影都必须从这条事实链读取，只有 confirmed 或 locked fact 才能支撑可接受 claim。",
+      "title": "双端运行入口",
+      "description": "在前两步明确目的与规则后，从真实启动入口进入系统。FastAPI 组合根注册统一错误处理与业务路由，React 入口挂载 browser router，而 App 负责把既有 FactFrame 页面与四个 SV-Agent 工作区接到同一导航表面。三者共同回答服务如何启动、页面如何出现以及前后端边界在哪里。",
       "nodeIds": [
-        "file:apps/api/app/domain/products/entities.py",
-        "file:apps/api/app/domain/common/canonical.py",
-        "file:apps/api/app/adapters/db/models.py",
-        "file:apps/api/app/adapters/db/repositories.py"
-      ],
-      "languageLesson": "Python dataclass/Pydantic 领域对象表达业务不变量，SQLAlchemy repository 负责映射与事务边界；两者分离能避免 ORM 状态成为领域规则。"
+        "file:apps/api/app/main.py",
+        "file:apps/web/src/main.tsx",
+        "file:apps/web/src/App.tsx"
+      ]
     },
     {
       "order": 4,
-      "title": "脚本与分镜合同",
-      "description": "Viral pattern 先被编译为受控 phase 与 shot 结构，validation 再检查事实绑定、时长、可见文案和 creative contract。通过校验的脚本才能生成稳定 digest 的 storyboard preflight 与 preview，因此生成准备度来自合同而不是模型自由发挥。",
+      "title": "商品事实底座",
+      "description": "运行入口之下，产品实体定义来源、snapshot、fact 与确认状态，是生成流程可引用事实的底座。应用服务在这一模型上编排读取、确认、锁定与幂等冲突，promotion 规则再限制时效性信息的使用。由此可以看见系统先治理事实，再允许上层内容能力消费它们。",
       "nodeIds": [
-        "file:apps/api/app/domain/scripts/patterns.py",
-        "file:apps/api/app/domain/scripts/validation.py",
-        "file:apps/api/app/domain/scripts/storyboard.py",
-        "file:apps/api/app/application/storyboards.py"
+        "file:apps/api/app/domain/products/entities.py",
+        "file:apps/api/app/application/products.py",
+        "file:apps/api/app/domain/products/promotion.py"
       ]
     },
     {
       "order": 5,
-      "title": "任务与产物合同",
-      "description": "SV-Agent 领域实体定义 Task、Run、Step、Evidence 与 Approval 的状态边界，planning 构造 evidence-first 步骤图，artifact contracts 则冻结可审计产物的 schema 与 digest 关系。runtime records 只保存事实执行状态和类型化结果，不保存模型私有推理。",
+      "title": "脚本与分镜合同",
+      "description": "建立产品事实之后，脚本修订把事实重绑定做成 append-only 版本，并拒绝不可接受的父版本或事实状态。Creative contract 与验证器约束阶段目的、事实绑定、时长和可见文案，storyboard 服务再据此计算 preflight、preview 与审核状态。这个链路把创意生成变成可验证、可回溯的内容合同，而不是一次性文本输出。",
       "nodeIds": [
-        "file:apps/api/app/domain/sv_agent/entities.py",
-        "file:apps/api/app/domain/sv_agent/planning.py",
-        "file:apps/api/app/domain/sv_agent/artifact_contracts.py",
-        "file:apps/api/app/domain/sv_agent/runtime_records.py"
-      ],
-      "languageLesson": "闭合枚举、不可变 Pydantic model 与 append-oriented record 共同把 Agent 行为约束为可验证合同，而不是开放式状态字典。"
+        "file:apps/api/app/application/script_revisions.py",
+        "file:apps/api/app/domain/scripts/creative_contract.py",
+        "file:apps/api/app/domain/scripts/validation.py",
+        "file:apps/api/app/application/storyboards.py",
+        "file:apps/api/app/application/storyboard_reviews.py"
+      ]
     },
     {
       "order": 6,
-      "title": "能力路由与工作流",
-      "description": "项目级 Skill 设计把事实、叙事、体验、注意力、转化和实验评估拆成可复用能力，Viral Replication 台账再把这些能力装配成 MECE 流程。工作流包提供机器可发现的入口、fixtures 与前向测试，使 Agent 能按场景路由而不是硬编码单一路径。",
+      "title": "Agent 持久合同",
+      "description": "脚本链路之上，SV-Agent domain 把 Task、Run、Step、Evidence、授权、ToolRun 与 canonical artifacts 组织为闭合合同。Runtime records 只保存输入、typed output、验证发现和事实状态，artifact contracts 则固定九类可部署产物的结构。独立 reviewing 模型在下一审批门前检查范围、单变量隔离、声明边界和证据充分性。",
       "nodeIds": [
-        "document:docs/product/project-skill-system.md",
-        "document:docs/product/viral-replication-execution.md",
-        "document:.agents/workflows/viral-replication/README.md"
+        "file:apps/api/app/domain/sv_agent/entities.py",
+        "file:apps/api/app/domain/sv_agent/runtime_records.py",
+        "file:apps/api/app/domain/sv_agent/artifact_contracts.py",
+        "file:apps/api/app/domain/sv_agent/tool_runs.py",
+        "file:apps/api/app/domain/sv_agent/reviewing.py"
       ]
     },
     {
       "order": 7,
-      "title": "有界编排计划",
-      "description": "Application 层的 orchestration 读取封闭 workflow catalog，并把领域目标编译为纯函数 RunPlan 与 guard 结果。它只负责规划、前置条件和下一安全动作，不持久化计划、不推进 Run，也不调用 provider。",
+      "title": "能力路由与工作流",
+      "description": "有了领域合同后，项目级 Skill 设计说明能力如何萃取、分层、编排并通过质量门禁。Viral Replication 工作流入口把这些能力路由到机制包、fixtures 与前向测试，执行台账冻结 MECE 责任矩阵，图谱一致性文档则约束 tracked files 与生成导航。这里是从单项能力转向可重复工作流的组织层。",
       "nodeIds": [
-        "file:apps/api/app/application/sv_agent/orchestration.py"
-      ],
-      "languageLesson": "纯函数编排让相同输入得到稳定计划；执行、副作用和持久化留在独立边界，便于重放与审计。"
+        "document:docs/product/project-skill-system.md",
+        "document:.agents/workflows/viral-replication/README.md",
+        "document:docs/product/viral-replication-execution.md",
+        "document:docs/product/viral-replication-graph-consistency.md"
+      ]
     },
     {
       "order": 8,
+      "title": "有界编排计划",
+      "description": "工作流进入运行时前，由 planning 模块生成 evidence-first 步骤图并校验依赖、工具、事实门禁和完成条件。当前 orchestration 模块使用封闭 workflow catalog 编译纯函数 RunPlan，并只做 guard 判定，不执行步骤或写入业务状态。这一分层把“计划什么”与“真正执行什么”明确隔开。",
+      "nodeIds": [
+        "file:apps/api/app/domain/sv_agent/planning.py",
+        "file:apps/api/app/application/sv_agent/orchestration.py"
+      ]
+    },
+    {
+      "order": 9,
       "title": "封闭只读工具面",
-      "description": "Read-tool contracts 定义严格输入与类型化输出，registry 只暴露允许的六类工具，handler 把请求路由到既有 inspection service。execution 记录 ToolRun journal 的成功或稳定失败，但这些工具只读取 PostgreSQL 权威状态，不改变 Job、Script、Storyboard 或 Task/Run。",
+      "description": "RunPlan 可调用的读取能力不是任意工具集合，而是由 contracts 和静态 registry 定义的封闭 read-tool surface。Handler 把严格输入路由到既有商品、pattern、job、script 与 storyboard 查询，execution 同时写入 ToolRun journal，错误层只公开稳定错误码。这样 Agent 能读取权威状态并保留审计轨迹，却不会借读取工具修改业务事实。",
       "nodeIds": [
         "file:apps/api/app/application/sv_agent/read_tools/contracts.py",
         "file:apps/api/app/application/sv_agent/read_tools/registry.py",
         "file:apps/api/app/application/sv_agent/read_tools/handler.py",
         "file:apps/api/app/application/sv_agent/read_tools/execution.py",
-        "file:apps/api/app/application/job_reads.py"
-      ],
-      "languageLesson": "显式 named submodule import 与无副作用 package initializer 能保持 Python package Interface 清楚，并降低循环 import 风险。"
-    },
-    {
-      "order": 9,
-      "title": "任务收件箱投影",
-      "description": "Task Inbox 从当前 Task/Run head 计算可行动 lane 与稳定排序理由，再由 FastAPI route 和 Pydantic schema 暴露只读响应。React 页面只呈现服务端投影；集成测试验证 current-head、资格和排序边界，避免浏览器状态冒充数据库事实。",
-      "nodeIds": [
-        "file:apps/api/app/application/sv_agent/task_inbox.py",
-        "file:apps/api/app/api/routes/sv_agent.py",
-        "file:apps/api/app/api/schemas/sv_agent.py",
-        "file:apps/api/tests/integration/sv_agent/test_task_inbox.py",
-        "file:apps/web/src/routes/TaskInboxPage.tsx"
+        "file:apps/api/app/application/sv_agent/read_tools/errors.py"
       ]
     },
     {
       "order": 10,
-      "title": "任务控制台投影",
-      "description": "Mission Control 汇聚计划、产物、Approval 和 ToolRun 的当前前沿，解释阻断原因与下一安全动作。集成测试要求缺失、过期或冲突状态 fail closed，Web 页面只负责把这份权威投影组织成可读的决策界面。",
+      "title": "权威只读投影",
+      "description": "在编排与读取工具之上，三个 application projection 分别回答待处理任务、当前运行控制面和证据图状态。统一 FastAPI routes 只暴露 GET endpoints，Pydantic schemas 把任务、运行、证据、阻塞项和下一安全动作固定为稳定响应。投影层因此成为 PostgreSQL 权威状态面向 Web 的受控窗口。",
       "nodeIds": [
+        "file:apps/api/app/application/sv_agent/task_inbox.py",
         "file:apps/api/app/application/sv_agent/mission_control.py",
-        "file:apps/api/tests/integration/sv_agent/test_mission_control.py",
-        "file:apps/web/src/routes/MissionControlPage.tsx"
+        "file:apps/api/app/application/sv_agent/evidence_workspace.py",
+        "file:apps/api/app/api/routes/sv_agent.py",
+        "file:apps/api/app/api/schemas/sv_agent.py"
       ]
     },
     {
       "order": 11,
-      "title": "证据工作台投影",
-      "description": "Evidence Workspace 从 PostgreSQL 重建有界 Evidence Graph，核对 artifact lineage、digest 与独立证据平面后才返回可展示结果。配套集成测试守住 quarantine 和 unavailable 语义，Web 页面据此展示版本化产物，而不把研究文件直接提升为业务事实。",
+      "title": "任务入口与草稿",
+      "description": "Task Inbox 把服务端任务与决定按可行动 lane 展示，同时明确浏览器草稿不是权威业务状态。New Task 页面通过受控表单和范围预览收集 brief，v2 草稿合同以闭合枚举、公开 URL、时间窗口和人工边界约束 sessionStorage。旧 v1 兼容读取被隔离为非权威警告，因此草稿损坏不会污染 PostgreSQL 投影。",
       "nodeIds": [
-        "file:apps/api/app/application/sv_agent/evidence_workspace.py",
-        "file:apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py",
-        "file:apps/web/src/routes/EvidenceArtifactsPage.tsx"
+        "file:apps/web/src/routes/TaskInboxPage.tsx",
+        "file:apps/web/src/routes/NewTaskPage.tsx",
+        "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+        "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts"
       ]
     },
     {
       "order": 12,
-      "title": "Native Shell 草稿",
-      "description": "New Task 页面收集目标轨道、决策问题、公开参考和停止条件，并通过版本化 browser-local contract 保存完整草稿。草稿解析失败或 storage 不可用只产生非权威提示；它不会创建 Task/Run、调用 provider 或绕过 Approval。",
+      "title": "运行控制界面",
+      "description": "从任务入口继续到 Mission Control，用户可以查看七阶段路径、RunPlan、ToolRuns、阻塞原因与下一安全动作。页面只读取权威详情，配套样式把状态色、命令预览、响应式布局和可见 focus 统一起来。它把第八至第十步的后端控制合同翻译成可检查的操作界面。",
       "nodeIds": [
-        "file:apps/web/src/routes/NewTaskPage.tsx",
-        "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-        "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts"
-      ],
-      "languageLesson": "React controlled form 与 closed parser 把 UI 输入限制在已知 schema；sessionStorage 只属于当前浏览器标签页，不能充当服务器 authority。"
+        "file:apps/web/src/routes/MissionControlPage.tsx",
+        "file:apps/web/src/features/sv-agent/mission-control.css"
+      ]
     },
     {
       "order": 13,
-      "title": "独立证据平面",
-      "description": "Oumomo、Leap 公开报告和 Momcozy 私有素材各自保留 provenance、可见范围与证据等级，不能因为进入图谱就成为产品事实。Viral Replication oracle 对 Skills、fixtures 和 workflow graph 做确定性一致性审计，为人工判断提供证据而不是替代判断。",
+      "title": "证据与产物界面",
+      "description": "Evidence and Artifact workspace 展示版本化产物依赖、证据 DAG、独立证据面与审计细节。页面从 PostgreSQL 权威 Evidence projection 读取数据，样式层保持状态表达、details 展开、响应式布局和键盘 focus 可见。至此，领域中的 Evidence 与 Artifact 合同形成了面向用户的可追溯故事线。",
       "nodeIds": [
-        "document:docs/research/oumomo/evidence-index.md",
-        "document:docs/research/leap/public-report-evidence.md",
-        "document:tools/momcozy_assets/README.md",
-        "file:tools/viral_replication_oracle/oracle.py"
+        "file:apps/web/src/routes/EvidenceArtifactsPage.tsx",
+        "file:apps/web/src/features/sv-agent/evidence-artifacts.css"
       ]
     },
     {
       "order": 14,
-      "title": "分层验证闭环",
-      "description": "测试指南把 unit、PostgreSQL integration、Web、Private Gate 和能力图谱检查分开说明，并明确每个绿色结果能证明什么。架构测试守住新的 SV-Agent package locality，read-tool 集成测试则验证六类工具仍然只读且可审计。",
+      "title": "独立证据平面",
+      "description": "Web 中的证据不是单一来源：Oumomo 索引区分设计、机器证据与发现流程，Leap 公开报告记录直接观察及推断边界。Momcozy 真实素材由本地档案说明和 Private Gate 独立治理，检查来源、内容类型、hash、review 与敏感信息边界。多平面分离让研究信号、公开证据和私有资产各自保留正确的可信度与暴露范围。",
       "nodeIds": [
-        "document:docs/development/testing.md",
-        "file:apps/api/tests/unit/test_sv_agent_tool_architecture.py",
-        "file:apps/api/tests/integration/sv_agent/test_read_tool_execution.py"
+        "document:docs/research/oumomo/evidence-index.md",
+        "document:docs/research/leap/public-report-evidence.md",
+        "document:tools/momcozy_assets/README.md",
+        "file:tools/momcozy_assets/private_gate.py"
       ]
     },
     {
       "order": 15,
-      "title": "容器与持续集成",
-      "description": "API 与 Web Dockerfile 分别封装 Python 服务和静态 React 产物，docker-compose 组合 PostgreSQL、Redis、migration、worker 与前端服务。GitHub Actions 在独立依赖环境中执行回归门禁；这些工程信号证明可重复构建与测试，但不等同于生产发布或商业验收。",
+      "title": "验证与运行基础设施",
+      "description": "最后用测试文档判断每类绿色结果究竟能证明什么，再由 CI 在 PostgreSQL、Redis 环境中执行自动化检查。API 与 Web Dockerfiles 分别构建非 root Uvicorn 镜像和 Nginx 静态镜像，docker-compose 则把 migration、worker、reconciler 与双端服务编排为完整本地系统。这个收尾步骤把前面的架构理解落实为可重复验证，而不把 CI 或容器启动误报成生产验收。",
       "nodeIds": [
+        "document:docs/development/testing.md",
+        "pipeline:.github/workflows/ci.yml",
         "service:apps/api/Dockerfile",
         "service:apps/web/Dockerfile",
-        "service:infra/docker-compose.yml",
-        "pipeline:.github/workflows/ci.yml"
+        "service:infra/docker-compose.yml"
       ],
-      "languageLesson": "Multi-stage Docker build 分离构建依赖和运行镜像；CI service containers 提供可重复测试依赖，但生产拓扑仍需独立部署验收。"
+      "languageLesson": "GitHub Actions YAML 用 jobs 和 steps 表达并行与顺序验证；Docker multi-stage build 分离构建依赖与运行依赖，而 Compose 用 health checks 与服务依赖组织本地系统。"
     }
   ]
 }
