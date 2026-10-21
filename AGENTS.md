@@ -30,7 +30,7 @@ Inspect `git status --short --branch` before writes. Preserve unrelated changes.
 - Treat the repository as a CRAFT-inspired Agent project: living specifications stay under `docs/`, evidence under `docs/research/` and tracked `outputs/`, reusable instructions under `.agents/`, current delivery tickets under `docs/product/`, and executable products under `apps/`, `tools/`, `infra/`, `migrations/` and `sites/`. Do not create duplicate facade trees.
 - Authority order is code/database/tests, living docs and ADRs, implemented decision contracts, dated research evidence, then archived plans.
 - `.ua/knowledge-graph.json` is generated navigation. It never proves runtime, deployment, data quality or production acceptance by itself.
-- Track `.ua/knowledge-graph.json`, `fingerprints.json`, `meta.json`, `config.json` and `.understandignore`; do not track `.ua/intermediate/`, `.ua/tmp/` or `.ua/.trash-*`.
+- Track `.ua/knowledge-graph.json`, `.ua/fingerprints.json`, `.ua/meta.json`, `.ua/config.json` and `.ua/.understandignore`; do not track `.ua/intermediate/`, `.ua/tmp/` or `.ua/.trash-*`.
 - Regenerate the graph after path, module, dependency or long-lived documentation changes. Reject dangling edges and stale `meta.json`.
 - A gitignored path is not automatically garbage. In particular, preserve `outputs/momcozy-content-assets/`, Oumomo artifacts and scoring degradations unless an exact evidence-aware deletion is approved.
 - When moving documents, update `docs/index.md`, cross-links, `AGENTS.md` routing and any relevant graph freshness instructions in the same change.

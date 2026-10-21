@@ -5,7 +5,7 @@
 ## Current system
 
 - [Project layout](architecture/project-layout.md)：Agent 项目目录、CRAFT 语义映射、入口和不可破坏的边界。
-- [SV-Agent project layout proposal](architecture/sv-agent-project-layout-proposal.md)：结合当前 vertical slice 与参考仓库方法形成的目录整理顺序、迁移 tickets、冲突边界和回滚方案。
+- [SV-Agent project layout proposal](architecture/sv-agent-project-layout-proposal.md)：记录已实施的 application/Web locality、scoped guides、导航清理，以及剩余条件式目录门和回滚边界。
 - [System architecture](architecture/system-overview.md)：当前运行组件、事实边界、数据流和未来门禁。
 - [Capability model](product/capability-model.md)：从商品事实到实验、素材和决策的综合能力图谱。
 - [Momcozy insight storyline](product/momcozy-insight-storyline.md)：主品牌洞察如何由数据和证据逐层形成。

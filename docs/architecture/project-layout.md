@@ -19,7 +19,7 @@ SV-Agent 采用 CRAFT 启发的 Agent 项目组织方式，但不复制一套空
 | Prompts | `.agents/skills/`, `.agents/workflows/` | 可发现的 Skills、SOP、路由和验证脚本 | 动态下载插件、隐藏推理 |
 | Plans | `docs/product/*tickets*.md`, `docs/product/roadmap.md`, `docs/archive/implementation-plans/` | 当前票据与路线图；已完成或停止的历史计划 | 把历史计划当当前权限 |
 | Build | `apps/`, `tools/`, `migrations/`, `infra/`, `sites/` | API、Web、确定性工具、schema、运行环境、公开站点 | 私有素材库和本地托管绑定 |
-| Generated navigation | `.ua/` 的受控文件 | 能力图谱、指纹、元数据和配置 | 中间文件、验收结论 |
+| Generated navigation | `.ua/knowledge-graph.json`、`.ua/fingerprints.json`、`.ua/meta.json`、`.ua/config.json`、`.ua/.understandignore` | 能力图谱、指纹、元数据、配置和扫描边界 | `.ua/intermediate/`、`.ua/tmp/`、`.ua/.trash-*`、验收结论 |
 
 ## 顶层结构
 
@@ -39,6 +39,13 @@ SV-Agent/
 └── tools/                    # 确定性验证器、资产门与 workflow oracle
 ```
 
+## SV-Agent 当前局部结构
+
+- API application implementation 已收拢到 `apps/api/app/application/sv_agent/`，调用方从明确 submodule 导入。
+- Web browser-local state 在 `apps/web/src/features/sv-agent/state/`，feature styles 在 `apps/web/src/features/sv-agent/styles/`。
+- 四个 page implementation 仍保留在 `apps/web/src/routes/`；只有共享层稳定并建立删除 ticket 后才继续移动。
+- Domain、migration、Momcozy asset tools 与 Web feature 各有短 scoped `AGENTS.md`，它们只增加局部规则。
+
 ## Agent 进入路径
 
 1. 从 `AGENTS.md` 和 `docs/index.md` 确认权限、事实源和相关文档。
@@ -53,5 +60,5 @@ SV-Agent/
 - `.agents/` 描述 Agent 如何工作，不授予 render、publish、rights、commercial 或 production 权限。
 - `outputs/momcozy-content-assets/` 是本地 Private Gate，不进入公开仓库。
 - `sites/viral-replication-workbench/` 只包含经筛选的公开静态内容；本地 `.openai/hosting.json` 不纳入版本控制。
-- `docs/archive/` 保存历史，不是当前 TODO；当前实施状态以 `docs/product/sv-agent-implementation-tickets.md` 为准。
+- `docs/archive/` 保存历史，不是当前 TODO；产品能力状态以 `docs/product/sv-agent-implementation-tickets.md` 为准，目录整理状态以 `docs/architecture/sv-agent-project-layout-proposal.md` 为准。
 - 不建立重复的 `specs/`、`references/`、`prompts/`、`plans/` 或 `build/` 门面目录。需要调整职责时，先更新本文件、`docs/index.md` 和相关测试。

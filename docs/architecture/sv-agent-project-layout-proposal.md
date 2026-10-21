@@ -1,8 +1,8 @@
 # SV-Agent 项目目录整理方案
 
-状态：SV-ORG-101、SV-ORG-201 与 SV-ORG-301 已实施，后续门待批准
+状态：SV-ORG-101、SV-ORG-201、SV-ORG-301 与 SV-ORG-401 已实施；目录整理基线已闭合
 审计日期：2026-10-21  
-实施状态：SV-ORG-000、SV-ORG-101、SV-ORG-201 与 SV-ORG-301 已完成；未执行 checkout、adapter 或 Web page 路径搬移
+实施状态：SV-ORG-000、SV-ORG-101、SV-ORG-201、SV-ORG-301 与 SV-ORG-401 已完成；未执行 checkout、adapter 或 Web page 路径搬移
 
 ## 结论
 
@@ -15,7 +15,7 @@ SV-Agent 以当前 repository root 为 Git 根，`origin` 指向
 保留这套顶层结构，不新增 `specs/`、`prompts/`、`plans/`、`build/`、`.claude/` 或第二棵
 `SV-Agent/` 门面树。SV-ORG-101 已把 API application implementation 收拢到
 `application/sv_agent/` package；调用方盘点没有发现动态导入、entry point 或已声明的仓库外 caller，
-因此同批更新全部 imports，不保留旧 flat-module façade。PostgreSQL adapter 与 Web feature 是否继续
+因此同批更新全部 imports，不保留旧 flat-module façade。PostgreSQL adapter 与 Web page implementation 是否继续
 收拢，仍分别受后续 ticket 和独立批准门约束。
 
 Git 仓库身份已经是 `SV-Agent`，但本地 checkout 文件夹名尚未与仓库名对齐。这只是物理路径，不应通过在
@@ -51,7 +51,7 @@ Git 仓库身份已经是 `SV-Agent`，但本地 checkout 文件夹名尚未与�
 - PostgreSQL models/repositories 分散为三个同前缀文件；
 - Web state 与 CSS 已分别收拢到 feature 内的 `state/` 与 `styles/`；page implementation 仍保留在 `routes/`，等待稳定共享层与独立删除 ticket；
 - scoped local guides 已由 SV-ORG-301 闭合；后续只在操作规则确实不同的目录增补；
-- 当前大量未提交变更不适合同时进行路径搬移。
+- 已实施的结构迁移均已按 ticket 分批提交；后续只保留条件式 adapter/page tickets 与独立 checkout 运维票据。
 
 ## 当前实际落点
 
@@ -67,7 +67,7 @@ Git 仓库身份已经是 `SV-Agent`，但本地 checkout 文件夹名尚未与�
 | Port | `apps/api/app/ports/sv_agent_tool_journal.py` | 已有 ToolRun journal seam；不要为目录美观制造没有第二 adapter 的 port |
 | Migration | `migrations/versions/0012_sv_agent_persistence.py` | 13 个 additive `sv_*` 表及不可变/当前头约束的历史事实 |
 | Web product | `apps/web/src/routes/*Task*Page.tsx`、`MissionControlPage.tsx`、`EvidenceArtifactsPage.tsx` | Task Inbox、New Task、Mission Control、Evidence & Artifacts 页面 |
-| Web feature support | `apps/web/src/features/sv-agent/` | local draft state 与页面 CSS |
+| Web feature support | `apps/web/src/features/sv-agent/state/`、`styles/` | browser-local draft state 与 feature styles；page implementation 仍在 `routes/` |
 | Skills | `.agents/skills/viral-*`、`.agents/skills/factframe-*` | 单一能力 instructions；不是运行时代码 |
 | Workflow packs | `.agents/workflows/viral-replication/` | 七类执行路线、shared contracts、fixtures、forward tests |
 | Offline compatibility | `tools/viral_replication/`、`tools/viral_replication_oracle/` | canonical validator compatibility export 与确定性 oracle |
@@ -217,7 +217,8 @@ adapter、Web 路径 move 或运行行为变化混批。
 - `sites/viral-replication-workbench/dist/`（它是明确跟踪的公开发布 artifact）；
 - `.ua/knowledge-graph.json`、`fingerprints.json`、`meta.json` 和 config/ignore contract。
 
-本方案不执行任何删除。
+SV-ORG-401 只清理审计确认的 ignored、untracked、可重建缓存和 `.ua/.trash-*`；不删除 tracked 文件。
+`.venv/`、`node_modules/`、`.ua/intermediate/scan-result.json`、全部 `outputs/` 与公开站点产物继续保留。
 
 ## 分阶段实施 tickets
 
@@ -274,10 +275,13 @@ adapter、Web 路径 move 或运行行为变化混批。
 
 ### SV-ORG-401 — Navigation and cleanup
 
-- 更新 `docs/architecture/project-layout.md`、`docs/index.md`、所有相对链接和测试命令；
-- 完整重生成 `.ua`，拒绝 dangling/duplicate edges、stale meta 和旧 path fingerprints；
-- 仅删除已列明的可重建垃圾，逐类执行，不使用 broad ignored-file clean；
-- 验收：源码、文档、图谱和实际 import path 一致。
+状态：已完成（2026-10-21）。
+
+- 已同步 `AGENTS.md`、`docs/architecture/project-layout.md`、`docs/index.md` 与本方案的导航和状态；
+- 已验证 living docs、scoped guides、源码 imports、CI、测试命令与 Docker build context，不存在失效路径；
+- 已完整刷新并校验 `.ua`，旧路径、dangling/duplicate edges、stale fingerprints 与 layer/tour 问题均为 0；
+- 只清理精确枚举的 ignored、untracked、可重建缓存与 `.ua` scratch，不运行 broad ignored-file clean；
+- 验收：源码、文档、图谱、fingerprints 与实际 import path 一致，tracked 文件删除数为 0。
 
 ## 验证清单
 
@@ -300,7 +304,7 @@ rtk npm --prefix apps/web run build
 - 比较 graph / fingerprints / meta 的路径集合；
 - 验证 dangling edge、duplicate edge、layer 和 tour 问题均为 0；
 - 检查所有旧 import、Markdown link、测试命令和 Docker build context；
-- 构建 API Docker image，证明新 package 被部署上下文包含。
+- 运行 `rtk docker compose -f infra/docker-compose.yml build api web`，证明受影响目录被部署上下文包含。
 
 ## Rollback
 
@@ -314,5 +318,6 @@ rtk npm --prefix apps/web run build
 初次审计时工作区存在 SV-201～SV-204 未提交实现，因此先由 SV-ORG-000 建立了两个本地基线提交。
 SV-ORG-101 随后只执行 application 路径、import、architecture test、测试命令和图谱同步；SV-ORG-301
 只增加四个 scoped guides、根/文档路由与图谱同步；SV-ORG-201 只收拢 Web state/styles 并更新静态引用，
-没有改变页面、storage、网络或视觉行为。三批都没有混入数据库、adapter、垃圾删除、push 或部署变更。
-当前后续边界仍是条件式 SV-ORG-102 与 SV-ORG-401，各自需要独立批准。
+没有改变页面、storage、网络或视觉行为。SV-ORG-401 只同步导航、验证路径并清理明确可重建的 ignored scratch，
+没有删除 tracked 文件，也没有混入数据库、adapter、push 或部署变更。当前剩余边界是：SV-ORG-102 条件尚未
+触发；Web pages 只有达到共享阈值并建立删除 ticket 后才迁移；SV-ORG-010 仍是独立可选运维 ticket。
