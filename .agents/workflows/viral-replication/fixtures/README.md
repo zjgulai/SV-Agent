@@ -5,7 +5,7 @@
 ## 三层验证边界
 
 1. **Fixture-shape validation**：`tools/viral_replication_oracle` 检查 JSON 可读性、fixture/case 必需字段、closed expected disposition 和 failure-code 形状。CLI 的 `fixture_schema=<count>` 只代表这一层，不是 SV-001 canonical artifact schema acceptance。
-2. **Canonical artifact contract validation**：`tools/viral_replication/artifact_contracts.py` 是九类新增 artifact 的 executable machine-schema authority。只有将 fixture 映射为对应 artifact 并调用该 validator，才可声称 artifact contract validation；当前 fixture oracle 的 `schema` 计数不能替代它。
+2. **Canonical artifact contract validation**：`apps/api/app/domain/sv_agent/artifact_contracts.py` 是九类新增 artifact 的 executable machine-schema authority；`tools/viral_replication/artifact_contracts.py` 是兼容入口。只有将 fixture 映射为对应 artifact 并调用该 validator，才可声称 artifact contract validation；当前 fixture oracle 的 `schema` 计数不能替代它。
 3. **Workflow expectation oracle**：oracle 从 fixture input 独立推导 disposition/blockers，再与 `expected` 对照。该层验证 workflow stop condition，不证明 canonical artifact、真实媒体、CI、平台或 production acceptance。
 
 本地 deterministic runner：
@@ -17,7 +17,7 @@ rtk uv run --project apps/api python -m tools.viral_replication_oracle .agents/w
 ## 消费顺序
 
 1. 先读取 `routing-decision-tree.md` 和目标 workflow 的 `SOP.md`。
-2. 将夹具中的输入映射为对应 artifact；不得把 `expected` 字段当作模型生成的事实。若报告 canonical artifact acceptance，必须另行调用 `tools/viral_replication/artifact_contracts.py` 的 validator。
+2. 将夹具中的输入映射为对应 artifact；不得把 `expected` 字段当作模型生成的事实。若报告 canonical artifact acceptance，必须另行调用 deployable domain validator（可经 `tools/viral_replication/artifact_contracts.py` 兼容入口）。
 3. 按 canonical skills 的 stop conditions 逐条检查，再由 workflow oracle 独立推导 disposition 与 blockers。
 4. 只输出 `blocked`、`proceed_with_limits` 或 `ready_for_next_gate` 之一，并保留 blocker、evidence level、unknowns 和 next action。
 5. 只有在预期 blocker 被准确指出时，fixture expectation 才算通过；不能用“看起来合理”替代字段级判断，也不能把 fixture-shape pass 写成 artifact-schema pass。

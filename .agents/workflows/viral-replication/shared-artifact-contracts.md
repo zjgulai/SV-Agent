@@ -1,6 +1,6 @@
 # Shared Artifact Contracts
 
-六类 workflow 共享同一 artifact chain。九类新增 artifact 的 executable machine-schema authority 是 `tools/viral_replication/artifact_contracts.py`；它提供本地 JSON Schema projection、digest binding 和 validator。本文只解释 handoff 与证据边界，不复制第二套 machine schema。当前没有为这些 artifact 新增 PostgreSQL 表、migration、Task/Run runtime persistence 或外部写能力。
+六类 workflow 共享同一 artifact chain。九类新增 artifact 的 executable machine-schema authority 是 `apps/api/app/domain/sv_agent/artifact_contracts.py`；`tools/viral_replication/artifact_contracts.py` 兼容导出同一套 JSON Schema projection、digest binding 和 validator。本文只解释 handoff 与证据边界，不复制第二套 machine schema。当前已有不可变 PostgreSQL envelope 与只读投影，但没有 Artifact writer、外部写能力或可持续执行链。
 
 ScriptVersion 与 StoryboardVersion 是既有 FactFrame append-only artifact，不属于上述九类新增 schema；它们仍是 chain 中两个独立、连续的节点。
 

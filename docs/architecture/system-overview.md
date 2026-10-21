@@ -117,10 +117,69 @@ The following are current implementation facts:
   Planner outcomes are computed only after Task/Run, catalog, FactScope and all route evidence
   pass one authoritative-context stage; invalid authority input therefore cannot be masked by
   a missing or ambiguous route disposition.
+- SV-Agent SV-105 is implemented locally as a pure independent next-gate reviewer. It accepts
+  upstream canonical-validated artifact snapshots and independently checks their digest/common
+  scope, derives the actual Control/Variant change, protects frozen context, audits selected and
+  excluded Facts across visible claim surfaces, and applies required-versus-optional evidence
+  semantics. Product-claim evidence must bind the same Product Snapshot and Fact as the current
+  ReplicationContract, with the Fact still `confirmed` or `locked`; a generic Product Truth
+  observation cannot support another Fact. It returns only `blocked`, `proceed_with_limits` or `ready_for_next_gate` with typed
+  deterministic findings. It has no repository, database, network, Tool, state-transition or
+  ApprovalEvent dependency.
+- SV-Agent SV-201 is implemented locally as the first public read-only Native Shell projection.
+  `GET /api/v1/sv-agent/tasks` reads at most 100 current Task/active Run heads from PostgreSQL,
+  verifies the current TaskBrief digest and active Run's Task revision, resolves current-revision
+  ApprovalRequests only through a complete digest-and-scope-matched DecisionEvent handle, and derives
+  lane, count and gate kinds in one database statement,
+  fails closed when Approval state and Run state drift in either direction, and returns a
+  versioned, deterministically ordered projection with explicit reasons.
+  Business blockers, missing input, technical failure, approval-record drift, active work,
+  completed-with-limits, stopped and not-started states remain distinct. The React route
+  `/sv-agent/tasks` renders that projection separately from bounded, versioned browser-local
+  drafts. Browser storage denial or corruption degrades only the local draft section. The page
+  and API are read-only and expose no Render, Publish or Ship action.
+- SV-Agent SV-202 is implemented locally as a browser-local New Task brief. The React route
+  `/sv-agent/tasks/new` captures goal, question, public reference, subject, delivery context,
+  observation window, stop condition, claim scope and initial rights/child-safety states in a
+  bounded versioned `sessionStorage` envelope. Brand Voice without product claims does not
+  require a Product Snapshot candidate; any product-claim path does. The Inbox can reopen the
+  same local draft, while denied or corrupt storage cannot mutate or mask PostgreSQL Tasks.
+  This surface performs no reference fetch, API mutation, provider call, Run/Job start, Tool
+  dispatch, Approval, Render or Publish action.
+- SV-Agent SV-203 is implemented locally as a bounded read-only Mission Control. `GET
+  /api/v1/sv-agent/tasks/{task_id}` starts from the PostgreSQL current Task/Run head and returns a
+  versioned white-list projection. A RunPlan is current only when its row, closed payload, digest,
+  current TaskBrief input, Task revision and Run revision agree. An Artifact is current only when
+  one non-stale candidate passes the shared canonical contract and row-envelope binding and has an
+  exact runtime-lineage link whose verification payload matches its canonical digest;
+  missing, ambiguous, unverified or corrupt frontiers remain explicit.
+  DecisionEvents must match the complete ApprovalRequest digest and Task/Run handle. ApprovalRequests
+  and ToolRuns are bounded and stable, Task/Run heads are rechecked after the
+  multi-query projection, and unsupported stage completion stays `unknown`. The React route
+  `/sv-agent/tasks/:taskId` renders the seven-stage path, current evidence-backed bundle, blockers
+  and next safe action. Its command composer is a browser-memory preview: it sends no mutation,
+  stores no command, exposes no approval decision, and cannot recover without a verified receipt.
+- SV-Agent SV-204 is implemented locally as a bounded read-only Evidence and Artifact workspace.
+  `GET /api/v1/sv-agent/tasks/{task_id}/artifacts` uses the deployable canonical Pydantic contracts,
+  one canonical content-digest algorithm plus full-chain semantic validation, database/payload
+  digests, Task/Run-scoped direct refs, monotonic Run revisions,
+  runtime-lineage verification and an acyclic dependency graph across the active Run's persisted
+  revisions. It fails closed above 50 nodes, 200 edges or 100 lineage links and returns only
+  allow-listed summaries; payloads, digests, locators, URLs, filesystem paths, credentials and
+  private identifiers are not projected. ReplicationFinding details inherit source kinds and one
+  unambiguous observation window only through declared ReferenceBundle lineage. Product Truth is
+  available only from one current non-stale FactMap/ReplicationContract frontier whose claim scope,
+  subject, selected Facts and excluded Facts agree and bind one exact Snapshot digest with selected
+  `confirmed`/`locked` Facts; a closed `no_product_claims` frontier is
+  explicitly out of scope. The Task/Run head is rechecked after Product Truth queries. Performance,
+  Experiment and Asset stay independently unavailable because no reviewed runtime binding is
+  connected. The React route `/sv-agent/tasks/:taskId/evidence` is GET-only, keeps missing states
+  distinct and withholds Control/Variant navigation because the canonical artifacts do not yet
+  provide typed immutable ScriptVersion roles.
 
 The following remain future design gates, not implemented capabilities:
 
-- SV-Agent durable Run/RunPlan orchestrator, command-receipt resume for tool invocation, verified actor and authorization adapter, Run/Artifact/runtime-lineage writers, HumanApproval service, workspace projections and every public write route. The pure SV-104A/B planner and internal read ToolRun journal do not make those capabilities active.
+- SV-Agent durable Run/RunPlan orchestrator, command-receipt resume for tool invocation, verified actor and authorization adapter, Run/Artifact/runtime-lineage/reviewer writers, HumanApproval service, Approval/Replay and Policy workspace projections, and every public write route. The pure SV-104A/B planner, pure SV-105 reviewer, internal read ToolRun journal, read-only SV-201 Inbox, local-only SV-202 brief, read-only SV-203 Mission Control and read-only SV-204 Evidence and Artifact workspace do not make those capabilities active.
 - Immutable `ProviderRun` attempt/cost records separated from script artifacts.
 - Structured render lexemes and attribute constraints for semantic visual exclusion.
 - Keyframe assets, quote state, RenderJob, video generation and publishing.

@@ -62,7 +62,7 @@ rtk uv run --project apps/api python -m unittest tools.viral_replication_oracle.
 rtk uv run --project apps/api python -m tools.viral_replication_oracle
 rtk uv run --project apps/api ruff check tools/viral_replication tools/viral_replication_oracle
 rtk uv run --project apps/api ruff format --check tools/viral_replication tools/viral_replication_oracle
-rtk uv run --project apps/api python -m mypy --explicit-package-bases tools/viral_replication tools/viral_replication_oracle
+rtk env MYPYPATH=apps/api uv run --project apps/api python -m mypy --explicit-package-bases tools/viral_replication tools/viral_replication_oracle
 ```
 
 Interpret the output as three separate results:
@@ -164,6 +164,138 @@ evaluation, cross-scope/conflict rejection and computational repeatability. A
 does not prove a RunPlan database writer, Run CAS, command-receipt resume, concurrent
 exactly-once behavior, Tool dispatch, Human Approval authority, public API, deployment,
 render, publication, rights, commercial approval or production acceptance.
+
+## SV-Agent independent reviewer gate
+
+SV-105 adds one pure next-gate review seam. Run its adversarial examples together with the
+domain dependency guard and the complete SV-Agent domain suite:
+
+```bash
+rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent/test_reviewing.py apps/api/tests/unit/test_sv_agent_tool_architecture.py -q
+rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent -q
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/tests/unit/domain/sv_agent apps/api/tests/unit/test_sv_agent_tool_architecture.py
+rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent apps/api/tests/unit/domain/sv_agent apps/api/tests/unit/test_sv_agent_tool_architecture.py
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent
+```
+
+A green result proves deterministic artifact digest/scope checks, actual single-variable
+isolation, frozen-context protection, visible-surface deny-set enforcement, same-Snapshot and
+same-Fact Product Truth binding, required versus optional evidence semantics, stable typed findings
+and the absence of an ApprovalEvent output.
+It proves only the in-memory next-gate decision. It does not prove full artifact schema
+normalization, a durable orchestrator or reviewer record, Tool execution, state advancement,
+Human Approval authority, a public API, deployment, media acceptance, publication, rights,
+commercial approval or production acceptance.
+
+## SV-Agent Task and Decision Inbox gates
+
+SV-201 adds one bounded PostgreSQL read projection and the first read-only Native Shell route.
+Run its current-head, approval-currentness, HTTP contract and browser authority-boundary checks:
+
+```bash
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_task_inbox.py apps/api/tests/integration/api/test_sv_agent_tasks.py -q
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
+rtk uv run --project apps/api ruff check apps/api/app/application/sv_agent_task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_task_inbox.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk uv run --project apps/api ruff format --check apps/api/app/application/sv_agent_task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_task_inbox.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk npm --prefix apps/web test -- --run
+rtk npm --prefix apps/web run lint
+rtk npm --prefix apps/web run typecheck
+rtk npm --prefix apps/web run build
+```
+
+A green result proves that the persisted Inbox is bounded to 100 current PostgreSQL Tasks,
+verifies the current TaskBrief digest and active Run Task revision, uses unresolved ApprovalRequests
+whose DecisionEvents match the complete digest-and-scope handle for the decision lane, keeps
+lane/count/gate kinds in one statement snapshot, fails closed on two-way Approval/Run drift,
+keeps business blockers separate from technical failures, exposes ordering reasons, and never
+merges versioned browser-local drafts into authoritative state. Storage denial and corrupt local
+drafts cannot prevent the authoritative Inbox from rendering. It proves only a read-only
+projection and UI. It does not create or revise a Task, advance a Run, decide an ApprovalRequest,
+invoke a Tool/provider, render, publish, deploy or establish rights, commercial or production
+approval.
+
+## SV-Agent New Task browser-brief gates
+
+SV-202 adds a complete browser-local brief without adding a server mutation. Run its goal-track,
+Product Snapshot conditionality, save/resume, storage-denial and corrupted-envelope checks:
+
+```bash
+rtk npm --prefix apps/web test -- --run src/routes/__tests__/new-task.test.tsx src/routes/__tests__/task-inbox.test.tsx
+rtk npm --prefix apps/web run lint
+rtk npm --prefix apps/web run typecheck
+rtk npm --prefix apps/web run build
+```
+
+A green result proves that Brand Voice without product claims can omit Product Snapshot, Product
+Replication retains the complete form and draft identity when reopened and saved again, and Brand
+Voice product claims make Product Snapshot required. Explicit rights/child-safety acknowledgements
+remain unresolved human gates. Malformed or oversized local storage can be replaced, denied storage
+does not clear the form or report a false save, and custom-invalid input receives visible feedback
+and focus. Request observation asserts that saving produces no HTTP mutation; only the read-only
+Inbox `GET` occurs after navigation. It does not prove a PostgreSQL Task write, Product Snapshot
+existence, reference retrieval, provider or Tool execution, Agent Run, Approval, Render, Publish,
+deployment, rights, commercial or production acceptance.
+
+## SV-Agent Mission Control gates
+
+SV-203 adds a bounded PostgreSQL detail projection and a read-only Mission Control route. Run the
+current-head, frontier-integrity, stage-semantics, HTTP and browser command-boundary checks:
+
+```bash
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_mission_control.py apps/api/tests/integration/api/test_sv_agent_tasks.py -q
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
+rtk uv run --project apps/api ruff check apps/api/app/application/sv_agent_mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_mission_control.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk uv run --project apps/api ruff format --check apps/api/app/application/sv_agent_mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_mission_control.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk npm --prefix apps/web test -- --run src/routes/__tests__/mission-control.test.tsx src/routes/__tests__/task-inbox.test.tsx
+rtk npm --prefix apps/web test -- --run
+rtk npm --prefix apps/web run lint
+rtk npm --prefix apps/web run typecheck
+rtk npm --prefix apps/web run build
+```
+
+A green result proves that Mission Control binds to the current Task/Run revision and TaskBrief
+digest, rejects invalid or ambiguous Plan frontiers, accepts only shared-schema canonical Artifacts
+with exact row-envelope binding, requires bounded digest-valid runtime lineage for a
+current Artifact, preserves unknown stages, bounds ApprovalRequests and ToolRuns, and returns RFC
+9457 errors without writing database rows. Browser tests prove that command composition produces
+only an in-memory preview,
+offers no approve/reject decision, disables receipt-less recovery, writes no storage and makes no
+request beyond the detail `GET`. DecisionEvents must match the complete ApprovalRequest handle.
+The gate does not prove a durable command compiler, public write route,
+Tool/provider execution, HumanApproval service, deployment, rights, commercial or production
+acceptance.
+
+## SV-Agent Evidence and Artifact workspace gates
+
+SV-204 adds one bounded PostgreSQL projection and a GET-only browser workspace. Run the canonical
+graph, evidence-plane, HTTP and browser boundary checks:
+
+```bash
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py -q
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent apps/api/tests/integration/sv_agent apps/api/tests/integration/api/test_sv_agent_tasks.py -q
+rtk uv run --project apps/api python -m pytest tools/viral_replication/tests/test_artifact_contracts.py -q
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_evidence_workspace.py apps/api/app/application/sv_agent_mission_control.py apps/api/app/application/sv_agent_task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent/artifact_contracts.py apps/api/app/application/sv_agent_evidence_workspace.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py tools/viral_replication/artifact_contracts.py
+rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent/artifact_contracts.py apps/api/app/application/sv_agent_evidence_workspace.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py tools/viral_replication/artifact_contracts.py
+rtk npm --prefix apps/web test -- --run src/routes/__tests__/evidence-artifacts.test.tsx src/routes/__tests__/mission-control.test.tsx
+rtk npm --prefix apps/web test -- --run
+rtk npm --prefix apps/web run lint
+rtk npm --prefix apps/web run typecheck
+rtk npm --prefix apps/web run build
+```
+
+A green result proves that the workspace reads one current Task/active Run scope, uses the same
+deployable canonical validator and content-digest semantics as the offline compatibility entrypoint,
+projects a complete bounded DAG across persisted Run revisions, rejects whole-chain claim-scope,
+selected/excluded-Fact, subject, digest, scope, ref, revision, cycle and runtime-lineage
+drift, rechecks the head after Product Truth queries, and does not change business row counts.
+Product Truth availability requires one current frontier, one exact Snapshot digest and selected
+`confirmed`/`locked` Facts; `no_product_claims`, unavailable and quarantined remain distinct.
+Browser tests prove that artifact-specific source, subject, inherited window, limitation and proof
+details are expandable, raw refs are collapsed, four evidence planes do not become one score, and
+recovery remains GET-only. The gate does not prove a D2 evidence
+package binding, private Momcozy library state, a typed immutable Control/Variant pair,
+HumanApproval, deployment, rights, commercial approval or production acceptance.
 
 `TEST_DATABASE_URL` must identify a disposable database, never the development or deployment database. Append-only ledger tests intentionally cannot clean rows by deleting them; use the fixture transaction rollback for routine tests and a one-off database for any multi-connection concurrency test.
 

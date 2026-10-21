@@ -7,6 +7,7 @@ from app.api.routes.jobs import router as jobs_router
 from app.api.routes.product_imports import router as product_imports_router
 from app.api.routes.products import router as products_router
 from app.api.routes.scripts import router as scripts_router
+from app.api.routes.sv_agent import router as sv_agent_router
 from app.settings import settings
 
 
@@ -19,6 +20,7 @@ def create_app() -> FastAPI:
     application.include_router(product_imports_router)
     application.include_router(jobs_router)
     application.include_router(scripts_router)
+    application.include_router(sv_agent_router)
     return application
 
 

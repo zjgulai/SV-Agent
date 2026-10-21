@@ -1,8 +1,8 @@
 # SV-Agent Implementation Tickets
 
-Status: Batch 1, SV-101 through SV-103 and bounded SV-104A/B are complete and validated locally; SV-005 is accepted; Git, remote CI, deployment and production status must be verified independently
+Status: Batch 1, SV-101 through SV-103, bounded SV-104A/B, SV-105 and SV-201 through SV-204 are complete and validated locally; SV-005 is accepted; Git, remote CI, deployment and production status must be verified independently
 Architecture authority: `docs/product/sv-agent-native-agent-spec.md`
-Runtime implementation includes the domain kernel, internal persistence/read seams and pure planning/evaluation; public writes, durable plan execution and authorization remain inactive.
+Runtime implementation includes the domain kernel, internal persistence/read seams, pure planning/evaluation, one public read-only Task Inbox, a browser-local New Task brief, read-only Mission Control and the read-only Evidence and Artifact workspace; public writes, durable plan execution and authorization remain inactive.
 
 ## Delivery rules
 
@@ -255,6 +255,7 @@ SV-104A/B implementation result:
 
 Priority: P1
 Depends on: SV-103
+Status: completed locally on 2026-10-21 as a pure next-gate domain reviewer
 
 Acceptance:
 
@@ -262,12 +263,35 @@ Acceptance:
 - Returns only `blocked`, `proceed_with_limits`, or `ready_for_next_gate` plus typed findings.
 - Reviewer recommendations cannot create human ApprovalEvents.
 
+Implementation result:
+
+- `IndependentReviewer.review(NextGateReviewPackage)` is the only public seam. It consumes
+  upstream canonical-validated serialized artifact snapshots, one Task/Run binding, actual
+  Control/Variant mechanism values, frozen context, visible claims and typed evidence.
+- The reviewer independently recomputes artifact digests and common-envelope scope, then derives
+  the actual Control/Variant diff. Exact mechanism coverage is required; exactly one dimension may
+  change, and it must equal the ReplicationContract selection. Configuration, Fact binding,
+  subject, material scope and claim-contract digests stay frozen.
+- The reviewer scans voiceover, caption, on-screen text, visual, action, acceptance, title, tag and
+  shooting-list claim projections. Excluded Facts cannot reappear, and Product claims require a
+  selected `confirmed` or `locked` Fact plus resolvable Product Truth Fact evidence bound to the
+  same Product Snapshot and Fact identity as the ReplicationContract.
+- Required next-gate evidence must be `observed` at Fact level. Unknown, unreported, uncollected,
+  source-ambiguous, unavailable, quarantined or inference-only required evidence blocks; the same
+  states on optional evidence produce `proceed_with_limits`.
+- Findings and disposition are deterministic, typed and order-independent. The module performs no
+  I/O, persistence, Tool dispatch or state advancement and cannot create an ApprovalEvent.
+- This local result does not validate the full durable SV-104 orchestrator, a trusted
+  HumanApproval adapter, a public route, production media, deployment, publication, rights,
+  commercial approval or production acceptance.
+
 ## Epic 2 - A-direction Agent UX
 
 ### SV-201 - Task and Decision Inbox
 
 Priority: P1
 Depends on: SV-102
+Status: completed and validated locally on 2026-10-21
 
 Acceptance:
 
@@ -276,10 +300,36 @@ Acceptance:
 - Browser-local drafts are clearly separated from persisted Tasks.
 - No unavailable Render, Publish, or Ship action appears.
 
+Implementation result:
+
+- `TaskInbox.inspect()` projects at most 100 PostgreSQL Task/current-revision/active-Run heads,
+  returns `truncated` when more exist, and applies a versioned deterministic lane order with an
+  explicit reason on every item. It reconstructs the current TaskBrief, verifies its digest, and
+  rejects an active Run whose `task_revision` is not the current Task revision.
+- A Task enters `needs_decision` only when its current Task and Run revisions have an unresolved
+  current ApprovalRequest. A DecisionEvent resolves that request only when ID/version, request
+  digest and Task/Run revisions all match. Lane, count and gate kinds come from one statement snapshot. A
+  waiting-approval Run without that record, or another Run state with a pending request, fails
+  closed into technical attention; missing input, business blocker, technical failure, active work,
+  completed-with-limits, stopped and not-started remain separate lanes.
+- `GET /api/v1/sv-agent/tasks` returns a typed PostgreSQL-authoritative read projection and maps
+  journal drift and database unavailability to stable RFC 9457 problems. It creates no writer or
+  migration.
+- `/sv-agent/tasks` shows persisted records and bounded `sessionStorage` drafts in separate
+  authority sections. Denied storage access and corrupt local draft data are ignored locally and
+  cannot affect the server projection. No Render, Publish, Ship, Task mutation or Approval action
+  is exposed.
+
+Validation: targeted backend contract/integration tests, the full SV-Agent integration directory,
+the complete API unit suite, Ruff, Mypy, Web tests, TypeScript, ESLint and the production Web build
+pass locally. This validates the read-only Inbox only; it does not prove SV-202 Task creation,
+durable plan execution, approval decisions, deployment or production acceptance.
+
 ### SV-202 - New Task brief
 
 Priority: P1
 Depends on: SV-201
+Status: completed and validated locally on 2026-10-21
 
 Acceptance:
 
@@ -288,10 +338,37 @@ Acceptance:
 - Rights and child-safety boundaries are explicit and cannot be auto-approved.
 - Creating a draft does not trigger providers or write tools.
 
+Implementation result:
+
+- `/sv-agent/tasks/new` captures the full brief through controlled native form controls. Product
+  Replication requires a Product Snapshot candidate reference. Brand Voice requires one only after
+  the user introduces product claims.
+- Complete drafts are bounded to 20 records and a 256 KiB versioned `sessionStorage` envelope.
+  Public references accept only absolute HTTP/HTTPS URLs without credentials. Saving does not
+  fetch the reference or call an API.
+- Rights and child-safety start from unresolved states. The form offers no approved value and
+  requires two separate acknowledgements that these boundaries still need human gates.
+- Inbox cards keep v2 drafts visibly separate from PostgreSQL Tasks and can reopen the same draft
+  without changing its identity. Legacy v1 drafts remain readable and are not
+  overwritten or presented as complete v2 briefs.
+- Denied storage keeps the completed form visible and reports that nothing was saved. A corrupt v2
+  envelope, including malformed or oversized data, can be replaced by a valid user submission
+  without hiding the authoritative Inbox; parsed drafts are rebuilt from known fields so unknown
+  properties are not retained.
+- Custom validation marks and focuses the first invalid field while preserving the user's inputs.
+- Browser tests observe only the Inbox `GET`; the implementation adds no API mutation, provider,
+  Run, Job, Tool, Approval, Render or Publish seam.
+
+Validation: targeted New Task and Inbox tests, the complete Web test suite, TypeScript, ESLint and
+the production Web build pass locally. This proves the browser-local brief and authority split
+only. It does not create a PostgreSQL Task, validate Product Snapshot existence, approve rights or
+child safety, start an Agent Run, deploy or establish production acceptance.
+
 ### SV-203 - Mission Control
 
 Priority: P1
 Depends on: SV-202, SV-104
+Status: complete and validated locally; read-only projection and browser preview only
 
 Acceptance:
 
@@ -300,10 +377,42 @@ Acceptance:
 - Agent explanations cite artifact and evidence refs rather than private reasoning.
 - Reload resumes from authoritative PostgreSQL state.
 
+Implemented result:
+
+- `GET /api/v1/sv-agent/tasks/{task_id}` projects one current Task/Run head from PostgreSQL.
+  RunPlan and Artifact frontiers are shown only when the exact current revision has one unique,
+  closed-contract-valid candidate. The RunPlan TaskBrief input digest must match the current brief;
+  an Artifact must pass the shared canonical schema, exact row-envelope binding and runtime-lineage
+  proof.
+- The seven-stage path uses `unknown` when persisted evidence cannot prove a stage. ToolRun success,
+  downstream artifacts and prototype examples never backfill stage completion, mechanism confidence
+  or reviewer recommendations.
+- Plan, Artifact, runtime-lineage, ApprovalRequest and ToolRun reads are bounded and deterministically ordered.
+  A DecisionEvent resolves an ApprovalRequest only through the complete digest-and-scope handle.
+  Approval drift, ambiguous or unverified frontiers, digest/scope drift, rights blocks and technical
+  failures fail closed. Runtime-lineage verification payloads must match their stored canonical
+  digest. Task/Run heads are rechecked after the projection is assembled.
+- `/sv-agent/tasks/:taskId` follows the approved Variant C information hierarchy: explanation and
+  seven-stage path in the main pane, replication package and safety boundary in the side pane.
+  Raw refs are collapsed into audit details; arbitrary payloads, digests and private reasoning are
+  not returned.
+- The conversational area creates a browser-memory preview of a closed `ContinueTask` intent and
+  instruction. It performs no `POST`, stores no preview, cannot approve/reject, and disables recovery
+  when no verified command receipt is available.
+
+Validation: backend projection and HTTP tests cover no-Run, exact/ambiguous/invalid Plan and Artifact
+frontiers, runtime-lineage digest drift, unknown stages, approval drift and bounds, ToolRun bounds, 200/404/500/503,
+and unchanged row counts. Frontend tests cover complete and missing workspaces, authority boundaries,
+command-preview non-effects, truncation, error recovery and Inbox navigation. Backend type/lint/format
+checks and the complete Web test, typecheck, lint and production build gates pass locally. This does
+not prove durable orchestration, a public command writer, HumanApproval decisions, provider execution,
+deployment or production acceptance.
+
 ### SV-204 - Evidence and Artifact workspace
 
 Priority: P1
 Depends on: SV-203
+Status: complete and validated locally; read-only PostgreSQL projection and browser workspace only
 
 Acceptance:
 
@@ -311,6 +420,45 @@ Acceptance:
 - Product Truth, Performance, Experiment, and Asset evidence remain separate.
 - Each conclusion can open source, subject, window, limitation, and proof-level details.
 - Control and Variant comparison uses immutable version refs.
+
+Implemented result:
+
+- `GET /api/v1/sv-agent/tasks/{task_id}/artifacts` reads the current Task revision and active
+  Run, then projects a deterministic artifact graph across that Run's persisted revisions. The
+  route is bounded to 50 nodes, 200 edges and 100 runtime-lineage links; overflow fails closed
+  instead of returning a graph that looks complete.
+- A row is accepted as a canonical artifact only when the shared deployable Pydantic contract,
+  record envelope, payload digest, the canonical content digest, timestamps, Task/Run scope,
+  direct refs, full-chain semantic validation and graph resolution agree. FactMap and
+  ReplicationContract claim scope, subject, selected Facts and excluded Facts must match. Declared
+  and verified edges cannot point backward to an artifact that did not
+  yet exist. Dangling refs, cycles, duplicate or conflicting runtime links, verification drift and
+  a changed current head return `JOURNAL_INTEGRITY_ERROR`.
+- Product Truth becomes `available` only for one current, non-stale FactMap/ReplicationContract
+  frontier and one exact Product Snapshot digest whose selected Facts still belong to that Snapshot
+  and remain `confirmed` or `locked`. A closed, empty `no_product_claims` chain is `out_of_scope`;
+  hidden mappings or competing frontiers are quarantined. Performance, Experiment and Asset remain
+  separately `unavailable`; the reader performs no package, filesystem, network or private-library
+  access.
+- Current canonical artifacts do not declare typed Control and Variant ScriptVersion roles.
+  Comparison therefore returns `COMPARISON_VERSION_REFS_UNAVAILABLE`; generic `control_id` /
+  `variant_id`, latest-version selection and similarity never create a comparison binding.
+- `/sv-agent/tasks/:taskId/evidence` shows the graph, the four evidence planes and artifact-named,
+  expandable source-kind, subject, window, limitation and proof-level summaries. Conclusion source
+  kinds and one unambiguous observation window are inherited only through declared
+  ReferenceBundle lineage. Raw refs and stable codes are collapsed by default. The page makes one
+  GET request and exposes no Task/Run write, Approval, Render, Publish or production action.
+
+Validation: backend application and HTTP tests cover no-Run, canonical semantic rejection, exact
+Product Truth, current-frontier/no-claim scope, cross-revision chains, time-travel rejection,
+closed-envelope drift, dangling refs, digest drift, cycles, output redaction, post-query head
+recheck, size bounds, conflicting runtime links, unchanged row counts and 404/500/503 Problem
+Details. Frontend tests cover graph/detail rendering, artifact-specific disclosure names, four
+distinct evidence planes, closed missing semantics, unavailable comparison, empty/error recovery
+and GET-only behavior. The complete SV-Agent regression suite, Web tests, typecheck, lint and
+production build pass locally. This does not prove D2 external
+evidence binding, private-library acceptance, Control/Variant version availability, HumanApproval,
+deployment, publication or production acceptance.
 
 ### SV-205 - Approval and Replay workspace
 
@@ -403,12 +551,18 @@ SV-005. ADR 0007 was accepted on 2026-10-21. The approval authorizes the bounded
 
 SV-101 through SV-105, then SV-201 through SV-205, initially with read-only tools.
 
-Current checkpoint: SV-101 through SV-103 plus SV-104A/B are complete and validated
-locally. The current evidence proves a closed internal read-tool registry, factual
-ToolRun journal, deterministic typed plan compiler and pure prerequisite evaluator. It does
-not claim durable RunPlan persistence, state advancement, command-receipt resume,
-HumanApproval writer, public write surface, deployment, render, publication, rights,
-commercial approval, or production acceptance.
+Current checkpoint: SV-101 through SV-103, SV-104A/B, SV-105 and SV-201 through SV-204 are complete and
+validated locally. The current evidence proves a closed internal read-tool registry, factual
+ToolRun journal, deterministic typed plan compiler, pure prerequisite evaluator, pure independent
+next-gate reviewer and a PostgreSQL-authoritative public read-only Task Inbox with a separate
+browser-draft authority plane plus a complete local New Task brief that can be resumed from the
+Inbox. It also proves a bounded read-only Mission Control with exact current-frontier checks,
+unknown-state semantics and an in-memory command preview, plus a fail-closed Evidence and Artifact
+workspace that keeps Product Truth, Performance, Experiment and Asset evidence separate. It does
+not claim PostgreSQL Task
+creation, durable RunPlan persistence, state
+advancement, command-receipt resume, HumanApproval writer, public write surface, deployment,
+render, publication, rights, commercial approval, or production acceptance.
 
 ### Batch 4 - Controlled writes
 

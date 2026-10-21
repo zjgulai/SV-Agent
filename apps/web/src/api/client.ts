@@ -42,6 +42,308 @@ export interface ProblemDetails {
   request_id: string;
 }
 
+export type TaskInboxLane =
+  | "needs_decision"
+  | "needs_input"
+  | "blocked"
+  | "technical_attention"
+  | "agent_running"
+  | "completed_with_limits"
+  | "stopped"
+  | "not_started";
+
+export type TaskInboxOrderingReason =
+  | "human_decision_required"
+  | "user_input_required"
+  | "business_blocker_present"
+  | "runtime_integrity_attention"
+  | "technical_failure_requires_review"
+  | "agent_work_in_progress"
+  | "completed_with_declared_limits"
+  | "stopped_by_decision"
+  | "run_not_started";
+
+export interface TaskInboxItem {
+  task_id: string;
+  task_revision: number;
+  goal_track: "product_replication" | "brand_voice_social_resonance";
+  subject: string;
+  decision_question: string;
+  active_run_id: string | null;
+  active_run_revision: number | null;
+  run_state:
+    | "draft"
+    | "planning"
+    | "awaiting_input"
+    | "runnable"
+    | "running"
+    | "awaiting_approval"
+    | "blocked"
+    | "completed_with_limits"
+    | "failed"
+    | "stopped"
+    | null;
+  pending_decision_count: number;
+  pending_gate_kinds: string[];
+  lane: TaskInboxLane;
+  ordering_reason: TaskInboxOrderingReason;
+  priority_at: string;
+}
+
+export interface TaskInboxProjection {
+  schema_version: "sv-task-inbox/v1";
+  authority: "postgresql";
+  ordering_policy_version: "sv-task-inbox-order/v1";
+  items: TaskInboxItem[];
+  truncated: boolean;
+}
+
+export type MissionControlRunState = Exclude<TaskInboxItem["run_state"], null>;
+export type MissionControlStageStatus =
+  | "completed"
+  | "active"
+  | "waiting"
+  | "blocked"
+  | "unknown";
+export type MissionControlStageKey =
+  | "reference_admission"
+  | "content_decomposition"
+  | "mechanism_selection"
+  | "fact_and_contract"
+  | "adaptation"
+  | "script_and_storyboard"
+  | "media_integrity_and_finding";
+export type AgentCommandIntent =
+  | "provide_input"
+  | "request_plan"
+  | "request_evidence"
+  | "revise_plan"
+  | "advance"
+  | "resume_recovery"
+  | "stop";
+
+export interface MissionControlProjection {
+  schema_version: "sv-mission-control/v1";
+  authority: "postgresql";
+  task: {
+    task_id: string;
+    task_revision: number;
+    goal_track: TaskInboxItem["goal_track"];
+    decision_question: string;
+    subject: string;
+    platform: "tiktok" | "instagram" | "youtube" | "other";
+    market: string;
+    language: string;
+    performance_window: { start: string; end: string; timezone: string };
+    stop_condition: string;
+    initial_rights_state:
+      | "confirmed_for_analysis"
+      | "analysis_only"
+      | "unknown"
+      | "restricted"
+      | "blocked";
+  };
+  run: {
+    run_id: string;
+    task_revision: number;
+    run_revision: number;
+    state: MissionControlRunState;
+    primary_mechanism: string | null;
+    creative_dimension: string | null;
+    updated_at: string;
+  } | null;
+  stages: Array<{
+    key: MissionControlStageKey;
+    label: string;
+    status: MissionControlStageStatus;
+  }>;
+  current_stage: MissionControlStageKey;
+  plan: {
+    ref: string;
+    version: number;
+    workflow_name: string;
+    workflow_version: string;
+    capability_catalog_version: string;
+    run_revision: number;
+    steps: Array<{
+      step_id: string;
+      order: number;
+      capability_name: string;
+      capability_version: string;
+      execution_mode: string;
+    }>;
+    limitations: string[];
+    created_at: string;
+  } | null;
+  blockers: Array<{ code: string; message: string; source_ref: string }>;
+  next_safe_action: {
+    kind: string;
+    label: string;
+    reason: string;
+    reason_code: string;
+    interaction_intent: AgentCommandIntent | null;
+    basis_refs: string[];
+    explicit_non_effects: string[];
+    execution_available: false;
+  };
+  tool_runs: Array<{
+    ref: string;
+    tool_name: string;
+    tool_version: string;
+    intent_summary: string;
+    effect_class: "read" | "write";
+    status: "pending" | "running" | "completed" | "failed" | "unavailable" | "unknown";
+    stable_error_code: string | null;
+    recovery_action: string | null;
+    started_at: string | null;
+    finished_at: string | null;
+    updated_at: string;
+  }>;
+  tool_runs_truncated: boolean;
+  current_artifact: {
+    ref: string;
+    artifact_type:
+      | "reference_bundle"
+      | "decomposition_map"
+      | "pattern_hypothesis"
+      | "replication_plan"
+      | "fact_map"
+      | "replication_contract"
+      | "adaptation_package"
+      | "media_integrity_record"
+      | "replication_finding";
+    version: number;
+    status:
+      | "draft"
+      | "validated"
+      | "awaiting_approval"
+      | "blocked"
+      | "approved"
+      | "stale"
+      | "superseded"
+      | "final_with_limits";
+    evidence_level: "fact" | "inference" | "unknown";
+    proof_level: "local" | "ci" | "private" | "deployment" | "live" | "production";
+    created_at: string;
+  } | null;
+  explanation: {
+    summary: string;
+    citations: Array<{ kind: string; ref: string }>;
+  };
+}
+
+export type EvidenceArtifactType = NonNullable<
+  MissionControlProjection["current_artifact"]
+>["artifact_type"];
+export type EvidenceArtifactStatus = NonNullable<
+  MissionControlProjection["current_artifact"]
+>["status"];
+export type EvidenceLevel = NonNullable<
+  MissionControlProjection["current_artifact"]
+>["evidence_level"];
+export type ProofLevel = NonNullable<
+  MissionControlProjection["current_artifact"]
+>["proof_level"];
+export type EvidencePlaneKind =
+  | "product_truth"
+  | "performance"
+  | "experiment"
+  | "asset";
+export type EvidenceAvailabilityState =
+  | "available"
+  | "unavailable"
+  | "out_of_scope"
+  | "quarantined";
+
+export interface EvidenceSubjectSummary {
+  state:
+    | "exact_snapshot"
+    | "reviewed_snapshot_selection"
+    | "reviewed_family_context"
+    | "unresolved"
+    | "conflict"
+    | "not_applicable";
+  market: string | null;
+  locale: string | null;
+  limitations: string[];
+}
+
+export interface EvidenceWindowSummary {
+  start: string;
+  end: string;
+  timezone: string;
+  basis: "artifact_observation" | "task_scope";
+}
+
+export interface EvidenceArtifactsProjection {
+  schema_version: "sv-evidence-artifacts/v1";
+  authority: "postgresql";
+  task: {
+    task_id: string;
+    task_revision: number;
+    subject: string;
+    performance_window: { start: string; end: string; timezone: string };
+  };
+  run: {
+    run_id: string;
+    run_revision: number;
+    state: MissionControlRunState;
+  } | null;
+  graph: {
+    state: "available" | "unavailable";
+    public_code: string;
+    nodes: Array<{
+      ref: string;
+      artifact_type: EvidenceArtifactType;
+      version: number;
+      status: EvidenceArtifactStatus;
+      evidence_level: EvidenceLevel;
+      proof_level: ProofLevel;
+      created_at: string;
+      is_conclusion: boolean;
+      sources: Array<{ kind: string }>;
+      subject: EvidenceSubjectSummary;
+      window: EvidenceWindowSummary | null;
+      limitations: string[];
+    }>;
+    edges: Array<{
+      source_ref: string;
+      target_ref: string;
+      kind: "declared_input" | "runtime_verified";
+      verification_state: "declared_only" | "verified";
+    }>;
+    limitations: string[];
+  };
+  evidence_planes: Array<{
+    kind: EvidencePlaneKind;
+    state: EvidenceAvailabilityState;
+    public_code: string;
+    source: string;
+    subject: EvidenceSubjectSummary | null;
+    window: EvidenceWindowSummary | null;
+    proof_level: ProofLevel | null;
+    limitations: string[];
+  }>;
+  comparison:
+    | {
+        state: "available";
+        public_code: string;
+        script_ref: string;
+        control_version_ref: string;
+        variant_version_ref: string;
+        limitations: string[];
+      }
+    | {
+        state: "unavailable";
+        public_code: "COMPARISON_VERSION_REFS_UNAVAILABLE";
+        script_ref: null;
+        control_version_ref: null;
+        variant_version_ref: null;
+        limitations: string[];
+      };
+  explicit_non_effects: string[];
+}
+
 export class ApiProblem extends Error {
   constructor(public readonly problem: ProblemDetails) {
     super(problem.detail);
@@ -417,6 +719,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  listSvAgentTasks: () => request<TaskInboxProjection>("/api/v1/sv-agent/tasks"),
+  getSvAgentMissionControl: (taskId: string) =>
+    request<MissionControlProjection>(
+      `/api/v1/sv-agent/tasks/${encodeURIComponent(taskId)}`,
+    ),
+  getSvAgentEvidenceArtifacts: (taskId: string) =>
+    request<EvidenceArtifactsProjection>(
+      `/api/v1/sv-agent/tasks/${encodeURIComponent(taskId)}/artifacts`,
+    ),
   listProducts: () => request<Product[]>("/api/v1/products"),
   getProduct: (id: string) => request<Product>(`/api/v1/products/${id}`),
   createProduct: (input: {

@@ -1,12 +1,14 @@
 # SV-Agent Native Agent Specification
 
-Status: active implementation contract; SV-101 through SV-103 and bounded SV-104A/B complete locally
+Status: active implementation contract; SV-101 through SV-103, bounded SV-104A/B, SV-105 and SV-201 through SV-204 complete locally
 UX decision: A - Task Mission Control is selected
 Batch 1 kernel status: implemented and validated in the repository baseline
 Runtime status: domain kernel, Task persistence/CAS, factual replay, closed read tools,
-digest-bound RunPlan compilation and pure prerequisite evaluation are implemented; durable
-RunPlan writes, execution orchestration and authorization runtime are not implemented
-SV-005 design gate: accepted on 2026-10-21 in `docs/adr/0007-sv-agent-task-runtime-and-authorization.md`; SV-101 and the bounded SV-102 batch are implemented locally
+digest-bound RunPlan compilation, pure prerequisite evaluation and pure independent next-gate
+review, a public read-only Task Inbox, a browser-local New Task brief, a read-only Mission
+Control and a read-only Evidence and Artifact workspace are implemented; durable RunPlan/reviewer writes,
+execution orchestration and authorization runtime are not implemented
+SV-005 design gate: accepted on 2026-10-21 in `docs/adr/0007-sv-agent-task-runtime-and-authorization.md`; SV-101 through SV-105 and SV-201 through SV-204 are implemented locally
 Primary brand workspace: Momcozy
 Companion backlog: `docs/product/sv-agent-implementation-tickets.md`
 
@@ -154,7 +156,16 @@ supersedes_artifact_id?
 
 Artifact statuses are `draft`, `validated`, `awaiting_approval`, `blocked`, `approved`, `stale`, `superseded`, and `final_with_limits`. Artifact status does not replace Run, ToolRun, Approval, or evidence status.
 
-The executable machine-schema authority for the nine new artifacts is `tools/viral_replication/artifact_contracts.py`. It provides the local validator and JSON Schema projection. SV-102 adds an immutable `sv_artifacts` envelope table, but deliberately adds no Artifact writer and does not move the validator into the deployable application runtime; a future writer must validate the closed payload before persistence. Every canonical artifact still requires non-empty `task_ref` and `run_ref`; local fixtures may use bounded synthetic refs, but those refs do not prove that a persisted artifact or runnable orchestration exists.
+The executable machine-schema authority for the nine new artifacts is
+`apps/api/app/domain/sv_agent/artifact_contracts.py`. The historical
+`tools/viral_replication/artifact_contracts.py` import is a compatibility export to that same
+implementation, so offline fixtures and the deployable API cannot drift into two schema copies.
+SV-102 added the immutable `sv_artifacts` envelope table without an Artifact writer. SV-204 moves
+the pure validator into the deployable domain only so the read-only workspace can reject malformed
+persisted rows; it still adds no writer. A future writer must call the same closed validator before
+persistence. Every canonical artifact still requires non-empty `task_ref` and `run_ref`; local
+fixtures may use bounded synthetic refs, but those refs do not prove that a persisted artifact or
+runnable orchestration exists.
 
 DecompositionMap carries a closed, mechanism-discriminated `mechanism_observations` union for narrative beats, proof steps, experience cues, timed attention observations, conversion components, and trend components. A concrete `primary_mechanism` requires the matching branch; an ambiguous `primary_mechanism=null` requires `mechanism_observations=null` and must stop or split into Variants. Conversion and trend branches close their full component partitions and preserve explicit source-surface or source-reuse boundaries. This schema records bounded observations; it does not authorize source reuse, platform execution, or media generation.
 
@@ -364,7 +375,7 @@ Control and Variant comparison opens from Screens 4 and 5. Playbooks and cases a
 
 ## 14. Security and authority gates
 
-The current application does not provide a complete user, tenant, RBAC, and actor-attribution boundary for autonomous mutating tools. ADR 0007 has accepted a local-review-only actor policy, separate Human Approval seam, deny-by-default application authorization, and additive PostgreSQL ledger. SV-102 implements the ledger schema plus an internal, flush-only Task repository for create/revise/get and factual replay; SV-103 adds only the internal synchronous read ToolRun journal. SV-104A/B adds a pure, built-in six-route planner and prerequisite evaluator without a writer or dispatcher. `ActorStamp` is stored attribution only; it is not a verified identity or authorization adapter. Human Approval, Run/Artifact/RunPlan writers, non-read ToolRun execution, persisted execution orchestration and public mutation remain inactive until their later tickets are implemented and validated. Until then:
+The current application does not provide a complete user, tenant, RBAC, and actor-attribution boundary for autonomous mutating tools. ADR 0007 has accepted a local-review-only actor policy, separate Human Approval seam, deny-by-default application authorization, and additive PostgreSQL ledger. SV-102 implements the ledger schema plus an internal, flush-only Task repository for create/revise/get and factual replay; SV-103 adds only the internal synchronous read ToolRun journal. SV-104A/B adds a pure, built-in six-route planner and prerequisite evaluator without a writer or dispatcher. SV-105 adds only a pure independent next-gate reviewer; it does not persist a review or create an ApprovalEvent. `ActorStamp` is stored attribution only; it is not a verified identity or authorization adapter. Human Approval, Run/Artifact/RunPlan/reviewer writers, non-read ToolRun execution, persisted execution orchestration and public mutation remain inactive until their later tickets are implemented and validated. Until then:
 
 - SV-Agent write tools remain local or explicitly user-confirmed.
 - No public remote write surface is enabled.
@@ -397,9 +408,26 @@ Entry gate: ADR 0007 is explicitly accepted. Exit gate: approved Task/Run schema
 
 Current checkpoint: SV-104A/B adds a closed `sv-run-plan/v1` value, six-mechanism static
 catalog, evidence-bound unique/ambiguous route handling and a pure prerequisite evaluator on
-top of SV-103. It does not persist or execute a plan, resume a durable command, dispatch a
-Tool, create an Approval, or expose a public Task surface. Those missing pieces still prevent
-this phase from reaching its exit gate.
+top of SV-103. SV-105 adds deterministic independent checks for artifact digest/scope, actual
+single-variable isolation, visible-surface deny-set and Product Truth evidence bound to the same
+Product Snapshot and Fact identity. SV-201 adds the
+first public read-only Native Shell surface: a PostgreSQL-authoritative, bounded and reasoned
+Task Inbox that verifies the current TaskBrief, active Run revision scope and complete Approval
+decision handle, plus a visibly separate browser-draft section. SV-202 adds a complete, bounded and
+resumable browser-local New Task brief with explicit rights and child-safety acknowledgements.
+SV-203 adds a read-only Mission Control projection and route. It binds to the current PostgreSQL
+Task/Run head and brief digest, and shows only unique validated Plan and canonical,
+runtime-lineage-verified Artifact frontiers,
+keeps unsupported stages unknown, and offers an in-memory command preview with explicit
+non-effects. It does not create PostgreSQL Tasks, persist or execute a plan, resume a durable
+command, dispatch a Tool, decide an ApprovalRequest or expose any public write. SV-204 adds the
+bounded read-only `GET /api/v1/sv-agent/tasks/{task_id}/artifacts` projection and
+`/sv-agent/tasks/:taskId/evidence` workspace. It validates canonical artifact envelopes, full-chain
+semantics and graph integrity across the active Run's revisions, separates Product Truth,
+Performance, Experiment and
+Asset missing semantics, and refuses Control/Variant binding until typed immutable ScriptVersion
+roles exist. Approval/Replay plus the remaining runtime capabilities still prevent this phase from
+reaching its exit gate.
 
 ### Phase 3 - Controlled writes
 

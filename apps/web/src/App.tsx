@@ -2,14 +2,18 @@ import { lazy, Suspense } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 
 import { NewProductPage } from "./routes/NewProductPage";
+import { NewTaskPage } from "./routes/NewTaskPage";
 import { CompareVersionsPage } from "./routes/CompareVersionsPage";
 import { GenerateScriptPage } from "./routes/GenerateScriptPage";
+import { EvidenceArtifactsPage } from "./routes/EvidenceArtifactsPage";
 import { JobPage } from "./routes/JobPage";
+import { MissionControlPage } from "./routes/MissionControlPage";
 import { ProductDetailPage } from "./routes/ProductDetailPage";
 import { ProductsPage } from "./routes/ProductsPage";
 import { ScriptPage } from "./routes/ScriptPage";
 import { StoryboardPreflightPage } from "./routes/StoryboardPreflightPage";
 import { StoryboardReviewPage } from "./routes/StoryboardReviewPage";
+import { TaskInboxPage } from "./routes/TaskInboxPage";
 
 const DecisionWorkbenchPrototypePage = import.meta.env.DEV
   ? lazy(() => import("./routes/DecisionWorkbenchPrototypePage").then((module) => ({ default: module.DecisionWorkbenchPrototypePage })))
@@ -24,6 +28,7 @@ export function AppRoutes() {
           <span>FactFrame</span>
         </NavLink>
         <nav aria-label="主导航">
+          <NavLink to="/sv-agent/tasks">SV-Agent</NavLink>
           <NavLink to="/products">商品事实</NavLink>
           <span className="nav-muted">脚本版本</span>
         </nav>
@@ -32,6 +37,10 @@ export function AppRoutes() {
         <Routes>
           <Route path="/" element={<Navigate to="/products" replace />} />
           <Route path="/products" element={<ProductsPage />} />
+          <Route path="/sv-agent/tasks" element={<TaskInboxPage />} />
+          <Route path="/sv-agent/tasks/new" element={<NewTaskPage />} />
+          <Route path="/sv-agent/tasks/:taskId/evidence" element={<EvidenceArtifactsPage />} />
+          <Route path="/sv-agent/tasks/:taskId" element={<MissionControlPage />} />
           <Route path="/products/new" element={<NewProductPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/products/:id/generate" element={<GenerateScriptPage />} />

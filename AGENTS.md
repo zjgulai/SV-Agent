@@ -5,6 +5,7 @@
 Start at `docs/index.md`, then read only the routes relevant to the task:
 
 1. `docs/architecture/project-layout.md` for repository roles, entrypoints and CRAFT-inspired Agent structure.
+   Read `docs/architecture/sv-agent-project-layout-proposal.md` before changing SV-Agent paths or adding local module instructions.
 2. `docs/architecture/system-overview.md` for current runtime, data flow and scope.
 3. `docs/development/testing.md` for validation commands.
 4. `CONTEXT-MAP.md` and the relevant `docs/contexts/*/CONTEXT.md` when domain language is involved.
@@ -15,6 +16,8 @@ Start at `docs/index.md`, then read only the routes relevant to the task:
 9. `docs/product/insight-performance-projection-design.md` for the selected compare-bound Decision Brief, subject binding, missing-value semantics and reviewed-package gates.
 10. `docs/product/project-skill-system.md` and `$factframe-workflows` when a task spans multiple capability contexts or needs project workflow routing.
 11. `docs/product/viral-replication-execution.md`, `docs/product/viral-replication-graph-consistency.md` and `.agents/workflows/viral-replication/README.md` when the task concerns viral replication SOPs, skills, fixtures, graph consistency or workflow routing.
+12. `docs/product/sv-agent-ui-ux-taste-audit.md` for SV-Agent shell, responsive navigation, information hierarchy, state-system or visual acceptance work.
+13. `docs/research/sv-agent-video-model-selection.md` before adding video generation, model routing, TokenHub/VOD adapters, paid smoke tests or media-provider scope.
 
 `docs/archive/implementation-plans/` records historical execution and blocked work. It is not the current TODO or architecture authority.
 

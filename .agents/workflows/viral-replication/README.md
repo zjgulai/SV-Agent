@@ -22,7 +22,7 @@ ReferenceBundle
 → ReplicationFinding
 ```
 
-`ReplicationPlan` 是合同冻结前可修订的 workflow planning state；`AdaptationPackage` 是六类现有机制输出的统一 handoff 名称。九类新增 artifact 的 executable machine-schema authority 是 `tools/viral_replication/artifact_contracts.py`；本地 validator 已存在，但没有 PostgreSQL/runtime persistence。任何 workflow 都不得跳过 `viral-media-integrity` 直接进入 ReplicationFinding，也不得把这条顺序解释成 render、publish、rights、commercial 或 production capability。
+`ReplicationPlan` 是合同冻结前可修订的 workflow planning state；`AdaptationPackage` 是六类现有机制输出的统一 handoff 名称。九类新增 artifact 的 executable machine-schema authority 是 `apps/api/app/domain/sv_agent/artifact_contracts.py`；`tools/viral_replication/artifact_contracts.py` 只兼容导出同一实现。PostgreSQL 已有不可变 envelope 与只读投影，但仍没有 Artifact writer。任何 workflow 都不得跳过 `viral-media-integrity` 直接进入 ReplicationFinding，也不得把这条顺序解释成 render、publish、rights、commercial 或 production capability。
 
 ## Current packs
 
