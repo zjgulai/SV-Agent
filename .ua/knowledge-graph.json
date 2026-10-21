@@ -32,8 +32,8 @@
       "Vitest"
     ],
     "description": "以 PostgreSQL 产品事实与不可变版本为底座的 evidence-first AI 视频工作台；SV-Agent 在其上增加爆款复刻 Task/Run 合同、能力工作流、只读 Native Shell、审计前沿与人工门边界。",
-    "analyzedAt": "2026-10-21T12:41:28Z",
-    "gitCommitHash": "fa0d9f89154e7cfcc0868c0de33a9a62296c8231"
+    "analyzedAt": "2026-10-21T13:31:16Z",
+    "gitCommitHash": "d694b56948ce3b36e5a489ba9a260f1c1fafe3be"
   },
   "nodes": [
     {
@@ -10588,10 +10588,10 @@
       "complexity": "simple"
     },
     {
-      "id": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "id": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "type": "file",
       "name": "browserNewTaskDrafts.ts",
-      "filePath": "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "summary": "定义 SV-Agent New Task 的完整 browser-local v2 草稿契约，以闭合枚举、公开 URL、时间窗口和人工边界校验安全读写 sessionStorage；读取阶段拒绝超大 envelope 并投影受控字段，保存阶段按同一 draft identity 有界 upsert，且不访问网络或服务器 API。",
       "tags": [
         "browser-storage",
@@ -10605,10 +10605,10 @@
       "languageNotes": "通过 TypeScript closed unions 与运行时 parser 双重约束，最多保留 20 条、总 envelope 不超过 256 KiB。"
     },
     {
-      "id": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "id": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
       "type": "file",
       "name": "browserTaskDrafts.ts",
-      "filePath": "apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
       "summary": "兼容读取旧 v1 浏览器本地 SV-Agent 草稿，并把解析失败或 storage 不可用隔离为非权威警告，避免影响 PostgreSQL Task Inbox。",
       "tags": [
         "browser-storage",
@@ -10620,10 +10620,10 @@
       "complexity": "moderate"
     },
     {
-      "id": "file:apps/web/src/features/sv-agent/evidence-artifacts.css",
+      "id": "file:apps/web/src/features/sv-agent/styles/evidence-artifacts.css",
       "type": "file",
       "name": "evidence-artifacts.css",
-      "filePath": "apps/web/src/features/sv-agent/evidence-artifacts.css",
+      "filePath": "apps/web/src/features/sv-agent/styles/evidence-artifacts.css",
       "summary": "为 Evidence and Artifact workspace 的摘要、DAG、证据面、审计 details 与响应式布局提供状态样式和可见 focus。",
       "tags": [
         "stylesheet",
@@ -10635,10 +10635,10 @@
       "languageNotes": "CSS 保持四证据面分离、移动端单列和原生 details 可用性。"
     },
     {
-      "id": "file:apps/web/src/features/sv-agent/mission-control.css",
+      "id": "file:apps/web/src/features/sv-agent/styles/mission-control.css",
       "type": "file",
       "name": "mission-control.css",
-      "filePath": "apps/web/src/features/sv-agent/mission-control.css",
+      "filePath": "apps/web/src/features/sv-agent/styles/mission-control.css",
       "summary": "为 Mission Control 的说明主区、七阶段路径、RunPlan、ToolRuns、命令预览与右侧复刻包定义响应式布局、状态色和可见 focus 样式。",
       "tags": [
         "stylesheet",
@@ -10651,10 +10651,10 @@
       "languageNotes": "CSS Grid 在桌面组织主区与 side bundle，移动断点收敛为单列并保留审计 details 与表单可读性。"
     },
     {
-      "id": "file:apps/web/src/features/sv-agent/new-task.css",
+      "id": "file:apps/web/src/features/sv-agent/styles/new-task.css",
       "type": "file",
       "name": "new-task.css",
-      "filePath": "apps/web/src/features/sv-agent/new-task.css",
+      "filePath": "apps/web/src/features/sv-agent/styles/new-task.css",
       "summary": "为 SV-Agent New Task brief 定义桌面双栏、移动单栏、原生表单分组、人工边界提示与可见 focus 样式，保证范围预览位于表单之后且所有控件保持键盘可见性。",
       "tags": [
         "stylesheet",
@@ -10666,10 +10666,10 @@
       "languageNotes": "使用 CSS Grid、:has() 和 :focus-visible 表达选中态与键盘焦点，并通过 900px/720px breakpoint 逐步收敛布局。"
     },
     {
-      "id": "file:apps/web/src/features/sv-agent/task-inbox.css",
+      "id": "file:apps/web/src/features/sv-agent/styles/task-inbox.css",
       "type": "file",
       "name": "task-inbox.css",
-      "filePath": "apps/web/src/features/sv-agent/task-inbox.css",
+      "filePath": "apps/web/src/features/sv-agent/styles/task-inbox.css",
       "summary": "为 SV-Agent Task Inbox 定义权威边界、Task 卡片、本地草稿、继续编辑入口和状态区的响应式样式，并为链接和按钮提供可见键盘焦点。",
       "tags": [
         "stylesheet",
@@ -19412,10 +19412,10 @@
       "complexity": "simple"
     },
     {
-      "id": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:isPublicReference",
+      "id": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:isPublicReference",
       "type": "function",
       "name": "isPublicReference",
-      "filePath": "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "lineRange": [
         83,
         95
@@ -19429,10 +19429,10 @@
       "complexity": "simple"
     },
     {
-      "id": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:parseDraft",
+      "id": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:parseDraft",
       "type": "function",
       "name": "parseDraft",
-      "filePath": "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "lineRange": [
         101,
         177
@@ -19447,10 +19447,10 @@
       "complexity": "complex"
     },
     {
-      "id": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
+      "id": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
       "type": "function",
       "name": "readBrowserNewTaskDrafts",
-      "filePath": "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "lineRange": [
         179,
         206
@@ -19465,10 +19465,10 @@
       "complexity": "moderate"
     },
     {
-      "id": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
+      "id": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
       "type": "function",
       "name": "readBrowserNewTaskDraftsFrom",
-      "filePath": "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "lineRange": [
         208,
         216
@@ -19483,10 +19483,10 @@
       "complexity": "simple"
     },
     {
-      "id": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
+      "id": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
       "type": "function",
       "name": "saveBrowserNewTaskDraft",
-      "filePath": "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "lineRange": [
         218,
         242
@@ -19501,10 +19501,10 @@
       "complexity": "moderate"
     },
     {
-      "id": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:parseDraft",
+      "id": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:parseDraft",
       "type": "function",
       "name": "parseDraft",
-      "filePath": "apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
       "lineRange": [
         28,
         45
@@ -19518,10 +19518,10 @@
       "complexity": "simple"
     },
     {
-      "id": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDrafts",
+      "id": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDrafts",
       "type": "function",
       "name": "readBrowserTaskDrafts",
-      "filePath": "apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
       "lineRange": [
         47,
         70
@@ -19536,10 +19536,10 @@
       "complexity": "moderate"
     },
     {
-      "id": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
+      "id": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
       "type": "function",
       "name": "readBrowserTaskDraftsFrom",
-      "filePath": "apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "filePath": "apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
       "lineRange": [
         72,
         80
@@ -43608,133 +43608,133 @@
       "weight": 0.8
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "target": "file:apps/web/src/routes/__tests__/new-task.test.tsx",
       "type": "tested_by",
       "direction": "forward",
       "weight": 0.5
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:isPublicReference",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:isPublicReference",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:parseDraft",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:parseDraft",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
       "type": "exports",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
       "type": "exports",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
+      "source": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
       "type": "exports",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "source": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
       "target": "file:apps/web/src/routes/__tests__/task-inbox.test.tsx",
       "type": "tested_by",
       "direction": "forward",
       "weight": 0.5
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:parseDraft",
+      "source": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:parseDraft",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDrafts",
+      "source": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDrafts",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDrafts",
+      "source": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDrafts",
       "type": "exports",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
+      "source": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
-      "target": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
+      "source": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
       "type": "exports",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/mission-control.css",
+      "source": "file:apps/web/src/features/sv-agent/styles/mission-control.css",
       "target": "file:apps/web/src/routes/__tests__/mission-control.test.tsx",
       "type": "tested_by",
       "direction": "forward",
       "weight": 0.5
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/mission-control.css",
+      "source": "file:apps/web/src/features/sv-agent/styles/mission-control.css",
       "target": "file:apps/web/src/routes/MissionControlPage.tsx",
       "type": "related",
       "direction": "forward",
       "weight": 0.5
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/new-task.css",
+      "source": "file:apps/web/src/features/sv-agent/styles/new-task.css",
       "target": "file:apps/web/src/routes/NewTaskPage.tsx",
       "type": "related",
       "direction": "forward",
       "weight": 0.5
     },
     {
-      "source": "file:apps/web/src/features/sv-agent/task-inbox.css",
+      "source": "file:apps/web/src/features/sv-agent/styles/task-inbox.css",
       "target": "file:apps/web/src/routes/TaskInboxPage.tsx",
       "type": "related",
       "direction": "forward",
@@ -43854,7 +43854,7 @@
     },
     {
       "source": "file:apps/web/src/routes/__tests__/task-inbox.test.tsx",
-      "target": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "target": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
       "type": "imports",
       "direction": "forward",
       "weight": 0.7
@@ -44008,7 +44008,7 @@
     },
     {
       "source": "file:apps/web/src/routes/EvidenceArtifactsPage.tsx",
-      "target": "file:apps/web/src/features/sv-agent/evidence-artifacts.css",
+      "target": "file:apps/web/src/features/sv-agent/styles/evidence-artifacts.css",
       "type": "imports",
       "direction": "forward",
       "weight": 0.7
@@ -44127,7 +44127,7 @@
     },
     {
       "source": "file:apps/web/src/routes/MissionControlPage.tsx",
-      "target": "file:apps/web/src/features/sv-agent/mission-control.css",
+      "target": "file:apps/web/src/features/sv-agent/styles/mission-control.css",
       "type": "imports",
       "direction": "forward",
       "weight": 0.7
@@ -44211,14 +44211,14 @@
     },
     {
       "source": "file:apps/web/src/routes/NewTaskPage.tsx",
-      "target": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "target": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "type": "imports",
       "direction": "forward",
       "weight": 0.7
     },
     {
       "source": "file:apps/web/src/routes/NewTaskPage.tsx",
-      "target": "file:apps/web/src/features/sv-agent/new-task.css",
+      "target": "file:apps/web/src/features/sv-agent/styles/new-task.css",
       "type": "imports",
       "direction": "forward",
       "weight": 0.7
@@ -44428,21 +44428,21 @@
     },
     {
       "source": "file:apps/web/src/routes/TaskInboxPage.tsx",
-      "target": "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "target": "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
       "type": "imports",
       "direction": "forward",
       "weight": 0.7
     },
     {
       "source": "file:apps/web/src/routes/TaskInboxPage.tsx",
-      "target": "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "target": "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
       "type": "imports",
       "direction": "forward",
       "weight": 0.7
     },
     {
       "source": "file:apps/web/src/routes/TaskInboxPage.tsx",
-      "target": "file:apps/web/src/features/sv-agent/task-inbox.css",
+      "target": "file:apps/web/src/features/sv-agent/styles/task-inbox.css",
       "type": "imports",
       "direction": "forward",
       "weight": 0.7
@@ -47905,64 +47905,64 @@
       "weight": 0.8
     },
     {
-      "source": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:parseDraft",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:isPublicReference",
+      "source": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:parseDraft",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:isPublicReference",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
+      "source": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:parseDraft",
+      "source": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:parseDraft",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:parseDraft",
+      "source": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:parseDraft",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
+      "source": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDrafts",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
-      "target": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDrafts",
+      "source": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
+      "target": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDrafts",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
     },
     {
-      "source": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDrafts",
-      "target": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:parseDraft",
-      "type": "calls",
-      "direction": "forward",
-      "weight": 0.8
-    },
-    {
-      "source": "function:apps/web/src/routes/NewTaskPage.tsx:NewTaskPage",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
+      "source": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDrafts",
+      "target": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:parseDraft",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
     },
     {
       "source": "function:apps/web/src/routes/NewTaskPage.tsx:NewTaskPage",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:apps/web/src/routes/NewTaskPage.tsx:NewTaskPage",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:saveBrowserNewTaskDraft",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
@@ -47976,14 +47976,14 @@
     },
     {
       "source": "function:apps/web/src/routes/TaskInboxPage.tsx:TaskInboxPage",
-      "target": "function:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
+      "target": "function:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts:readBrowserNewTaskDraftsFrom",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
     },
     {
       "source": "function:apps/web/src/routes/TaskInboxPage.tsx:TaskInboxPage",
-      "target": "function:apps/web/src/features/sv-agent/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
+      "target": "function:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts:readBrowserTaskDraftsFrom",
       "type": "calls",
       "direction": "forward",
       "weight": 0.8
@@ -53341,12 +53341,12 @@
         "file:apps/web/src/features/scripts/ScriptTimeline.tsx",
         "file:apps/web/src/features/scripts/ValidationPanel.tsx",
         "file:apps/web/src/features/scripts/factRebindOperation.ts",
-        "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-        "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts",
-        "file:apps/web/src/features/sv-agent/evidence-artifacts.css",
-        "file:apps/web/src/features/sv-agent/mission-control.css",
-        "file:apps/web/src/features/sv-agent/new-task.css",
-        "file:apps/web/src/features/sv-agent/task-inbox.css",
+        "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+        "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts",
+        "file:apps/web/src/features/sv-agent/styles/evidence-artifacts.css",
+        "file:apps/web/src/features/sv-agent/styles/mission-control.css",
+        "file:apps/web/src/features/sv-agent/styles/new-task.css",
+        "file:apps/web/src/features/sv-agent/styles/task-inbox.css",
         "file:apps/web/src/main.tsx",
         "file:apps/web/src/routes/CompareVersionsPage.tsx",
         "file:apps/web/src/routes/DecisionWorkbenchPrototypePage.tsx",
@@ -53925,8 +53925,8 @@
       "nodeIds": [
         "file:apps/web/src/routes/TaskInboxPage.tsx",
         "file:apps/web/src/routes/NewTaskPage.tsx",
-        "file:apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
-        "file:apps/web/src/features/sv-agent/browserTaskDrafts.ts"
+        "file:apps/web/src/features/sv-agent/state/browserNewTaskDrafts.ts",
+        "file:apps/web/src/features/sv-agent/state/browserTaskDrafts.ts"
       ]
     },
     {
@@ -53935,7 +53935,7 @@
       "description": "从任务入口继续到 Mission Control，用户可以查看七阶段路径、RunPlan、ToolRuns、阻塞原因与下一安全动作。页面只读取权威详情，配套样式把状态色、命令预览、响应式布局和可见 focus 统一起来。它把第八至第十步的后端控制合同翻译成可检查的操作界面。",
       "nodeIds": [
         "file:apps/web/src/routes/MissionControlPage.tsx",
-        "file:apps/web/src/features/sv-agent/mission-control.css"
+        "file:apps/web/src/features/sv-agent/styles/mission-control.css"
       ]
     },
     {
@@ -53944,7 +53944,7 @@
       "description": "Evidence and Artifact workspace 展示版本化产物依赖、证据 DAG、独立证据面与审计细节。页面从 PostgreSQL 权威 Evidence projection 读取数据，样式层保持状态表达、details 展开、响应式布局和键盘 focus 可见。至此，领域中的 Evidence 与 Artifact 合同形成了面向用户的可追溯故事线。",
       "nodeIds": [
         "file:apps/web/src/routes/EvidenceArtifactsPage.tsx",
-        "file:apps/web/src/features/sv-agent/evidence-artifacts.css"
+        "file:apps/web/src/features/sv-agent/styles/evidence-artifacts.css"
       ]
     },
     {
