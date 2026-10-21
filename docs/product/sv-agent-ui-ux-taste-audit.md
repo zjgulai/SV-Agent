@@ -95,8 +95,8 @@ Shell 顶部始终把 `FactFrame` 作为主品牌，SV-Agent 只是一项导航�
 全局 `h1` 使用 44–78px，Mission Control 与 Evidence 仍分别使用最高 66px 和 64px。这让页面标题成为最大信息，而不是待处理决定、当前阻塞或证据结论。证据位置：
 
 - [`index.css`](../../apps/web/src/styles/index.css) 的全局 `h1`、eyebrow、按钮样式。
-- [`mission-control.css`](../../apps/web/src/features/sv-agent/mission-control.css) 的 hero title。
-- [`evidence-artifacts.css`](../../apps/web/src/features/sv-agent/evidence-artifacts.css) 的 hero title。
+- [`mission-control.css`](../../apps/web/src/features/sv-agent/styles/mission-control.css) 的 hero title。
+- [`evidence-artifacts.css`](../../apps/web/src/features/sv-agent/styles/evidence-artifacts.css) 的 hero title。
 
 建议采用 12 / 14 / 16 / 22 / 28 的主尺度：
 

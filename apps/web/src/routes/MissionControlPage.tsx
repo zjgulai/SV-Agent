@@ -7,7 +7,7 @@ import {
   type AgentCommandIntent,
   type MissionControlStageStatus,
 } from "../api/client";
-import "../features/sv-agent/mission-control.css";
+import "../features/sv-agent/styles/mission-control.css";
 
 const runStateLabels: Record<string, string> = {
   draft: "草稿",

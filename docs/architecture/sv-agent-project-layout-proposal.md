@@ -1,8 +1,8 @@
 # SV-Agent 项目目录整理方案
 
-状态：SV-ORG-101 与 SV-ORG-301 已实施，后续门待批准
+状态：SV-ORG-101、SV-ORG-201 与 SV-ORG-301 已实施，后续门待批准
 审计日期：2026-10-21  
-实施状态：SV-ORG-000、SV-ORG-101 与 SV-ORG-301 已完成；未执行 checkout、adapter 或 Web 路径搬移
+实施状态：SV-ORG-000、SV-ORG-101、SV-ORG-201 与 SV-ORG-301 已完成；未执行 checkout、adapter 或 Web page 路径搬移
 
 ## 结论
 
@@ -43,14 +43,14 @@ Git 仓库身份已经是 `SV-Agent`，但本地 checkout 文件夹名尚未与�
 | Workflows | `.agents/workflows/viral-replication/` | 已存在；包含路由、artifact contracts、fixtures 和 forward tests |
 | Guardrails | `AGENTS.md`、`.github/workflows/ci.yml`、数据库约束、测试与验证器 | 已存在；不要建立未被任何 runner 执行的装饰性 hooks 目录 |
 | Progressive context | `docs/`、`CONTEXT-MAP.md` | 已存在；living docs 与 archive 已分开 |
-| Local instructions | 尚未在 SV-Agent 高风险代码目录落地 | 建议在结构稳定后添加少量 scoped `AGENTS.md`，不复制根规则全文 |
+| Local instructions | 四个 SV-Agent 高风险目录已有 scoped `AGENTS.md` | 只保留局部增量并链接根规则，不复制全局规则全文 |
 
 因此，参考结构带来的主要缺口不是顶层文件夹，而是：
 
 - SV-Agent application locality 已由 SV-ORG-101 闭合；后续改动必须保持 package Interface 无副作用；
 - PostgreSQL models/repositories 分散为三个同前缀文件；
-- Web 的 route、feature state 和 CSS 分处两层，页面内部的 feature locality 不够；
-- 高风险目录还没有 scoped local guide；
+- Web state 与 CSS 已分别收拢到 feature 内的 `state/` 与 `styles/`；page implementation 仍保留在 `routes/`，等待稳定共享层与独立删除 ticket；
+- scoped local guides 已由 SV-ORG-301 闭合；后续只在操作规则确实不同的目录增补；
 - 当前大量未提交变更不适合同时进行路径搬移。
 
 ## 当前实际落点
@@ -162,8 +162,8 @@ apps/web/src/
 | `application/sv_agent_{task_inbox,mission_control,evidence_workspace}.py` | `application/sv_agent/{task_inbox,mission_control,evidence_workspace}.py` | 已完成 `git mv` | HTTP route 与 tests 已同批更新 |
 | `application/sv_agent_tool_*.py`、`sv_agent_read_tool_execution.py` | `application/sv_agent/read_tools/` | 已完成 `git mv` | `read_tools/__init__.py` 无副作用；callers 从明确 submodule 导入 |
 | `adapters/db/sv_agent_models.py` 等 | `adapters/db/sv_agent/` | 第二阶段可选 move | 保留一版旧 module re-export；migration 不移动 |
-| `features/sv-agent/*.css` | `features/sv-agent/styles/` | Web 阶段 move | 页面 import 同批更新 |
-| `features/sv-agent/browser*Drafts.ts` | `features/sv-agent/state/` | Web 阶段 move | 不改变 storage key/version |
+| `features/sv-agent/*.css` | `features/sv-agent/styles/` | 已完成 `git mv` | 页面 import 已同批更新，CSS 内容不变 |
+| `features/sv-agent/browser*Drafts.ts` | `features/sv-agent/state/` | 已完成 `git mv` | storage key/version 与字段合同不变 |
 | SV-Agent route page implementations | `features/sv-agent/pages/` | 达到共享阈值后再 move | `routes/` 暂作 router adapter；稳定后删除 facade |
 | `tools/viral_replication/artifact_contracts.py` | 保留原位 | 不移动 | 它是 deployable domain validator 的明确 compatibility export |
 | `.agents/skills/viral-*` | 保留原位 | 不移动 | Skill 是能力 Interface，不是 API runtime implementation |
@@ -256,10 +256,12 @@ adapter、Web 路径 move 或运行行为变化混批。
 
 ### SV-ORG-201 — Web feature locality
 
-- 先移动 state 和 styles，再决定 pages 是否进入 feature；
+状态：已完成（2026-10-21）。
+
+- state 与 styles 已先收拢到 feature 内的 `state/` 与 `styles/`；
 - route paths、storage envelope version/key、GET-only 网络边界保持不变；
-- 路由 adapter 若保留，必须有删除 ticket；
-- 验收：四个页面在 desktop/tablet/mobile 的 navigation、empty/error/loading 与 read-only 行为不变。
+- 当前未形成稳定的共享 `api/components` 层，也没有 route adapter 删除 ticket，因此 page implementation 暂不移动；
+- 验收：四个页面的 targeted/full tests、lint、typecheck 与 build 通过，CSS 内容保持逐字节一致。
 
 ### SV-ORG-301 — Scoped local guides
 
@@ -311,6 +313,6 @@ rtk npm --prefix apps/web run build
 
 初次审计时工作区存在 SV-201～SV-204 未提交实现，因此先由 SV-ORG-000 建立了两个本地基线提交。
 SV-ORG-101 随后只执行 application 路径、import、architecture test、测试命令和图谱同步；SV-ORG-301
-只增加四个 scoped guides、根/文档路由与图谱同步。两批都没有混入行为、数据库、adapter、Web 路径、
-垃圾删除、push 或部署变更。当前后续边界仍是 SV-ORG-102、SV-ORG-201 与 SV-ORG-401，各自需要独立
-批准和可回滚提交。
+只增加四个 scoped guides、根/文档路由与图谱同步；SV-ORG-201 只收拢 Web state/styles 并更新静态引用，
+没有改变页面、storage、网络或视觉行为。三批都没有混入数据库、adapter、垃圾删除、push 或部署变更。
+当前后续边界仍是条件式 SV-ORG-102 与 SV-ORG-401，各自需要独立批准。

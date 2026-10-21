@@ -9,8 +9,8 @@ import {
   type DraftGoalTrack,
   type DraftPlatform,
   type DraftRightsState,
-} from "../features/sv-agent/browserNewTaskDrafts";
-import "../features/sv-agent/new-task.css";
+} from "../features/sv-agent/state/browserNewTaskDrafts";
+import "../features/sv-agent/styles/new-task.css";
 
 const defaultStopCondition = "权利或儿童安全边界不闭合时停止";
 

@@ -10,7 +10,7 @@ import {
   type EvidenceSubjectSummary,
   type EvidenceWindowSummary,
 } from "../api/client";
-import "../features/sv-agent/evidence-artifacts.css";
+import "../features/sv-agent/styles/evidence-artifacts.css";
 
 const artifactLabels: Record<EvidenceArtifactType, string> = {
   reference_bundle: "参考素材包",

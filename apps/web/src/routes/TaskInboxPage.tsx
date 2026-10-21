@@ -6,9 +6,9 @@ import type {
   TaskInboxOrderingReason,
 } from "../api/client";
 import { api } from "../api/client";
-import { readBrowserTaskDraftsFrom } from "../features/sv-agent/browserTaskDrafts";
-import { readBrowserNewTaskDraftsFrom } from "../features/sv-agent/browserNewTaskDrafts";
-import "../features/sv-agent/task-inbox.css";
+import { readBrowserTaskDraftsFrom } from "../features/sv-agent/state/browserTaskDrafts";
+import { readBrowserNewTaskDraftsFrom } from "../features/sv-agent/state/browserNewTaskDrafts";
+import "../features/sv-agent/styles/task-inbox.css";
 
 const laneLabels: Record<TaskInboxLane, string> = {
   needs_decision: "等待你的决定",

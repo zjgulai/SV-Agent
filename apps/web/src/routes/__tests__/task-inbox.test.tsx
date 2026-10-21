@@ -7,7 +7,7 @@ import { server } from "../../test/server";
 import {
   readBrowserTaskDrafts,
   readBrowserTaskDraftsFrom,
-} from "../../features/sv-agent/browserTaskDrafts";
+} from "../../features/sv-agent/state/browserTaskDrafts";
 
 
 describe("SV-Agent Task and Decision Inbox", () => {
