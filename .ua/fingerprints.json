@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "6f64bc3100ad82bea6413509516edef9b0470598",
-  "generatedAt": "2026-10-20T20:47:27.272Z",
+  "gitCommitHash": "9901b4025eb581ec0b22b9635a3030b8f9e29466",
+  "generatedAt": "2026-10-21T11:16:54.934Z",
   "files": {
     ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md": {
       "filePath": ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md",
@@ -145,7 +145,7 @@
     },
     ".agents/workflows/viral-replication/README.md": {
       "filePath": ".agents/workflows/viral-replication/README.md",
-      "contentHash": "066cf17e2ddee612ad06fa4fee52e09cfcc7716d618ca314dbebc8237b4cbbbf",
+      "contentHash": "ee5883c9dc000093b3d02589e8c5bfdcce5f75b8da01d3cca064203b2b220f2e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -155,7 +155,7 @@
     },
     ".agents/workflows/viral-replication/fixtures/README.md": {
       "filePath": ".agents/workflows/viral-replication/fixtures/README.md",
-      "contentHash": "01390016c20e51868c8b35f62b58ca49fe2dfe6fd9949d42d960dd5f790ee95f",
+      "contentHash": "3c441d5d04967ac8591ee6a87c4194f609aea12b34a943b4fbc364e7f2e47622",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -585,7 +585,7 @@
     },
     ".agents/workflows/viral-replication/shared-artifact-contracts.md": {
       "filePath": ".agents/workflows/viral-replication/shared-artifact-contracts.md",
-      "contentHash": "f2f556686685753db706cab107f10a94406def222b2ee67bb41b886418b1eb84",
+      "contentHash": "45011c9593237e952fb485f4e26641a6dcfe6373b40bfebf2242fc9c29384a51",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -645,12 +645,12 @@
     },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
-      "contentHash": "8ee587492ce7af27a2f1a24396044f9efa1da5b8f991ef2ab671dad58f859065",
+      "contentHash": "2ade920779ba92425f2bf04bdf67fa9ed916fb46514626842382cb436beddb4b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 51,
+      "totalLines": 54,
       "hasStructuralAnalysis": true
     },
     "CONTEXT-MAP.md": {
@@ -3705,6 +3705,150 @@
       "totalLines": 740,
       "hasStructuralAnalysis": true
     },
+    "apps/api/app/api/routes/sv_agent.py": {
+      "filePath": "apps/api/app/api/routes/sv_agent.py",
+      "contentHash": "9b0ad46130eab532213204dc86f628ab1b04ddd90890f6d84f9c8bec7e2ababb",
+      "functions": [
+        {
+          "name": "list_tasks",
+          "params": [
+            "session"
+          ],
+          "returnType": "TaskInboxOutput",
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "get_task_evidence_artifacts",
+          "params": [
+            "task_id",
+            "session"
+          ],
+          "returnType": "EvidenceArtifactWorkspaceOutput",
+          "exported": true,
+          "lineCount": 141
+        },
+        {
+          "name": "get_task_mission_control",
+          "params": [
+            "task_id",
+            "session"
+          ],
+          "returnType": "MissionControlOutput",
+          "exported": true,
+          "lineCount": 150
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Annotated"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends"
+          ]
+        },
+        {
+          "source": "sqlalchemy.exc",
+          "specifiers": [
+            "SQLAlchemyError"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.session",
+          "specifiers": [
+            "get_db_session"
+          ]
+        },
+        {
+          "source": "app.api.problems",
+          "specifiers": [
+            "ApiProblem"
+          ]
+        },
+        {
+          "source": "app.api.schemas.sv_agent",
+          "specifiers": [
+            "EvidenceArtifactEdgeOutput",
+            "EvidenceArtifactGraphOutput",
+            "EvidenceArtifactNodeOutput",
+            "EvidenceArtifactWorkspaceOutput",
+            "EvidenceComparisonOutput",
+            "EvidencePlaneOutput",
+            "EvidenceSourceOutput",
+            "EvidenceSubjectOutput",
+            "EvidenceWindowOutput",
+            "EvidenceWorkspaceRunOutput",
+            "EvidenceWorkspaceTaskOutput",
+            "MissionArtifactOutput",
+            "MissionBlockerOutput",
+            "MissionCitationOutput",
+            "MissionControlOutput",
+            "MissionExplanationOutput",
+            "MissionNextSafeActionOutput",
+            "MissionPlanOutput",
+            "MissionPlanStepOutput",
+            "MissionRunOutput",
+            "MissionStageOutput",
+            "MissionTaskOutput",
+            "MissionToolRunOutput",
+            "PerformanceWindowOutput",
+            "TaskInboxItemOutput",
+            "TaskInboxOutput"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_evidence_workspace",
+          "specifiers": [
+            "EvidenceArtifactWorkspace"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_mission_control",
+          "specifiers": [
+            "MissionControl"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_task_inbox",
+          "specifiers": [
+            "TaskInbox"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError",
+            "TaskNotFound"
+          ]
+        }
+      ],
+      "exports": [
+        "list_tasks",
+        "get_task_evidence_artifacts",
+        "get_task_mission_control"
+      ],
+      "totalLines": 387,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/app/api/schemas/__init__.py": {
       "filePath": "apps/api/app/api/schemas/__init__.py",
       "contentHash": "8f40f1a171933525b18f19d754cf6a04af425104d2ba1199ebc0d2ea873a7907",
@@ -4201,6 +4345,484 @@
         "StoryboardApprovalOutput"
       ],
       "totalLines": 176,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/app/api/schemas/sv_agent.py": {
+      "filePath": "apps/api/app/api/schemas/sv_agent.py",
+      "contentHash": "8a1d2d8ab31d41d858cb2ce2e15d8259384843cf4b5d26764fcaeb7e20460415",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TaskInboxItemOutput",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "goal_track",
+            "subject",
+            "decision_question",
+            "active_run_id",
+            "active_run_revision",
+            "run_state",
+            "pending_decision_count",
+            "pending_gate_kinds",
+            "lane",
+            "ordering_reason",
+            "priority_at"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "TaskInboxOutput",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "ordering_policy_version",
+            "items",
+            "truncated"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "PerformanceWindowOutput",
+          "methods": [],
+          "properties": [
+            "start",
+            "end",
+            "timezone"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "MissionTaskOutput",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "goal_track",
+            "decision_question",
+            "subject",
+            "platform",
+            "market",
+            "language",
+            "performance_window",
+            "stop_condition",
+            "initial_rights_state"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "MissionRunOutput",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "run_revision",
+            "task_revision",
+            "state",
+            "primary_mechanism",
+            "creative_dimension",
+            "updated_at"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "MissionStageOutput",
+          "methods": [],
+          "properties": [
+            "key",
+            "label",
+            "status"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "MissionPlanStepOutput",
+          "methods": [],
+          "properties": [
+            "step_id",
+            "order",
+            "capability_name",
+            "capability_version",
+            "execution_mode"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "MissionPlanOutput",
+          "methods": [],
+          "properties": [
+            "ref",
+            "version",
+            "run_revision",
+            "workflow_name",
+            "workflow_version",
+            "capability_catalog_version",
+            "steps",
+            "limitations",
+            "created_at"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "MissionBlockerOutput",
+          "methods": [],
+          "properties": [
+            "code",
+            "message",
+            "source_ref"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "MissionNextSafeActionOutput",
+          "methods": [],
+          "properties": [
+            "kind",
+            "label",
+            "reason",
+            "reason_code",
+            "interaction_intent",
+            "basis_refs",
+            "explicit_non_effects",
+            "execution_available"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "MissionToolRunOutput",
+          "methods": [],
+          "properties": [
+            "ref",
+            "tool_name",
+            "tool_version",
+            "intent_summary",
+            "effect_class",
+            "status",
+            "stable_error_code",
+            "recovery_action",
+            "started_at",
+            "finished_at",
+            "updated_at"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "MissionArtifactOutput",
+          "methods": [],
+          "properties": [
+            "ref",
+            "artifact_type",
+            "version",
+            "status",
+            "evidence_level",
+            "proof_level",
+            "created_at"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "MissionCitationOutput",
+          "methods": [],
+          "properties": [
+            "kind",
+            "ref"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "MissionExplanationOutput",
+          "methods": [],
+          "properties": [
+            "summary",
+            "citations"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "MissionControlOutput",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "task",
+            "run",
+            "stages",
+            "current_stage",
+            "plan",
+            "blockers",
+            "next_safe_action",
+            "tool_runs",
+            "tool_runs_truncated",
+            "current_artifact",
+            "explanation"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "EvidenceWorkspaceTaskOutput",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "subject",
+            "performance_window"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "EvidenceWorkspaceRunOutput",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "run_revision",
+            "state"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "EvidenceSubjectOutput",
+          "methods": [],
+          "properties": [
+            "state",
+            "market",
+            "locale",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "EvidenceSourceOutput",
+          "methods": [],
+          "properties": [
+            "kind"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "EvidenceWindowOutput",
+          "methods": [],
+          "properties": [
+            "start",
+            "end",
+            "timezone",
+            "basis"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "EvidenceArtifactNodeOutput",
+          "methods": [],
+          "properties": [
+            "ref",
+            "artifact_type",
+            "version",
+            "status",
+            "evidence_level",
+            "proof_level",
+            "created_at",
+            "is_conclusion",
+            "sources",
+            "subject",
+            "window",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "EvidenceArtifactEdgeOutput",
+          "methods": [],
+          "properties": [
+            "source_ref",
+            "target_ref",
+            "kind",
+            "verification_state"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "EvidenceArtifactGraphOutput",
+          "methods": [],
+          "properties": [
+            "state",
+            "public_code",
+            "nodes",
+            "edges",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "EvidencePlaneOutput",
+          "methods": [],
+          "properties": [
+            "kind",
+            "state",
+            "public_code",
+            "source",
+            "subject",
+            "window",
+            "proof_level",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "EvidenceComparisonOutput",
+          "methods": [],
+          "properties": [
+            "state",
+            "public_code",
+            "script_ref",
+            "control_version_ref",
+            "variant_version_ref",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "EvidenceArtifactWorkspaceOutput",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "task",
+            "run",
+            "graph",
+            "evidence_planes",
+            "comparison",
+            "explicit_non_effects"
+          ],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Literal"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_evidence_workspace",
+          "specifiers": [
+            "EvidencePlaneKind",
+            "WorkspaceAvailability"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_mission_control",
+          "specifiers": [
+            "StageKey",
+            "StageStatus"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_task_inbox",
+          "specifiers": [
+            "TaskInboxLane",
+            "TaskInboxOrderingReason"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "CreativeDimension",
+            "GoalTrack",
+            "PrimaryMechanism",
+            "RightsState",
+            "RunState",
+            "TargetPlatform"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ApprovalGateKind",
+            "ArtifactStatus",
+            "ArtifactType",
+            "EffectClass",
+            "EvidenceLevel",
+            "ProofLevel",
+            "ToolRunStatus"
+          ]
+        }
+      ],
+      "exports": [
+        "TaskInboxItemOutput",
+        "TaskInboxOutput",
+        "PerformanceWindowOutput",
+        "MissionTaskOutput",
+        "MissionRunOutput",
+        "MissionStageOutput",
+        "MissionPlanStepOutput",
+        "MissionPlanOutput",
+        "MissionBlockerOutput",
+        "MissionNextSafeActionOutput",
+        "MissionToolRunOutput",
+        "MissionArtifactOutput",
+        "MissionCitationOutput",
+        "MissionExplanationOutput",
+        "MissionControlOutput",
+        "EvidenceWorkspaceTaskOutput",
+        "EvidenceWorkspaceRunOutput",
+        "EvidenceSubjectOutput",
+        "EvidenceSourceOutput",
+        "EvidenceWindowOutput",
+        "EvidenceArtifactNodeOutput",
+        "EvidenceArtifactEdgeOutput",
+        "EvidenceArtifactGraphOutput",
+        "EvidencePlaneOutput",
+        "EvidenceComparisonOutput",
+        "EvidenceArtifactWorkspaceOutput"
+      ],
+      "totalLines": 324,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/application/__init__.py": {
@@ -6480,6 +7102,1087 @@
       "totalLines": 266,
       "hasStructuralAnalysis": true
     },
+    "apps/api/app/application/sv_agent_evidence_workspace.py": {
+      "filePath": "apps/api/app/application/sv_agent_evidence_workspace.py",
+      "contentHash": "b8161dec8ebbe728c1f775c091016f3646a420dff449bf4f397d391fef82d8e2",
+      "functions": [
+        {
+          "name": "_parse_artifact",
+          "params": [
+            "record",
+            "task",
+            "run"
+          ],
+          "returnType": "tuple[EvidenceArtifactNode, tuple[dict[str, Any], ...], str]",
+          "exported": true,
+          "lineCount": 158
+        },
+        {
+          "name": "_resolve_declared_edges",
+          "params": [
+            "declared_refs",
+            "internal_refs"
+          ],
+          "returnType": "tuple[EvidenceArtifactEdge, ...]",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "_validate_direct_ref",
+          "params": [
+            "value",
+            "expected_type",
+            "input_ref_values"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_assert_acyclic",
+          "params": [
+            "nodes",
+            "edges"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_parse_subject",
+          "params": [
+            "value"
+          ],
+          "returnType": "EvidenceSubject",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "_parse_observation_window",
+          "params": [
+            "value"
+          ],
+          "returnType": "EvidenceWindow | None",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_artifact_ref",
+          "params": [
+            "record"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_record_ref",
+          "params": [
+            "record"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_inherit_conclusion_evidence",
+          "params": [
+            "nodes",
+            "declared_edges"
+          ],
+          "returnType": "tuple[EvidenceArtifactNode, ...]",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "_strings",
+          "params": [
+            "value",
+            "code"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_assert_safe_text",
+          "params": [
+            "value",
+            "code"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_validate_timezone",
+          "params": [
+            "value",
+            "code"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_text",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_digest",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_positive_int",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_unavailable_product_truth",
+          "params": [],
+          "returnType": "EvidencePlane",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_quarantined_product_truth",
+          "params": [
+            "limitation"
+          ],
+          "returnType": "EvidencePlane",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_proof_level_rank",
+          "params": [
+            "value"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_unavailable_planes",
+          "params": [
+            "task_window"
+          ],
+          "returnType": "tuple[EvidencePlane, ...]",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "_unavailable_comparison",
+          "params": [],
+          "returnType": "EvidenceComparison",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [
+        {
+          "name": "WorkspaceAvailability",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "EvidencePlaneKind",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "EvidenceWindow",
+          "methods": [],
+          "properties": [
+            "start",
+            "end",
+            "timezone",
+            "basis"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "EvidenceSubject",
+          "methods": [],
+          "properties": [
+            "state",
+            "market",
+            "locale",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "EvidenceSource",
+          "methods": [],
+          "properties": [
+            "kind"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "EvidenceArtifactNode",
+          "methods": [],
+          "properties": [
+            "ref",
+            "artifact_type",
+            "version",
+            "status",
+            "evidence_level",
+            "proof_level",
+            "created_at",
+            "is_conclusion",
+            "sources",
+            "subject",
+            "window",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "EvidenceArtifactEdge",
+          "methods": [],
+          "properties": [
+            "source_ref",
+            "target_ref",
+            "kind",
+            "verification_state"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "EvidenceArtifactGraph",
+          "methods": [],
+          "properties": [
+            "state",
+            "public_code",
+            "nodes",
+            "edges",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "EvidencePlane",
+          "methods": [],
+          "properties": [
+            "kind",
+            "state",
+            "public_code",
+            "source",
+            "subject",
+            "window",
+            "proof_level",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "EvidenceComparison",
+          "methods": [],
+          "properties": [
+            "state",
+            "public_code",
+            "script_ref",
+            "control_version_ref",
+            "variant_version_ref",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "EvidenceWorkspaceTask",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "subject",
+            "performance_start",
+            "performance_end",
+            "performance_timezone"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "EvidenceWorkspaceRun",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "run_revision",
+            "state"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "EvidenceArtifactWorkspaceProjection",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "task",
+            "run",
+            "graph",
+            "evidence_planes",
+            "comparison",
+            "explicit_non_effects"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "EvidenceArtifactWorkspace",
+          "methods": [
+            "__init__",
+            "inspect",
+            "_project_evidence_planes",
+            "_project_product_truth",
+            "_load_task",
+            "_load_runtime_edges",
+            "_assert_snapshot_unchanged"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 479
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Sequence"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "replace"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "enum",
+          "specifiers": [
+            "StrEnum"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "zoneinfo",
+          "specifiers": [
+            "ZoneInfo",
+            "ZoneInfoNotFoundError"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.models",
+          "specifiers": [
+            "ProductFactRecord",
+            "ProductSnapshotRecord"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvArtifactRecord",
+            "SvRunRecord",
+            "SvRuntimeLineageLinkRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.artifact_contracts",
+          "specifiers": [
+            "ArtifactValidationError",
+            "validate_artifact",
+            "validate_artifact_chain"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "RunState"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError",
+            "TaskNotFound"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ArtifactStatus",
+            "ArtifactType",
+            "EvidenceLevel",
+            "ProofLevel"
+          ]
+        }
+      ],
+      "exports": [
+        "WorkspaceAvailability",
+        "EvidencePlaneKind",
+        "EvidenceWindow",
+        "EvidenceSubject",
+        "EvidenceSource",
+        "EvidenceArtifactNode",
+        "EvidenceArtifactEdge",
+        "EvidenceArtifactGraph",
+        "EvidencePlane",
+        "EvidenceComparison",
+        "EvidenceWorkspaceTask",
+        "EvidenceWorkspaceRun",
+        "EvidenceArtifactWorkspaceProjection",
+        "EvidenceArtifactWorkspace",
+        "_parse_artifact",
+        "_resolve_declared_edges",
+        "_validate_direct_ref",
+        "_assert_acyclic",
+        "_parse_subject",
+        "_parse_observation_window",
+        "_artifact_ref",
+        "_record_ref",
+        "_inherit_conclusion_evidence",
+        "_strings",
+        "_assert_safe_text",
+        "_validate_timezone",
+        "_text",
+        "_digest",
+        "_positive_int",
+        "_unavailable_product_truth",
+        "_quarantined_product_truth",
+        "_proof_level_rank",
+        "_unavailable_planes",
+        "_unavailable_comparison"
+      ],
+      "totalLines": 1402,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/app/application/sv_agent_mission_control.py": {
+      "filePath": "apps/api/app/application/sv_agent_mission_control.py",
+      "contentHash": "cbfe0b12855a603703723efa30077c7e7d32e2a3fb6f84b1bc8e23600aa177ca",
+      "functions": [
+        {
+          "name": "_mission_task",
+          "params": [
+            "record",
+            "brief"
+          ],
+          "returnType": "MissionTask",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_mission_run",
+          "params": [
+            "record"
+          ],
+          "returnType": "MissionRun",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "_validate_plan_input_refs",
+          "params": [
+            "raw_input_refs",
+            "task",
+            "brief_digest",
+            "catalog_digest"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "_validate_plan_guard",
+          "params": [
+            "guard",
+            "task",
+            "run"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "_validate_artifact_handle",
+          "params": [
+            "handle",
+            "task",
+            "run"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "_validate_approval_handle",
+          "params": [
+            "handle",
+            "task",
+            "run"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "_validate_fact_scope_evidence",
+          "params": [
+            "evidence",
+            "task",
+            "run"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "_parse_plan",
+          "params": [
+            "record",
+            "task",
+            "run",
+            "brief_digest"
+          ],
+          "returnType": "MissionPlan",
+          "exported": true,
+          "lineCount": 99
+        },
+        {
+          "name": "_parse_artifact",
+          "params": [
+            "record",
+            "task",
+            "run"
+          ],
+          "returnType": "MissionArtifact",
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "_stages_without_run",
+          "params": [],
+          "returnType": "tuple[tuple[MissionStage, ...], StageKey]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_stages_for",
+          "params": [
+            "run",
+            "plan",
+            "artifact",
+            "blockers"
+          ],
+          "returnType": "tuple[tuple[MissionStage, ...], StageKey]",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "_state_blockers",
+          "params": [
+            "brief",
+            "run",
+            "task_ref",
+            "run_ref",
+            "approvals",
+            "approvals_truncated",
+            "approval_frontier_inconsistent",
+            "tool_runs"
+          ],
+          "returnType": "list[MissionBlocker]",
+          "exported": true,
+          "lineCount": 81
+        },
+        {
+          "name": "_next_action",
+          "params": [
+            "run",
+            "blockers",
+            "basis_refs"
+          ],
+          "returnType": "MissionNextSafeAction",
+          "exported": true,
+          "lineCount": 140
+        },
+        {
+          "name": "_brief_from_record",
+          "params": [
+            "record"
+          ],
+          "returnType": "TaskBrief",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_text",
+          "params": [
+            "value"
+          ],
+          "returnType": "TypeGuard[str]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_positive_int",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_digest",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [
+        {
+          "name": "StageKey",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "StageStatus",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "MissionTask",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "goal_track",
+            "decision_question",
+            "subject",
+            "platform",
+            "market",
+            "language",
+            "performance_start",
+            "performance_end",
+            "performance_timezone",
+            "stop_condition",
+            "initial_rights_state"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "MissionRun",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "run_revision",
+            "task_revision",
+            "state",
+            "primary_mechanism",
+            "creative_dimension",
+            "updated_at"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "MissionStage",
+          "methods": [],
+          "properties": [
+            "key",
+            "label",
+            "status"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "MissionPlanStep",
+          "methods": [],
+          "properties": [
+            "step_id",
+            "order",
+            "capability_name",
+            "capability_version",
+            "execution_mode"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "MissionPlan",
+          "methods": [],
+          "properties": [
+            "ref",
+            "version",
+            "run_revision",
+            "workflow_name",
+            "workflow_version",
+            "capability_catalog_version",
+            "steps",
+            "limitations",
+            "created_at"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "MissionBlocker",
+          "methods": [],
+          "properties": [
+            "code",
+            "message",
+            "source_ref"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "MissionNextSafeAction",
+          "methods": [],
+          "properties": [
+            "kind",
+            "label",
+            "reason",
+            "reason_code",
+            "interaction_intent",
+            "basis_refs",
+            "explicit_non_effects",
+            "execution_available"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "MissionToolRun",
+          "methods": [],
+          "properties": [
+            "ref",
+            "tool_name",
+            "tool_version",
+            "intent_summary",
+            "effect_class",
+            "status",
+            "stable_error_code",
+            "recovery_action",
+            "started_at",
+            "finished_at",
+            "updated_at"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "MissionArtifact",
+          "methods": [],
+          "properties": [
+            "ref",
+            "artifact_type",
+            "version",
+            "status",
+            "evidence_level",
+            "proof_level",
+            "created_at"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_ArtifactFrontier",
+          "methods": [],
+          "properties": [
+            "projection",
+            "artifact_id",
+            "payload_digest"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "MissionCitation",
+          "methods": [],
+          "properties": [
+            "kind",
+            "ref"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "MissionExplanation",
+          "methods": [],
+          "properties": [
+            "summary",
+            "citations"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "MissionControlProjection",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "task",
+            "run",
+            "stages",
+            "current_stage",
+            "plan",
+            "blockers",
+            "next_safe_action",
+            "tool_runs",
+            "tool_runs_truncated",
+            "current_artifact",
+            "explanation"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "MissionControl",
+          "methods": [
+            "__init__",
+            "inspect",
+            "_load_task",
+            "_load_plan",
+            "_load_artifact",
+            "_load_tool_runs",
+            "_load_pending_approvals",
+            "_assert_snapshot_unchanged"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 386
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "enum",
+          "specifiers": [
+            "StrEnum"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal",
+            "TypeGuard"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "exists",
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvApprovalRequestRecord",
+            "SvArtifactRecord",
+            "SvDecisionEventRecord",
+            "SvRunPlanRecord",
+            "SvRunRecord",
+            "SvRuntimeLineageLinkRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord",
+            "SvToolRunRecord"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.artifact_contracts",
+          "specifiers": [
+            "ArtifactValidationError",
+            "validate_artifact"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "CreativeDimension",
+            "GoalTrack",
+            "PerformanceWindow",
+            "PrimaryMechanism",
+            "RightsState",
+            "RunState",
+            "TargetPlatform",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError",
+            "TaskNotFound"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ApprovalGateKind",
+            "ArtifactStatus",
+            "ArtifactType",
+            "EffectClass",
+            "EvidenceLevel",
+            "ProofLevel",
+            "ToolRunStatus"
+          ]
+        }
+      ],
+      "exports": [
+        "StageKey",
+        "StageStatus",
+        "MissionTask",
+        "MissionRun",
+        "MissionStage",
+        "MissionPlanStep",
+        "MissionPlan",
+        "MissionBlocker",
+        "MissionNextSafeAction",
+        "MissionToolRun",
+        "MissionArtifact",
+        "_ArtifactFrontier",
+        "MissionCitation",
+        "MissionExplanation",
+        "MissionControlProjection",
+        "MissionControl",
+        "_mission_task",
+        "_mission_run",
+        "_validate_plan_input_refs",
+        "_validate_plan_guard",
+        "_validate_artifact_handle",
+        "_validate_approval_handle",
+        "_validate_fact_scope_evidence",
+        "_parse_plan",
+        "_parse_artifact",
+        "_stages_without_run",
+        "_stages_for",
+        "_state_blockers",
+        "_next_action",
+        "_brief_from_record",
+        "_text",
+        "_positive_int",
+        "_digest"
+      ],
+      "totalLines": 1399,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/app/application/sv_agent_orchestration.py": {
       "filePath": "apps/api/app/application/sv_agent_orchestration.py",
       "contentHash": "c6309ec99b1c9f91a9e816cdb894866269c87fc19c575a6ba8713b1e30c5c04e",
@@ -6764,6 +8467,169 @@
         "ReadToolExecutionService"
       ],
       "totalLines": 149,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/app/application/sv_agent_task_inbox.py": {
+      "filePath": "apps/api/app/application/sv_agent_task_inbox.py",
+      "contentHash": "53a1c08e57b6c2125431e70cafa080263f4812f5110fc6785530be8e5d70969e",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TaskInboxLane",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "TaskInboxOrderingReason",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "TaskInboxItem",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "goal_track",
+            "subject",
+            "decision_question",
+            "active_run_id",
+            "active_run_revision",
+            "run_state",
+            "pending_decision_count",
+            "pending_gate_kinds",
+            "lane",
+            "ordering_reason",
+            "priority_at"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "TaskInboxProjection",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "ordering_policy_version",
+            "items",
+            "truncated"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "TaskInbox",
+          "methods": [
+            "__init__",
+            "inspect"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 275
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "enum",
+          "specifiers": [
+            "StrEnum"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Literal"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "and_",
+            "case",
+            "exists",
+            "func",
+            "literal",
+            "or_",
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvApprovalRequestRecord",
+            "SvDecisionEventRecord",
+            "SvRunRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "GoalTrack",
+            "PerformanceWindow",
+            "RightsState",
+            "RunState",
+            "TargetPlatform",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ApprovalGateKind"
+          ]
+        }
+      ],
+      "exports": [
+        "TaskInboxLane",
+        "TaskInboxOrderingReason",
+        "TaskInboxItem",
+        "TaskInboxProjection",
+        "TaskInbox"
+      ],
+      "totalLines": 358,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/application/sv_agent_tool_contracts.py": {
@@ -9220,6 +11086,1129 @@
       "totalLines": 2,
       "hasStructuralAnalysis": true
     },
+    "apps/api/app/domain/sv_agent/artifact_contracts.py": {
+      "filePath": "apps/api/app/domain/sv_agent/artifact_contracts.py",
+      "contentHash": "931de824743c9713a341aa8967a8bbf2390ff23638cf4c293c33adbfcfb2ecd8",
+      "functions": [
+        {
+          "name": "_validate_direct_refs",
+          "params": [
+            "artifact",
+            "refs"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_validate_mechanism_partition",
+          "params": [
+            "primary_mechanism",
+            "selected_component",
+            "frozen_components"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_canonical_value",
+          "params": [
+            "value"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "canonical_artifact_digest",
+          "params": [
+            "payload"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_validation_error",
+          "params": [
+            "exc"
+          ],
+          "returnType": "ArtifactValidationError",
+          "exported": true,
+          "lineCount": 69
+        },
+        {
+          "name": "_resolve_model",
+          "params": [
+            "payload",
+            "expected_type"
+          ],
+          "returnType": "tuple[type[ArtifactEnvelope], dict[str, Any]]",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "bind_artifact_digest",
+          "params": [
+            "payload"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "validate_artifact",
+          "params": [
+            "payload",
+            "expected_type"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_chain_ref_key",
+          "params": [
+            "ref"
+          ],
+          "returnType": "tuple[str, str, str, int]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_raise_chain_error",
+          "params": [
+            "code",
+            "path",
+            "detail"
+          ],
+          "returnType": "NoReturn",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_validated_external_ref",
+          "params": [
+            "payload",
+            "index"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_validate_chain_relationships",
+          "params": [
+            "artifacts",
+            "resolved_refs"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 203
+        },
+        {
+          "name": "validate_artifact_chain",
+          "params": [
+            "payloads",
+            "external_refs"
+          ],
+          "returnType": "tuple[dict[str, Any], ...]",
+          "exported": true,
+          "lineCount": 72
+        },
+        {
+          "name": "get_artifact_schema",
+          "params": [
+            "artifact_type"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [
+        {
+          "name": "ArtifactValidationError",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_FrozenModel",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "ArtifactRef",
+          "methods": [],
+          "properties": [
+            "artifact_id",
+            "artifact_type",
+            "task_ref",
+            "run_ref",
+            "version",
+            "content_digest"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "SourceRef",
+          "methods": [],
+          "properties": [
+            "source_ref",
+            "source_kind",
+            "source_digest"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "SubjectBinding",
+          "methods": [
+            "validate_snapshot_binding"
+          ],
+          "properties": [
+            "state",
+            "product_snapshot_id",
+            "product_snapshot_digest",
+            "market",
+            "locale",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "ObservationValue",
+          "methods": [
+            "preserve_missing_semantics"
+          ],
+          "properties": [
+            "observation_ref",
+            "metric",
+            "state",
+            "value",
+            "unit",
+            "source_refs"
+          ],
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "PerformanceWindow",
+          "methods": [
+            "validate_window"
+          ],
+          "properties": [
+            "start",
+            "end",
+            "timezone"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "ArtifactEnvelope",
+          "methods": [
+            "validate_input_ref_scope",
+            "validate_content_digest"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_id",
+            "artifact_type",
+            "task_ref",
+            "run_ref",
+            "version",
+            "status",
+            "input_refs",
+            "source_refs",
+            "subject_binding",
+            "content_digest",
+            "evidence_level",
+            "proof_level",
+            "limitations",
+            "created_at",
+            "supersedes_artifact_id"
+          ],
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "ReferenceBundle",
+          "methods": [
+            "validate_source_locator",
+            "validate_observation_evidence"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "reference_id",
+            "source_locator",
+            "source_digest",
+            "platform",
+            "performance_window",
+            "captured_at",
+            "rights_state",
+            "playability_state",
+            "candidate_state",
+            "observations"
+          ],
+          "exported": true,
+          "lineCount": 49
+        },
+        {
+          "name": "TimelineObservation",
+          "methods": [
+            "validate_time_range"
+          ],
+          "properties": [
+            "start_seconds",
+            "end_seconds",
+            "dimension",
+            "observation",
+            "availability",
+            "source_refs"
+          ],
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "PatternIdentity",
+          "methods": [],
+          "properties": [
+            "pattern_key",
+            "pattern_version"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "DecompositionAttentionObservation",
+          "methods": [
+            "validate_time_range"
+          ],
+          "properties": [
+            "component",
+            "start_seconds",
+            "end_seconds",
+            "carrier",
+            "observable_function",
+            "surface_modality",
+            "surface_disposition",
+            "source_refs",
+            "availability",
+            "shot_or_phase_anchor"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "AttentionDecompositionObservations",
+          "methods": [],
+          "properties": [
+            "mechanism",
+            "pattern_identity",
+            "observations"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "NarrativeBeatObservation",
+          "methods": [
+            "validate_time_range"
+          ],
+          "properties": [
+            "role",
+            "start_seconds",
+            "end_seconds",
+            "observable_function",
+            "surface_expression",
+            "surface_disposition",
+            "availability",
+            "source_refs"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "NarrativeDecompositionObservations",
+          "methods": [],
+          "properties": [
+            "mechanism",
+            "beats"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "ProofStepObservation",
+          "methods": [
+            "validate_time_range"
+          ],
+          "properties": [
+            "phase",
+            "start_seconds",
+            "end_seconds",
+            "proof_device",
+            "observable_function",
+            "observed_phenomenon",
+            "allowed_conclusion",
+            "availability",
+            "source_refs",
+            "limitations"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "ProofDecompositionObservations",
+          "methods": [],
+          "properties": [
+            "mechanism",
+            "steps"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "ExperienceCueObservation",
+          "methods": [
+            "validate_time_range"
+          ],
+          "properties": [
+            "cue_type",
+            "start_seconds",
+            "end_seconds",
+            "observable_function",
+            "surface_expression",
+            "replaceable_fields",
+            "availability",
+            "source_refs"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "ExperienceDecompositionObservations",
+          "methods": [],
+          "properties": [
+            "mechanism",
+            "cues"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "DecompositionComponentObservation",
+          "methods": [
+            "validate_optional_time_range"
+          ],
+          "properties": [
+            "start_seconds",
+            "end_seconds",
+            "observable_function",
+            "surface_modality",
+            "surface_disposition",
+            "availability",
+            "source_refs",
+            "unknowns"
+          ],
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "ConversionDecompositionObservation",
+          "methods": [],
+          "properties": [
+            "component"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "ConversionDecompositionObservations",
+          "methods": [
+            "validate_component_partition"
+          ],
+          "properties": [
+            "mechanism",
+            "observations",
+            "reference_surface_is_target_copy"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "TrendDecompositionObservation",
+          "methods": [],
+          "properties": [
+            "component"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "TrendSourceReuseBoundary",
+          "methods": [],
+          "properties": [
+            "source_identity",
+            "source_audio",
+            "source_template",
+            "target_execution_inclusion"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "TrendDecompositionObservations",
+          "methods": [
+            "validate_component_partition"
+          ],
+          "properties": [
+            "mechanism",
+            "observations",
+            "source_reuse_boundary"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "DecompositionMap",
+          "methods": [
+            "validate_direct_refs"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "reference_bundle_ref",
+            "timeline",
+            "primary_mechanism",
+            "secondary_mechanisms",
+            "mechanism_observations",
+            "unsupported_claims",
+            "unknowns"
+          ],
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "PatternHypothesis",
+          "methods": [
+            "validate_direct_refs"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "decomposition_map_ref",
+            "primary_mechanism",
+            "hypothesis",
+            "invariant_elements",
+            "replaceable_elements",
+            "prohibited_elements",
+            "adaptation_constraints",
+            "evidence_scope",
+            "unknowns"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "ExecutionBudget",
+          "methods": [],
+          "properties": [
+            "max_variants",
+            "max_iterations",
+            "max_duration_seconds",
+            "stop_on_violation"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "FrozenConfiguration",
+          "methods": [],
+          "properties": [
+            "language",
+            "market",
+            "platform",
+            "duration_seconds",
+            "model",
+            "material_scope",
+            "execution_budget"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "ReplicationPlan",
+          "methods": [
+            "validate_selected_component"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "pattern_hypothesis_ref",
+            "control_reference_ref",
+            "primary_mechanism",
+            "selected_component",
+            "control_id",
+            "variant_id",
+            "changed_dimension",
+            "frozen_components",
+            "target_platform",
+            "target_duration_seconds",
+            "execution_budget",
+            "stop_conditions",
+            "acceptance_gates",
+            "rights_state",
+            "requires_human_approval"
+          ],
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "ClaimMapping",
+          "methods": [
+            "validate_fact_binding"
+          ],
+          "properties": [
+            "claim_id",
+            "claim_text",
+            "disposition",
+            "fact_id",
+            "fact_status",
+            "evidence_refs",
+            "reason"
+          ],
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "FactMap",
+          "methods": [
+            "validate_fact_sets"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "replication_plan_ref",
+            "claim_scope",
+            "product_snapshot_id",
+            "product_snapshot_digest",
+            "claim_mappings",
+            "selected_fact_ids",
+            "excluded_fact_ids",
+            "unsupported_claims"
+          ],
+          "exported": true,
+          "lineCount": 48
+        },
+        {
+          "name": "ReplicationContract",
+          "methods": [
+            "validate_contract"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "replication_plan_ref",
+            "fact_map_ref",
+            "decomposition_map_ref",
+            "primary_mechanism",
+            "selected_component",
+            "frozen_components",
+            "claim_scope",
+            "control_id",
+            "variant_id",
+            "changed_dimension",
+            "frozen_configuration",
+            "selected_fact_ids",
+            "excluded_fact_ids",
+            "stop_conditions",
+            "acceptance_gates",
+            "rights_state",
+            "approval_ref",
+            "immutable"
+          ],
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "NarrativeTransformationPayload",
+          "methods": [],
+          "properties": [
+            "mechanism",
+            "component",
+            "frozen_components",
+            "source_arc",
+            "transformed_arc",
+            "preserved_truths"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "ProofDemonstrationPayload",
+          "methods": [],
+          "properties": [
+            "mechanism",
+            "component",
+            "frozen_components",
+            "proof_setup",
+            "observable_result",
+            "boundary_disclosures"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "ExperiencePovPayload",
+          "methods": [],
+          "properties": [
+            "mechanism",
+            "component",
+            "frozen_components",
+            "pov_actor",
+            "moment",
+            "sensory_cues"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "AttentionAnchor",
+          "methods": [
+            "validate_anchor_range"
+          ],
+          "properties": [
+            "component",
+            "start_seconds",
+            "end_seconds",
+            "carrier",
+            "observable_function",
+            "surface_class",
+            "source_ref",
+            "availability",
+            "shot_or_phase_anchor"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "AttentionGrammarPayload",
+          "methods": [
+            "validate_attention_safety"
+          ],
+          "properties": [
+            "mechanism",
+            "component",
+            "frozen_components",
+            "anchors",
+            "pattern_identity",
+            "target_surface_substitutions",
+            "sound_policy",
+            "hook_trigger",
+            "reveal_cadence",
+            "caption_cadence",
+            "visual_contrast",
+            "sonic_timing"
+          ],
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "PromotionContractBinding",
+          "methods": [
+            "validate_promotion_binding"
+          ],
+          "properties": [
+            "state",
+            "promotion_fact_id",
+            "promotion_fact_digest",
+            "value_digest",
+            "database_time_valid_at",
+            "product_snapshot_id",
+            "product_snapshot_digest"
+          ],
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "CtaPolicy",
+          "methods": [],
+          "properties": [
+            "pattern_policy",
+            "final_cta_role",
+            "visible_copy_owner",
+            "provider_may_write_visible_cta"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "ActionPathBinding",
+          "methods": [
+            "validate_action_path"
+          ],
+          "properties": [
+            "state",
+            "destination_ref",
+            "external_execution"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "ProviderExclusion",
+          "methods": [],
+          "properties": [
+            "excluded_surfaces",
+            "provider_may_write_visible_copy",
+            "evidence_refs"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "ConversionActionPayload",
+          "methods": [
+            "validate_conversion_safety"
+          ],
+          "properties": [
+            "mechanism",
+            "component",
+            "frozen_components",
+            "objection_resolution",
+            "promotion_contract",
+            "cta_invitation",
+            "action_path",
+            "cta_policy",
+            "action_path_binding",
+            "provider_exclusion"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "TrendAdmissionRecord",
+          "methods": [],
+          "properties": [
+            "evidence_scope",
+            "freshness_window_days",
+            "source_refs",
+            "limitations",
+            "analysis_evidence_state",
+            "adaptation_evidence_state",
+            "source_audio_evidence_state",
+            "template_evidence_state",
+            "platform_constraints",
+            "market_constraints",
+            "locale_constraints",
+            "assessment_state",
+            "execution_capability",
+            "external_action_requested",
+            "target_text_substitutions",
+            "target_visual_substitutions",
+            "target_audio_substitutions",
+            "source_identity_exclusions",
+            "originality_handoff"
+          ],
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "TrendNativePayload",
+          "methods": [
+            "validate_trend_safety"
+          ],
+          "properties": [
+            "mechanism",
+            "component",
+            "frozen_components",
+            "trend_signal_binding",
+            "trend_semantic_frame",
+            "template_grammar",
+            "audio_function",
+            "admission"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "AdaptationPackage",
+          "methods": [
+            "validate_payload_cardinality",
+            "validate_mechanism_payload"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "replication_contract_ref",
+            "primary_mechanism",
+            "selected_component",
+            "mechanism_payload"
+          ],
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "IntegrityGateCheck",
+          "methods": [
+            "validate_gate_state"
+          ],
+          "properties": [
+            "gate",
+            "state",
+            "findings",
+            "evidence_refs",
+            "blockers",
+            "unknowns",
+            "fallback_strategy"
+          ],
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "ScriptVersionRef",
+          "methods": [],
+          "properties": [
+            "artifact_type"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "StoryboardVersionRef",
+          "methods": [],
+          "properties": [
+            "artifact_type"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "ControlledArtifactRef",
+          "methods": [],
+          "properties": [
+            "artifact_type"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "StoryboardLineage",
+          "methods": [],
+          "properties": [
+            "storyboard_version_ref",
+            "source_script_version_ref",
+            "evidence_scope"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "MediaIntegrityRecord",
+          "methods": [
+            "validate_integrity_scope"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "replication_contract_ref",
+            "adaptation_package_ref",
+            "script_version_ref",
+            "storyboard_version_ref",
+            "storyboard_lineage",
+            "controlled_artifact_ref",
+            "mode",
+            "gate_checks",
+            "disposition",
+            "fallback_strategy",
+            "blockers",
+            "unknowns",
+            "evidence_limits"
+          ],
+          "exported": true,
+          "lineCount": 76
+        },
+        {
+          "name": "ReplicationFinding",
+          "methods": [
+            "validate_direct_refs"
+          ],
+          "properties": [
+            "schema_version",
+            "artifact_type",
+            "replication_contract_ref",
+            "adaptation_package_ref",
+            "media_integrity_record_ref",
+            "conclusion_scope",
+            "observations",
+            "bounded_inferences",
+            "unknowns",
+            "anomalies",
+            "next_actions",
+            "causal_claim",
+            "production_acceptance"
+          ],
+          "exported": true,
+          "lineCount": 30
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "ipaddress",
+          "specifiers": [
+            "ipaddress"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Iterable",
+            "Mapping"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Annotated",
+            "Any",
+            "Literal",
+            "NoReturn"
+          ]
+        },
+        {
+          "source": "urllib.parse",
+          "specifiers": [
+            "urlsplit"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "ValidationError",
+            "ValidationInfo",
+            "field_validator",
+            "model_validator"
+          ]
+        }
+      ],
+      "exports": [
+        "ArtifactValidationError",
+        "_FrozenModel",
+        "ArtifactRef",
+        "SourceRef",
+        "SubjectBinding",
+        "ObservationValue",
+        "PerformanceWindow",
+        "ArtifactEnvelope",
+        "_validate_direct_refs",
+        "ReferenceBundle",
+        "TimelineObservation",
+        "PatternIdentity",
+        "DecompositionAttentionObservation",
+        "AttentionDecompositionObservations",
+        "NarrativeBeatObservation",
+        "NarrativeDecompositionObservations",
+        "ProofStepObservation",
+        "ProofDecompositionObservations",
+        "ExperienceCueObservation",
+        "ExperienceDecompositionObservations",
+        "DecompositionComponentObservation",
+        "ConversionDecompositionObservation",
+        "ConversionDecompositionObservations",
+        "TrendDecompositionObservation",
+        "TrendSourceReuseBoundary",
+        "TrendDecompositionObservations",
+        "DecompositionMap",
+        "PatternHypothesis",
+        "ExecutionBudget",
+        "FrozenConfiguration",
+        "_validate_mechanism_partition",
+        "ReplicationPlan",
+        "ClaimMapping",
+        "FactMap",
+        "ReplicationContract",
+        "NarrativeTransformationPayload",
+        "ProofDemonstrationPayload",
+        "ExperiencePovPayload",
+        "AttentionAnchor",
+        "AttentionGrammarPayload",
+        "PromotionContractBinding",
+        "CtaPolicy",
+        "ActionPathBinding",
+        "ProviderExclusion",
+        "ConversionActionPayload",
+        "TrendAdmissionRecord",
+        "TrendNativePayload",
+        "AdaptationPackage",
+        "IntegrityGateCheck",
+        "ScriptVersionRef",
+        "StoryboardVersionRef",
+        "ControlledArtifactRef",
+        "StoryboardLineage",
+        "MediaIntegrityRecord",
+        "ReplicationFinding",
+        "_canonical_value",
+        "canonical_artifact_digest",
+        "_validation_error",
+        "_resolve_model",
+        "bind_artifact_digest",
+        "validate_artifact",
+        "_chain_ref_key",
+        "_raise_chain_error",
+        "_validated_external_ref",
+        "_validate_chain_relationships",
+        "validate_artifact_chain",
+        "get_artifact_schema"
+      ],
+      "totalLines": 1732,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/app/domain/sv_agent/entities.py": {
       "filePath": "apps/api/app/domain/sv_agent/entities.py",
       "contentHash": "5d00f20d2135f1764dc1f24b0eee6efa66b450c2743efdc29e6086eea5c31979",
@@ -10028,6 +13017,381 @@
       "totalLines": 721,
       "hasStructuralAnalysis": true
     },
+    "apps/api/app/domain/sv_agent/reviewing.py": {
+      "filePath": "apps/api/app/domain/sv_agent/reviewing.py",
+      "contentHash": "c7696d1b9c0e9b8c482796aee6e323105f01249e95c5c9162f171f6c5a77cce3",
+      "functions": [
+        {
+          "name": "_canonical_artifact_digest",
+          "params": [
+            "payload"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_canonical_artifact_value",
+          "params": [
+            "value"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_single_variable_finding",
+          "params": [
+            "code",
+            "path"
+          ],
+          "returnType": "ReviewerFinding",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_claim_finding",
+          "params": [
+            "code",
+            "path",
+            "evidence_refs"
+          ],
+          "returnType": "ReviewerFinding",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_claim_evidence_finding",
+          "params": [
+            "code",
+            "path",
+            "evidence_refs"
+          ],
+          "returnType": "ReviewerFinding",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_outcome",
+          "params": [
+            "findings"
+          ],
+          "returnType": "ReviewerOutcome",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_group_evidence",
+          "params": [
+            "evidence"
+          ],
+          "returnType": "dict[str, tuple[EvidenceSnapshot, ...]]",
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [
+        {
+          "name": "ReviewDisposition",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "FindingSeverity",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "FindingCategory",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "FindingCode",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "FindingNextAction",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "ClaimSurface",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "ClaimKind",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "EvidencePlane",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "EvidenceState",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "TaskRunBinding",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "run_id",
+            "run_revision"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "CanonicalArtifactSnapshot",
+          "methods": [],
+          "properties": [
+            "artifact_type",
+            "artifact_id",
+            "version",
+            "binding",
+            "declared_digest",
+            "canonical_payload_json"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "MechanismValue",
+          "methods": [],
+          "properties": [
+            "component",
+            "value_digest"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "FrozenContextSnapshot",
+          "methods": [],
+          "properties": [
+            "configuration_digest",
+            "fact_binding_digest",
+            "subject_binding_digest",
+            "material_scope_digest",
+            "claim_contract_digest"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "VisibleClaimSnapshot",
+          "methods": [],
+          "properties": [
+            "claim_id",
+            "surface",
+            "kind",
+            "fact_id",
+            "fact_state",
+            "evidence_refs"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "CandidateSnapshot",
+          "methods": [],
+          "properties": [
+            "mechanism_values",
+            "frozen_context",
+            "visible_claims"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "EvidenceSnapshot",
+          "methods": [],
+          "properties": [
+            "evidence_ref",
+            "plane",
+            "state",
+            "level",
+            "required_for_next_gate",
+            "product_snapshot_id",
+            "fact_id",
+            "fact_state"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "NextGateReviewPackage",
+          "methods": [],
+          "properties": [
+            "binding",
+            "artifacts",
+            "control",
+            "variant",
+            "evidence"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "ReviewerFinding",
+          "methods": [],
+          "properties": [
+            "code",
+            "severity",
+            "category",
+            "path",
+            "artifact_ref",
+            "evidence_refs",
+            "next_action"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "ReviewerOutcome",
+          "methods": [],
+          "properties": [
+            "disposition",
+            "findings"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "IndependentReviewer",
+          "methods": [
+            "review",
+            "_review_artifacts",
+            "_review_single_variable",
+            "_mechanism_values",
+            "_review_claims",
+            "_review_evidence"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 360
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "enum",
+          "specifiers": [
+            "StrEnum"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "app.domain.products.entities",
+          "specifiers": [
+            "FactStatus"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "CreativeDimension"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ArtifactType",
+            "EvidenceLevel"
+          ]
+        }
+      ],
+      "exports": [
+        "ReviewDisposition",
+        "FindingSeverity",
+        "FindingCategory",
+        "FindingCode",
+        "FindingNextAction",
+        "ClaimSurface",
+        "ClaimKind",
+        "EvidencePlane",
+        "EvidenceState",
+        "TaskRunBinding",
+        "CanonicalArtifactSnapshot",
+        "MechanismValue",
+        "FrozenContextSnapshot",
+        "VisibleClaimSnapshot",
+        "CandidateSnapshot",
+        "EvidenceSnapshot",
+        "NextGateReviewPackage",
+        "ReviewerFinding",
+        "ReviewerOutcome",
+        "IndependentReviewer",
+        "_canonical_artifact_digest",
+        "_canonical_artifact_value",
+        "_single_variable_finding",
+        "_claim_finding",
+        "_claim_evidence_finding",
+        "_outcome",
+        "_group_evidence"
+      ],
+      "totalLines": 668,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/app/domain/sv_agent/runtime_records.py": {
       "filePath": "apps/api/app/domain/sv_agent/runtime_records.py",
       "contentHash": "ac0c8b306089b27cb1271aa183036c431854ca20740ac16c29a6c19106866f92",
@@ -10418,14 +13782,14 @@
     },
     "apps/api/app/main.py": {
       "filePath": "apps/api/app/main.py",
-      "contentHash": "1c5e8ad4e29fcea79a7622a2d01bd6a4d922f79b2004ea55fd511f93393ba28d",
+      "contentHash": "c2bea0bf054bc0650c243ab98604dc6df270e04de8379721ede0170e68273aed",
       "functions": [
         {
           "name": "create_app",
           "params": [],
           "returnType": "FastAPI",
           "exported": true,
-          "lineCount": 10
+          "lineCount": 11
         }
       ],
       "classes": [],
@@ -10481,6 +13845,12 @@
           ]
         },
         {
+          "source": "app.api.routes.sv_agent",
+          "specifiers": [
+            "sv_agent_router"
+          ]
+        },
+        {
           "source": "app.settings",
           "specifiers": [
             "settings"
@@ -10490,7 +13860,7 @@
       "exports": [
         "create_app"
       ],
-      "totalLines": 26,
+      "totalLines": 28,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/ports/__init__.py": {
@@ -12635,6 +16005,231 @@
       "totalLines": 296,
       "hasStructuralAnalysis": true
     },
+    "apps/api/tests/integration/api/test_sv_agent_tasks.py": {
+      "filePath": "apps/api/tests/integration/api/test_sv_agent_tasks.py",
+      "contentHash": "97876500b67b04a69c99d39c3fa68e4fdbff4c7511ace0f9591bf006df701b44",
+      "functions": [
+        {
+          "name": "_runtime_row_counts",
+          "params": [
+            "session"
+          ],
+          "returnType": "tuple[int, ...]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_task_inbox_route_returns_only_the_read_only_persisted_projection",
+          "params": [
+            "client",
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "test_task_inbox_route_returns_stable_problem_details",
+          "params": [
+            "client",
+            "monkeypatch",
+            "error",
+            "status",
+            "code"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "test_mission_control_route_returns_nested_read_only_task_projection",
+          "params": [
+            "client",
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 87
+        },
+        {
+          "name": "test_evidence_artifact_route_returns_a_read_only_closed_projection",
+          "params": [
+            "client",
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 86
+        },
+        {
+          "name": "test_evidence_artifact_route_returns_stable_task_not_found_problem",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_evidence_artifact_route_returns_stable_problem_details",
+          "params": [
+            "client",
+            "monkeypatch",
+            "error",
+            "status",
+            "code"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "test_mission_control_route_returns_stable_task_not_found_problem",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_mission_control_route_returns_stable_problem_details",
+          "params": [
+            "client",
+            "monkeypatch",
+            "error",
+            "status",
+            "code"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_nested_keys",
+          "params": [
+            "value"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "AsyncClient"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "func",
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.exc",
+          "specifiers": [
+            "SQLAlchemyError"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvApprovalRequestRecord",
+            "SvArtifactRecord",
+            "SvCommandReceiptRecord",
+            "SvDecisionEventRecord",
+            "SvRunPlanRecord",
+            "SvRunRecord",
+            "SvRuntimeLineageLinkRecord",
+            "SvTaskEventRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord",
+            "SvToolRunRecord"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_repository",
+          "specifiers": [
+            "SvAgentRepository"
+          ]
+        },
+        {
+          "source": "app.api.routes",
+          "specifiers": [
+            "sv_agent_route"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "GoalTrack",
+            "PerformanceWindow",
+            "RightsState",
+            "TargetPlatform",
+            "Task",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ActorKind",
+            "ActorStamp"
+          ]
+        }
+      ],
+      "exports": [
+        "_runtime_row_counts",
+        "test_task_inbox_route_returns_only_the_read_only_persisted_projection",
+        "test_task_inbox_route_returns_stable_problem_details",
+        "test_mission_control_route_returns_nested_read_only_task_projection",
+        "test_evidence_artifact_route_returns_a_read_only_closed_projection",
+        "test_evidence_artifact_route_returns_stable_task_not_found_problem",
+        "test_evidence_artifact_route_returns_stable_problem_details",
+        "test_mission_control_route_returns_stable_task_not_found_problem",
+        "test_mission_control_route_returns_stable_problem_details",
+        "_nested_keys"
+      ],
+      "totalLines": 407,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/tests/integration/conftest.py": {
       "filePath": "apps/api/tests/integration/conftest.py",
       "contentHash": "3e63a25ea4dd9ea0595c26d76f84630e08f69d89f8b36e9861e59408aa613014",
@@ -12746,6 +16341,825 @@
       "imports": [],
       "exports": [],
       "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py": {
+      "filePath": "apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py",
+      "contentHash": "7ea8b0f3de0cbfac013f819747a2d93d8dff77ba37ab5ec46385e2ad2cce632c",
+      "functions": [
+        {
+          "name": "_field_names",
+          "params": [
+            "value"
+          ],
+          "returnType": "frozenset[str]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_task",
+          "params": [],
+          "returnType": "Task",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_persist_task",
+          "params": [
+            "session",
+            "task",
+            "active_run"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "_placeholder_ref",
+          "params": [
+            "task_id",
+            "run_id",
+            "artifact_type",
+            "index"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_artifact_defaults",
+          "params": [
+            "task_id",
+            "run_id",
+            "artifact_type",
+            "input_refs",
+            "subject_state"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 284
+        },
+        {
+          "name": "_artifact_payload",
+          "params": [
+            "task_id",
+            "run_id",
+            "artifact_id",
+            "artifact_type",
+            "version",
+            "input_refs",
+            "subject_state",
+            "source_kind",
+            "limitations",
+            "performance_window",
+            "product_snapshot_id",
+            "product_snapshot_digest",
+            "created_at",
+            "extra"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 101
+        },
+        {
+          "name": "_artifact_ref",
+          "params": [
+            "payload"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_artifact_record",
+          "params": [
+            "task_id",
+            "run_id",
+            "run_revision",
+            "payload",
+            "created_at"
+          ],
+          "returnType": "SvArtifactRecord",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "_fact_map_only_chain",
+          "params": [
+            "task_id",
+            "run_id",
+            "created_at",
+            "artifact_id_seed",
+            "subject_state",
+            "product_snapshot_id",
+            "product_snapshot_digest",
+            "selected_fact_ids"
+          ],
+          "returnType": "tuple[dict[str, object], ...]",
+          "exported": true,
+          "lineCount": 89
+        },
+        {
+          "name": "test_workspace_preserves_unavailable_evidence_without_inventing_a_run",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "test_product_claims_fact_map_without_contract_keeps_product_truth_unavailable",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 97
+        },
+        {
+          "name": "test_no_product_claims_fact_map_without_contract_keeps_product_truth_unavailable",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "test_workspace_accepts_canonical_text_with_significant_boundary_whitespace",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
+          "name": "test_workspace_exposes_product_truth_only_for_an_exact_eligible_binding",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 238
+        },
+        {
+          "name": "test_workspace_rejects_fact_map_contract_excluded_fact_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 141
+        },
+        {
+          "name": "test_workspace_projects_a_bounded_cross_revision_canonical_graph",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 328
+        },
+        {
+          "name": "test_workspace_rejects_unknown_fields_in_a_canonical_artifact_envelope",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "test_workspace_rejects_missing_type_specific_fields",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
+          "name": "test_workspace_rejects_unresolved_canonical_refs",
+          "params": [
+            "db_session",
+            "mutation",
+            "error_code"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 68
+        },
+        {
+          "name": "test_workspace_rejects_runtime_verification_digest_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 49
+        },
+        {
+          "name": "test_workspace_rejects_a_runtime_verified_cycle",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 68
+        },
+        {
+          "name": "test_workspace_fails_closed_above_the_artifact_bound",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "test_workspace_fails_closed_above_the_runtime_lineage_bound",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "test_workspace_fails_closed_above_the_total_edge_bound",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 69
+        },
+        {
+          "name": "test_workspace_rejects_conflicting_runtime_lineage_for_one_edge",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 89
+        },
+        {
+          "name": "test_workspace_rejects_a_semantically_invalid_canonical_artifact",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "test_workspace_rejects_a_direct_ref_from_another_task",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 66
+        },
+        {
+          "name": "test_workspace_rejects_declared_lineage_from_a_future_revision",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "test_workspace_rejects_runtime_lineage_verified_before_its_endpoints",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 87
+        },
+        {
+          "name": "test_product_truth_uses_the_current_non_superseded_claim_frontier",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 88
+        },
+        {
+          "name": "test_no_product_claims_cannot_hide_claim_mappings",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "test_workspace_rejects_private_output_text",
+          "params": [
+            "db_session",
+            "mutation"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 51
+        },
+        {
+          "name": "test_workspace_rechecks_the_head_after_product_truth_queries",
+          "params": [
+            "db_session",
+            "monkeypatch"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 42
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "decimal",
+          "specifiers": [
+            "Decimal"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "update"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.models",
+          "specifiers": [
+            "ProductFactRecord",
+            "ProductSnapshotRecord",
+            "ProductSourceRecord"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvArtifactRecord",
+            "SvRunRecord",
+            "SvRuntimeLineageLinkRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_evidence_workspace",
+          "specifiers": [
+            "EvidenceArtifactWorkspace"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.artifact_contracts",
+          "specifiers": [
+            "bind_artifact_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "GoalTrack",
+            "PerformanceWindow",
+            "RightsState",
+            "TargetPlatform",
+            "Task",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError"
+          ]
+        }
+      ],
+      "exports": [
+        "_field_names",
+        "_task",
+        "_persist_task",
+        "_placeholder_ref",
+        "_artifact_defaults",
+        "_artifact_payload",
+        "_artifact_ref",
+        "_artifact_record",
+        "_fact_map_only_chain",
+        "test_workspace_preserves_unavailable_evidence_without_inventing_a_run",
+        "test_product_claims_fact_map_without_contract_keeps_product_truth_unavailable",
+        "test_no_product_claims_fact_map_without_contract_keeps_product_truth_unavailable",
+        "test_workspace_accepts_canonical_text_with_significant_boundary_whitespace",
+        "test_workspace_exposes_product_truth_only_for_an_exact_eligible_binding",
+        "test_workspace_rejects_fact_map_contract_excluded_fact_drift",
+        "test_workspace_projects_a_bounded_cross_revision_canonical_graph",
+        "test_workspace_rejects_unknown_fields_in_a_canonical_artifact_envelope",
+        "test_workspace_rejects_missing_type_specific_fields",
+        "test_workspace_rejects_unresolved_canonical_refs",
+        "test_workspace_rejects_runtime_verification_digest_drift",
+        "test_workspace_rejects_a_runtime_verified_cycle",
+        "test_workspace_fails_closed_above_the_artifact_bound",
+        "test_workspace_fails_closed_above_the_runtime_lineage_bound",
+        "test_workspace_fails_closed_above_the_total_edge_bound",
+        "test_workspace_rejects_conflicting_runtime_lineage_for_one_edge",
+        "test_workspace_rejects_a_semantically_invalid_canonical_artifact",
+        "test_workspace_rejects_a_direct_ref_from_another_task",
+        "test_workspace_rejects_declared_lineage_from_a_future_revision",
+        "test_workspace_rejects_runtime_lineage_verified_before_its_endpoints",
+        "test_product_truth_uses_the_current_non_superseded_claim_frontier",
+        "test_no_product_claims_cannot_hide_claim_mappings",
+        "test_workspace_rejects_private_output_text",
+        "test_workspace_rechecks_the_head_after_product_truth_queries"
+      ],
+      "totalLines": 2689,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/tests/integration/sv_agent/test_mission_control.py": {
+      "filePath": "apps/api/tests/integration/sv_agent/test_mission_control.py",
+      "contentHash": "b848b9aa76e8d2fd82f8dd7e42136ba548efdfbab7757d37a1e72f98ccd7bfec",
+      "functions": [
+        {
+          "name": "_task",
+          "params": [],
+          "returnType": "Task",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_persist_task",
+          "params": [
+            "session",
+            "task",
+            "active_run"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "_canonical_replication_contract_payload",
+          "params": [
+            "task_id",
+            "run_id",
+            "artifact_id",
+            "created_at",
+            "status"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 79
+        },
+        {
+          "name": "_run_plan_payload",
+          "params": [
+            "task",
+            "run_id",
+            "run_revision",
+            "brief_digest"
+          ],
+          "returnType": "tuple[dict[str, object], list[dict[str, object]]]",
+          "exported": true,
+          "lineCount": 62
+        },
+        {
+          "name": "_persist_artifact_with_lineage",
+          "params": [
+            "session",
+            "task",
+            "run",
+            "artifact_id",
+            "payload",
+            "created_at"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 54
+        },
+        {
+          "name": "test_mission_control_projects_a_saved_task_without_inventing_a_run",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "test_mission_control_returns_task_not_found",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_mission_control_projects_only_current_bounded_authoritative_state",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 227
+        },
+        {
+          "name": "test_mission_control_fails_closed_on_plan_digest_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "test_mission_control_fails_closed_on_plan_task_brief_digest_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
+          "name": "test_mission_control_does_not_promote_ambiguous_plan_or_artifact_frontiers",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 114
+        },
+        {
+          "name": "test_mission_control_keeps_an_unverified_artifact_as_unavailable",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "test_mission_control_rejects_a_noncanonical_current_artifact",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "test_mission_control_rejects_current_artifact_content_digest_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "test_mission_control_rejects_current_artifact_row_scope_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "test_mission_control_fails_closed_on_lineage_verification_digest_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 71
+        },
+        {
+          "name": "test_mission_control_never_advances_when_current_frontiers_are_unavailable",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "test_mission_control_rejects_closed_plan_payload_pollution",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 92
+        },
+        {
+          "name": "test_mission_control_fails_closed_on_approval_decision_binding_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 113
+        },
+        {
+          "name": "test_mission_control_bounds_pending_approvals_with_stable_truncation",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 106
+        },
+        {
+          "name": "test_mission_control_does_not_open_an_approval_for_another_artifact",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 101
+        },
+        {
+          "name": "test_next_safe_action_never_advances_through_an_unresolved_blocker",
+          "params": [
+            "blocker",
+            "expected_kind",
+            "expected_reason_code"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "test_approved_artifact_does_not_activate_an_unproven_next_stage",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvApprovalRequestRecord",
+            "SvArtifactRecord",
+            "SvDecisionEventRecord",
+            "SvRunPlanRecord",
+            "SvRunRecord",
+            "SvRuntimeLineageLinkRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord",
+            "SvToolRunRecord"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_mission_control",
+          "specifiers": [
+            "MissionArtifact",
+            "MissionBlocker",
+            "MissionControl",
+            "MissionRun",
+            "StageKey",
+            "StageStatus",
+            "_next_action",
+            "_stages_for"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.artifact_contracts",
+          "specifiers": [
+            "bind_artifact_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "CreativeDimension",
+            "GoalTrack",
+            "PerformanceWindow",
+            "PrimaryMechanism",
+            "RightsState",
+            "RunState",
+            "TargetPlatform",
+            "Task",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError",
+            "TaskNotFound"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ArtifactStatus",
+            "ArtifactType",
+            "EvidenceLevel",
+            "ProofLevel"
+          ]
+        }
+      ],
+      "exports": [
+        "_task",
+        "_persist_task",
+        "_canonical_replication_contract_payload",
+        "_run_plan_payload",
+        "_persist_artifact_with_lineage",
+        "test_mission_control_projects_a_saved_task_without_inventing_a_run",
+        "test_mission_control_returns_task_not_found",
+        "test_mission_control_projects_only_current_bounded_authoritative_state",
+        "test_mission_control_fails_closed_on_plan_digest_drift",
+        "test_mission_control_fails_closed_on_plan_task_brief_digest_drift",
+        "test_mission_control_does_not_promote_ambiguous_plan_or_artifact_frontiers",
+        "test_mission_control_keeps_an_unverified_artifact_as_unavailable",
+        "test_mission_control_rejects_a_noncanonical_current_artifact",
+        "test_mission_control_rejects_current_artifact_content_digest_drift",
+        "test_mission_control_rejects_current_artifact_row_scope_drift",
+        "test_mission_control_fails_closed_on_lineage_verification_digest_drift",
+        "test_mission_control_never_advances_when_current_frontiers_are_unavailable",
+        "test_mission_control_rejects_closed_plan_payload_pollution",
+        "test_mission_control_fails_closed_on_approval_decision_binding_drift",
+        "test_mission_control_bounds_pending_approvals_with_stable_truncation",
+        "test_mission_control_does_not_open_an_approval_for_another_artifact",
+        "test_next_safe_action_never_advances_through_an_unresolved_blocker",
+        "test_approved_artifact_does_not_activate_an_unproven_next_stage"
+      ],
+      "totalLines": 1547,
       "hasStructuralAnalysis": true
     },
     "apps/api/tests/integration/sv_agent/test_read_tool_execution.py": {
@@ -13418,6 +17832,208 @@
         "test_concurrent_task_revisions_allow_exactly_one_compare_and_swap"
       ],
       "totalLines": 142,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/tests/integration/sv_agent/test_task_inbox.py": {
+      "filePath": "apps/api/tests/integration/sv_agent/test_task_inbox.py",
+      "contentHash": "6b49be6244ed7a6142e7c91fff5c93803abd7616047689160659643ef5891f86",
+      "functions": [
+        {
+          "name": "_task",
+          "params": [
+            "task_id",
+            "subject",
+            "created_at"
+          ],
+          "returnType": "Task",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_task_revision_record",
+          "params": [
+            "task",
+            "revision",
+            "brief_digest"
+          ],
+          "returnType": "SvTaskRevisionRecord",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_persist_task",
+          "params": [
+            "session",
+            "task",
+            "run_id",
+            "run_state",
+            "run_updated_at",
+            "brief_digest"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "test_inbox_fails_closed_on_current_brief_digest_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_inbox_fails_closed_when_active_run_belongs_to_an_old_task_revision",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "test_inbox_prioritizes_running_persisted_tasks_and_explains_order",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "test_inbox_requires_a_current_undecided_request_for_the_decision_lane",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 98
+        },
+        {
+          "name": "test_inbox_fails_closed_on_approval_decision_binding_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 70
+        },
+        {
+          "name": "test_inbox_fails_closed_when_a_non_approval_run_has_a_pending_request",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 56
+        },
+        {
+          "name": "test_inbox_returns_a_stable_bounded_projection",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "test_inbox_keeps_business_and_technical_run_states_distinct",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 61
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvApprovalRequestRecord",
+            "SvDecisionEventRecord",
+            "SvRunRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent_task_inbox",
+          "specifiers": [
+            "TaskInbox",
+            "TaskInboxLane",
+            "TaskInboxOrderingReason"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "CreativeDimension",
+            "GoalTrack",
+            "PerformanceWindow",
+            "PrimaryMechanism",
+            "RightsState",
+            "RunState",
+            "TargetPlatform",
+            "Task",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError"
+          ]
+        }
+      ],
+      "exports": [
+        "_task",
+        "_task_revision_record",
+        "_persist_task",
+        "test_inbox_fails_closed_on_current_brief_digest_drift",
+        "test_inbox_fails_closed_when_active_run_belongs_to_an_old_task_revision",
+        "test_inbox_prioritizes_running_persisted_tasks_and_explains_order",
+        "test_inbox_requires_a_current_undecided_request_for_the_decision_lane",
+        "test_inbox_fails_closed_on_approval_decision_binding_drift",
+        "test_inbox_fails_closed_when_a_non_approval_run_has_a_pending_request",
+        "test_inbox_returns_a_stable_bounded_projection",
+        "test_inbox_keeps_business_and_technical_run_states_distinct"
+      ],
+      "totalLines": 523,
       "hasStructuralAnalysis": true
     },
     "apps/api/tests/integration/sv_agent/test_task_journal.py": {
@@ -15214,6 +19830,280 @@
       "totalLines": 329,
       "hasStructuralAnalysis": true
     },
+    "apps/api/tests/unit/domain/sv_agent/test_reviewing.py": {
+      "filePath": "apps/api/tests/unit/domain/sv_agent/test_reviewing.py",
+      "contentHash": "c6e7ef9fdca213eb63422be908a368b8969e7e5848f7a7a7f498b6b74020580e",
+      "functions": [
+        {
+          "name": "_binding",
+          "params": [],
+          "returnType": "TaskRunBinding",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_artifact",
+          "params": [],
+          "returnType": "CanonicalArtifactSnapshot",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_mechanism_values",
+          "params": [
+            "hook_digest",
+            "reveal_digest"
+          ],
+          "returnType": "tuple[MechanismValue, ...]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_frozen_context",
+          "params": [],
+          "returnType": "FrozenContextSnapshot",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_claims",
+          "params": [],
+          "returnType": "tuple[VisibleClaimSnapshot, ...]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_candidate",
+          "params": [
+            "hook_digest",
+            "reveal_digest"
+          ],
+          "returnType": "CandidateSnapshot",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_package",
+          "params": [],
+          "returnType": "NextGateReviewPackage",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "test_consistent_single_variable_package_is_ready_and_repeatable",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_tampered_artifact_payload_is_blocked_by_recomputed_digest",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "test_multiple_actual_changes_are_not_treated_as_single_variable",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "test_artifact_from_another_task_scope_is_blocked_even_with_valid_digest",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "test_excluded_or_unsupported_claim_is_blocked_on_visual_surface",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "test_optional_not_reported_evidence_proceeds_only_with_limits",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "test_required_inference_evidence_blocks_the_next_gate",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_product_claim_with_unresolved_evidence_reference_is_blocked",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "test_product_claim_rejects_product_truth_evidence_for_unrelated_fact",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_product_claim_rejects_product_truth_evidence_for_unrelated_snapshot",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_product_claim_rejects_unconfirmed_product_truth_evidence",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_conflicting_duplicate_artifacts_are_order_independent",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "test_conflicting_evidence_snapshots_are_order_independent",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_reviewer_outcome_cannot_carry_a_human_approval_event",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_zero_actual_changes_do_not_count_as_isolation_evidence",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_frozen_configuration_drift_is_a_second_changed_dimension",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_source_ambiguous_evidence_cannot_support_a_product_claim",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "test_non_object_artifact_payload_returns_a_typed_finding",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "fields",
+            "replace"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "app.domain.products.entities",
+          "specifiers": [
+            "FactStatus"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "CreativeDimension"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.reviewing",
+          "specifiers": [
+            "CandidateSnapshot",
+            "CanonicalArtifactSnapshot",
+            "ClaimKind",
+            "ClaimSurface",
+            "EvidencePlane",
+            "EvidenceSnapshot",
+            "EvidenceState",
+            "FindingCategory",
+            "FindingCode",
+            "FindingNextAction",
+            "FindingSeverity",
+            "FrozenContextSnapshot",
+            "IndependentReviewer",
+            "MechanismValue",
+            "NextGateReviewPackage",
+            "ReviewDisposition",
+            "TaskRunBinding",
+            "VisibleClaimSnapshot"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ArtifactType",
+            "EvidenceLevel"
+          ]
+        }
+      ],
+      "exports": [
+        "_binding",
+        "_artifact",
+        "_mechanism_values",
+        "_frozen_context",
+        "_claims",
+        "_candidate",
+        "_package",
+        "test_consistent_single_variable_package_is_ready_and_repeatable",
+        "test_tampered_artifact_payload_is_blocked_by_recomputed_digest",
+        "test_multiple_actual_changes_are_not_treated_as_single_variable",
+        "test_artifact_from_another_task_scope_is_blocked_even_with_valid_digest",
+        "test_excluded_or_unsupported_claim_is_blocked_on_visual_surface",
+        "test_optional_not_reported_evidence_proceeds_only_with_limits",
+        "test_required_inference_evidence_blocks_the_next_gate",
+        "test_product_claim_with_unresolved_evidence_reference_is_blocked",
+        "test_product_claim_rejects_product_truth_evidence_for_unrelated_fact",
+        "test_product_claim_rejects_product_truth_evidence_for_unrelated_snapshot",
+        "test_product_claim_rejects_unconfirmed_product_truth_evidence",
+        "test_conflicting_duplicate_artifacts_are_order_independent",
+        "test_conflicting_evidence_snapshots_are_order_independent",
+        "test_reviewer_outcome_cannot_carry_a_human_approval_event",
+        "test_zero_actual_changes_do_not_count_as_isolation_evidence",
+        "test_frozen_configuration_drift_is_a_second_changed_dimension",
+        "test_source_ambiguous_evidence_cannot_support_a_product_claim",
+        "test_non_object_artifact_payload_returns_a_typed_finding"
+      ],
+      "totalLines": 445,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/tests/unit/domain/sv_agent/test_sv_agent_architecture.py": {
       "filePath": "apps/api/tests/unit/domain/sv_agent/test_sv_agent_architecture.py",
       "contentHash": "8d4000030a1212bfd6667d7030c3676470b31ce24a4b28e04b4913482ab0af6e",
@@ -16826,13 +21716,13 @@
     },
     "apps/web/src/App.tsx": {
       "filePath": "apps/web/src/App.tsx",
-      "contentHash": "61e4e09e7a0167b7769a6a5f72cce8422954489793aad8a11bbac1f974bfc11b",
+      "contentHash": "95320fbb1d0cf696c1f4596a1e9337a10c38c81fdf1676b21c7bd8f847254007",
       "functions": [
         {
           "name": "AppRoutes",
           "params": [],
           "exported": true,
-          "lineCount": 31
+          "lineCount": 36
         }
       ],
       "classes": [],
@@ -16860,6 +21750,12 @@
           ]
         },
         {
+          "source": "./routes/NewTaskPage",
+          "specifiers": [
+            "NewTaskPage"
+          ]
+        },
+        {
           "source": "./routes/CompareVersionsPage",
           "specifiers": [
             "CompareVersionsPage"
@@ -16872,9 +21768,21 @@
           ]
         },
         {
+          "source": "./routes/EvidenceArtifactsPage",
+          "specifiers": [
+            "EvidenceArtifactsPage"
+          ]
+        },
+        {
           "source": "./routes/JobPage",
           "specifiers": [
             "JobPage"
+          ]
+        },
+        {
+          "source": "./routes/MissionControlPage",
+          "specifiers": [
+            "MissionControlPage"
           ]
         },
         {
@@ -16906,17 +21814,23 @@
           "specifiers": [
             "StoryboardReviewPage"
           ]
+        },
+        {
+          "source": "./routes/TaskInboxPage",
+          "specifiers": [
+            "TaskInboxPage"
+          ]
         }
       ],
       "exports": [
         "AppRoutes"
       ],
-      "totalLines": 49,
+      "totalLines": 58,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/api/client.ts": {
       "filePath": "apps/web/src/api/client.ts",
-      "contentHash": "26d8d52fc7c5bab3cc3fe8da49ca3b26bb75373df4a93316bb149a9db6e377ea",
+      "contentHash": "0a991588c8d345437c2aa73a2209e3a61e932a268311d6973ad53e8489b82390",
       "functions": [
         {
           "name": "safeJobPathFromLocation",
@@ -16975,7 +21889,7 @@
         "safeJobPathFromLocation",
         "api"
       ],
-      "totalLines": 524,
+      "totalLines": 835,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/features/generations/useJobPolling.test.ts": {
@@ -17390,6 +22304,208 @@
       "totalLines": 95,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts": {
+      "filePath": "apps/web/src/features/sv-agent/browserNewTaskDrafts.ts",
+      "contentHash": "7e53299b87eecb0d8ab54b1cd239cd7c31e48bfa4b074087fd20eb8a86cbf6e6",
+      "functions": [
+        {
+          "name": "isRecord",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "boundedString",
+          "params": [
+            "value",
+            "maxLength"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "isTimestamp",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "isCalendarDate",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "isPublicReference",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "isOneOf",
+          "params": [
+            "value",
+            "allowed"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "parseDraft",
+          "params": [
+            "value"
+          ],
+          "returnType": "BrowserNewTaskDraft | null",
+          "exported": false,
+          "lineCount": 77
+        },
+        {
+          "name": "readBrowserNewTaskDrafts",
+          "params": [
+            "storage"
+          ],
+          "returnType": "BrowserNewTaskDraftRead",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "readBrowserNewTaskDraftsFrom",
+          "params": [
+            "getStorage"
+          ],
+          "returnType": "BrowserNewTaskDraftRead",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "saveBrowserNewTaskDraft",
+          "params": [
+            "storage",
+            "draft"
+          ],
+          "returnType": "BrowserNewTaskDraftWrite",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "NEW_TASK_DRAFT_STORAGE_KEY",
+        "readBrowserNewTaskDrafts",
+        "readBrowserNewTaskDraftsFrom",
+        "saveBrowserNewTaskDraft"
+      ],
+      "totalLines": 243,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/features/sv-agent/browserTaskDrafts.ts": {
+      "filePath": "apps/web/src/features/sv-agent/browserTaskDrafts.ts",
+      "contentHash": "f9be4830dc7616c32e99177316828456c77be3494837c7a2ac2756267a2937c2",
+      "functions": [
+        {
+          "name": "isRecord",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "boundedString",
+          "params": [
+            "value",
+            "maxLength"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "parseDraft",
+          "params": [
+            "value"
+          ],
+          "returnType": "BrowserTaskDraft | null",
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "readBrowserTaskDrafts",
+          "params": [
+            "storage"
+          ],
+          "returnType": "BrowserTaskDraftRead",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "readBrowserTaskDraftsFrom",
+          "params": [
+            "getStorage"
+          ],
+          "returnType": "BrowserTaskDraftRead",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "TASK_DRAFT_STORAGE_KEY",
+        "readBrowserTaskDrafts",
+        "readBrowserTaskDraftsFrom"
+      ],
+      "totalLines": 82,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/features/sv-agent/evidence-artifacts.css": {
+      "filePath": "apps/web/src/features/sv-agent/evidence-artifacts.css",
+      "contentHash": "1eb6cbdd8d9785105255141349c0e0ae80b4f668462e5b43da37f60505d5ae4e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 146,
+      "hasStructuralAnalysis": false
+    },
+    "apps/web/src/features/sv-agent/mission-control.css": {
+      "filePath": "apps/web/src/features/sv-agent/mission-control.css",
+      "contentHash": "e5b12cf2bcda133b0554c1e6a1d64b8223e5245469cf0376e28bf2d6027080f5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 106,
+      "hasStructuralAnalysis": false
+    },
+    "apps/web/src/features/sv-agent/new-task.css": {
+      "filePath": "apps/web/src/features/sv-agent/new-task.css",
+      "contentHash": "b85c59256d58ac28ea8acdfb791b9dcd8553822c1ada11a5f1aa49fbd182ee22",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": false
+    },
+    "apps/web/src/features/sv-agent/task-inbox.css": {
+      "filePath": "apps/web/src/features/sv-agent/task-inbox.css",
+      "contentHash": "ce709594e697de656c59bfd3aa6b333ec1f824f8081f19245ad3181bb8b2a5b3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": false
+    },
     "apps/web/src/main.tsx": {
       "filePath": "apps/web/src/main.tsx",
       "contentHash": "24bcdcdbcd4c5a8ee9cfa768b1f4130b3aaf8a55b3955971b26e1fefbdd4deaa",
@@ -17637,6 +22753,87 @@
       "totalLines": 168,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/routes/EvidenceArtifactsPage.tsx": {
+      "filePath": "apps/web/src/routes/EvidenceArtifactsPage.tsx",
+      "contentHash": "61e424d6496a4ddf0c267c4a241cb8af97da9bbe7d454b8a6b2c3c1885450752",
+      "functions": [
+        {
+          "name": "localizedPlaneLimitations",
+          "params": [
+            "plane"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "formatWindow",
+          "params": [
+            "window"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "ArtifactDetails",
+          "params": [
+            "{\n  node,\n}"
+          ],
+          "exported": false,
+          "lineCount": 54
+        },
+        {
+          "name": "EvidencePlane",
+          "params": [
+            "{\n  plane,\n}"
+          ],
+          "exported": false,
+          "lineCount": 37
+        },
+        {
+          "name": "EvidenceArtifactsPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 202
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useParams"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "api",
+            "EvidenceArtifactsProjection",
+            "EvidenceArtifactType",
+            "EvidenceAvailabilityState",
+            "EvidencePlaneKind",
+            "EvidenceSubjectSummary",
+            "EvidenceWindowSummary"
+          ]
+        },
+        {
+          "source": "../features/sv-agent/evidence-artifacts.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "EvidenceArtifactsPage"
+      ],
+      "totalLines": 428,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/src/routes/GenerateScriptPage.tsx": {
       "filePath": "apps/web/src/routes/GenerateScriptPage.tsx",
       "contentHash": "9206fc34353627ea35a4a2d60a6ea5d7d0a222b1022e0b6aca3f9507f5392416",
@@ -17773,6 +22970,74 @@
       "totalLines": 75,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/routes/MissionControlPage.tsx": {
+      "filePath": "apps/web/src/routes/MissionControlPage.tsx",
+      "contentHash": "dd7a7d525b39c8d5ec3a2d941c83624623eb03d991445178cab1fc474e0adba5",
+      "functions": [
+        {
+          "name": "localizedBlockerMessage",
+          "params": [
+            "code"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "formatTime",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "MissionControlPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 323
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "FormEvent",
+            "useState"
+          ]
+        },
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useParams"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "api",
+            "AgentCommandIntent",
+            "MissionControlStageStatus"
+          ]
+        },
+        {
+          "source": "../features/sv-agent/mission-control.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "MissionControlPage"
+      ],
+      "totalLines": 463,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/src/routes/NewProductPage.tsx": {
       "filePath": "apps/web/src/routes/NewProductPage.tsx",
       "contentHash": "7f12da94f6aced0864813b0085eb4861e610cbee572a4d8564e15b83e5b517af",
@@ -17837,6 +23102,72 @@
         "NewProductPage"
       ],
       "totalLines": 149,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/routes/NewTaskPage.tsx": {
+      "filePath": "apps/web/src/routes/NewTaskPage.tsx",
+      "contentHash": "cbb37d80a5fc859107a986a598527ec1fd39340b2220c7b50ca37098735cc9b9",
+      "functions": [
+        {
+          "name": "getSessionStorage",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "isPublicHttpReference",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "NewTaskPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 310
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "FormEvent",
+            "useMemo",
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useNavigate",
+            "useSearchParams"
+          ]
+        },
+        {
+          "source": "../features/sv-agent/browserNewTaskDrafts",
+          "specifiers": [
+            "readBrowserNewTaskDraftsFrom",
+            "saveBrowserNewTaskDraft",
+            "DraftChildSafetyState",
+            "DraftClaimScope",
+            "DraftGoalTrack",
+            "DraftPlatform",
+            "DraftRightsState"
+          ]
+        },
+        {
+          "source": "../features/sv-agent/new-task.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "NewTaskPage"
+      ],
+      "totalLines": 344,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/routes/ProductDetailPage.tsx": {
@@ -18140,6 +23471,128 @@
       "totalLines": 59,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/routes/TaskInboxPage.tsx": {
+      "filePath": "apps/web/src/routes/TaskInboxPage.tsx",
+      "contentHash": "d110c95bc4dc4a657b60ba83563b0c4972a325da507de43a6ed470020b49057a",
+      "functions": [
+        {
+          "name": "formatTime",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "TaskInboxPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 137
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useLocation"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "TaskInboxLane",
+            "TaskInboxOrderingReason"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "api"
+          ]
+        },
+        {
+          "source": "../features/sv-agent/browserTaskDrafts",
+          "specifiers": [
+            "readBrowserTaskDraftsFrom"
+          ]
+        },
+        {
+          "source": "../features/sv-agent/browserNewTaskDrafts",
+          "specifiers": [
+            "readBrowserNewTaskDraftsFrom"
+          ]
+        },
+        {
+          "source": "../features/sv-agent/task-inbox.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "TaskInboxPage"
+      ],
+      "totalLines": 181,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/routes/__tests__/evidence-artifacts.test.tsx": {
+      "filePath": "apps/web/src/routes/__tests__/evidence-artifacts.test.tsx",
+      "contentHash": "750770fbe07c87ef94bd0268d528223728c39f1a335fa3d2df4a4de6b3efec7b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@testing-library/react",
+          "specifiers": [
+            "render",
+            "screen",
+            "within"
+          ]
+        },
+        {
+          "source": "@testing-library/user-event",
+          "specifiers": [
+            "userEvent"
+          ]
+        },
+        {
+          "source": "msw",
+          "specifiers": [
+            "http",
+            "HttpResponse"
+          ]
+        },
+        {
+          "source": "vitest",
+          "specifiers": [
+            "describe",
+            "expect",
+            "it"
+          ]
+        },
+        {
+          "source": "../../test/TestApp",
+          "specifiers": [
+            "TestApp"
+          ]
+        },
+        {
+          "source": "../../test/server",
+          "specifiers": [
+            "server"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 284,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/src/routes/__tests__/generation.test.tsx": {
       "filePath": "apps/web/src/routes/__tests__/generation.test.tsx",
       "contentHash": "516a9f0be480aa5938446a6ec550178f76429b172851101e8e2c39486cfa4453",
@@ -18189,6 +23642,112 @@
       ],
       "exports": [],
       "totalLines": 207,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/routes/__tests__/mission-control.test.tsx": {
+      "filePath": "apps/web/src/routes/__tests__/mission-control.test.tsx",
+      "contentHash": "3b4c06c4e482a1b9ee1e078a41e40dd913e1cc53cd93fc4aadb15d2d951c312d",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@testing-library/react",
+          "specifiers": [
+            "render",
+            "screen",
+            "within"
+          ]
+        },
+        {
+          "source": "@testing-library/user-event",
+          "specifiers": [
+            "userEvent"
+          ]
+        },
+        {
+          "source": "msw",
+          "specifiers": [
+            "http",
+            "HttpResponse"
+          ]
+        },
+        {
+          "source": "vitest",
+          "specifiers": [
+            "describe",
+            "expect",
+            "it"
+          ]
+        },
+        {
+          "source": "../../test/TestApp",
+          "specifiers": [
+            "TestApp"
+          ]
+        },
+        {
+          "source": "../../test/server",
+          "specifiers": [
+            "server"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 463,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/routes/__tests__/new-task.test.tsx": {
+      "filePath": "apps/web/src/routes/__tests__/new-task.test.tsx",
+      "contentHash": "104ce8e2ef8c642f5441e792c57155eed999435d6b91f1a57edeed52396582a2",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@testing-library/react",
+          "specifiers": [
+            "render",
+            "screen",
+            "waitFor",
+            "within"
+          ]
+        },
+        {
+          "source": "@testing-library/user-event",
+          "specifiers": [
+            "userEvent"
+          ]
+        },
+        {
+          "source": "msw",
+          "specifiers": [
+            "http",
+            "HttpResponse"
+          ]
+        },
+        {
+          "source": "vitest",
+          "specifiers": [
+            "describe",
+            "expect",
+            "it",
+            "vi"
+          ]
+        },
+        {
+          "source": "../../test/TestApp",
+          "specifiers": [
+            "TestApp"
+          ]
+        },
+        {
+          "source": "../../test/server",
+          "specifiers": [
+            "server"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 308,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/routes/__tests__/products.test.tsx": {
@@ -18307,6 +23866,59 @@
       ],
       "exports": [],
       "totalLines": 312,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/routes/__tests__/task-inbox.test.tsx": {
+      "filePath": "apps/web/src/routes/__tests__/task-inbox.test.tsx",
+      "contentHash": "2897c60740a1b9abb913b183d145d0f5c55cff43cf91f1fc51719f331ffa68e4",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@testing-library/react",
+          "specifiers": [
+            "render",
+            "screen",
+            "within"
+          ]
+        },
+        {
+          "source": "msw",
+          "specifiers": [
+            "http",
+            "HttpResponse"
+          ]
+        },
+        {
+          "source": "vitest",
+          "specifiers": [
+            "describe",
+            "expect",
+            "it"
+          ]
+        },
+        {
+          "source": "../../test/TestApp",
+          "specifiers": [
+            "TestApp"
+          ]
+        },
+        {
+          "source": "../../test/server",
+          "specifiers": [
+            "server"
+          ]
+        },
+        {
+          "source": "../../features/sv-agent/browserTaskDrafts",
+          "specifiers": [
+            "readBrowserTaskDrafts",
+            "readBrowserTaskDraftsFrom"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 120,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/styles/index.css": {
@@ -18688,14 +24300,24 @@
       "totalLines": 58,
       "hasStructuralAnalysis": true
     },
-    "docs/architecture/system-overview.md": {
-      "filePath": "docs/architecture/system-overview.md",
-      "contentHash": "ba12afa98c9b87d95f1d7e2bf5a36bcb4ff7fa3c603332ef63a4cefc900f5037",
+    "docs/architecture/sv-agent-project-layout-proposal.md": {
+      "filePath": "docs/architecture/sv-agent-project-layout-proposal.md",
+      "contentHash": "5e2750b5492bfa418e0c45e090c92beb3172e09327d3b0ea606c6e476d5f6d29",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 129,
+      "totalLines": 313,
+      "hasStructuralAnalysis": true
+    },
+    "docs/architecture/system-overview.md": {
+      "filePath": "docs/architecture/system-overview.md",
+      "contentHash": "f0365ed51f21c22e89ac66f480569b2c5b4ad3d348fccf47a0708b1113a4e833",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 188,
       "hasStructuralAnalysis": true
     },
     "docs/archive/implementation-plans/2026-08-10-product-facts-viral-script-p0.md": {
@@ -18770,7 +24392,7 @@
     },
     "docs/contexts/viral-replication/CONTEXT.md": {
       "filePath": "docs/contexts/viral-replication/CONTEXT.md",
-      "contentHash": "7fcc55fac361ad4ab665044199a15de59887f12a06352d78a29615206ab49024",
+      "contentHash": "293e95cdfe9781c17ae9250ac3beacc63bbf8507cd1d26b7130f42fce4f4e265",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -18880,22 +24502,22 @@
     },
     "docs/development/testing.md": {
       "filePath": "docs/development/testing.md",
-      "contentHash": "50389062eefff3377f0f9a02cfd60bdb24f6311a290e5b480db62744a89eaee4",
+      "contentHash": "182cec8a6fb115557f62a75f32ec5e2063e615cb953210e2729bc0d9078e81f5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 277,
+      "totalLines": 409,
       "hasStructuralAnalysis": true
     },
     "docs/index.md": {
       "filePath": "docs/index.md",
-      "contentHash": "290e84dfb2231d3f51fe25413a6fb2441d5b49eacc08ef7f6547e7b4d2a4dacc",
+      "contentHash": "57c99f906af46a535404d0313ab9defcee8222dc284cdd78869c5d94a87aabe7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 61,
+      "totalLines": 64,
       "hasStructuralAnalysis": true
     },
     "docs/product/capability-comparison.md": {
@@ -18970,22 +24592,22 @@
     },
     "docs/product/sv-agent-implementation-tickets.md": {
       "filePath": "docs/product/sv-agent-implementation-tickets.md",
-      "contentHash": "230fd01ff20c9c35705ec0b95b788ba2d2c2bff2db2d28468b220e314dbb4104",
+      "contentHash": "f4aa20efaf004a3549c6f9e691229bd58e3b097c19fd303de48200934f6be63e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 420,
+      "totalLines": 574,
       "hasStructuralAnalysis": true
     },
     "docs/product/sv-agent-native-agent-spec.md": {
       "filePath": "docs/product/sv-agent-native-agent-spec.md",
-      "contentHash": "68bcffecc509936e1c8fae8d30331886112e0fd2580b4c124683a014284b8c42",
+      "contentHash": "34eaf686510231c5975fdb673580793585f0715dbb7ddcf45e645fd332167790",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 429,
+      "totalLines": 457,
       "hasStructuralAnalysis": true
     },
     "docs/product/sv-agent-sv104-planner-orchestrator-plan.md": {
@@ -18996,6 +24618,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "docs/product/sv-agent-ui-ux-taste-audit.md": {
+      "filePath": "docs/product/sv-agent-ui-ux-taste-audit.md",
+      "contentHash": "3fcb9ba517cca18d606440536bf16b4525a39252c5b6ffba6d5de80fef0657b2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 344,
       "hasStructuralAnalysis": true
     },
     "docs/product/viral-replication-execution.md": {
@@ -19076,6 +24708,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "docs/research/sv-agent-video-model-selection.md": {
+      "filePath": "docs/research/sv-agent-video-model-selection.md",
+      "contentHash": "9acc8a1fb188645d1fcc7e61d55f255c35ec59ae8e4256bdfd6372fae276048e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 376,
       "hasStructuralAnalysis": true
     },
     "infra/docker-compose.yml": {
@@ -22769,1125 +28411,23 @@
     },
     "tools/viral_replication/artifact_contracts.py": {
       "filePath": "tools/viral_replication/artifact_contracts.py",
-      "contentHash": "aa0b78408a554975366f19d292ec4dc011c44fdffec31c310ea499a8f2502c5f",
-      "functions": [
-        {
-          "name": "_validate_direct_refs",
-          "params": [
-            "artifact",
-            "refs"
-          ],
-          "returnType": "None",
-          "exported": true,
-          "lineCount": 14
-        },
-        {
-          "name": "_validate_mechanism_partition",
-          "params": [
-            "primary_mechanism",
-            "selected_component",
-            "frozen_components"
-          ],
-          "returnType": "None",
-          "exported": true,
-          "lineCount": 13
-        },
-        {
-          "name": "_canonical_value",
-          "params": [
-            "value"
-          ],
-          "returnType": "Any",
-          "exported": true,
-          "lineCount": 16
-        },
-        {
-          "name": "canonical_artifact_digest",
-          "params": [
-            "payload"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 14
-        },
-        {
-          "name": "_validation_error",
-          "params": [
-            "exc"
-          ],
-          "returnType": "ArtifactValidationError",
-          "exported": true,
-          "lineCount": 73
-        },
-        {
-          "name": "_resolve_model",
-          "params": [
-            "payload",
-            "expected_type"
-          ],
-          "returnType": "tuple[type[ArtifactEnvelope], dict[str, Any]]",
-          "exported": true,
-          "lineCount": 29
-        },
-        {
-          "name": "bind_artifact_digest",
-          "params": [
-            "payload"
-          ],
-          "returnType": "dict[str, Any]",
-          "exported": true,
-          "lineCount": 13
-        },
-        {
-          "name": "validate_artifact",
-          "params": [
-            "payload",
-            "expected_type"
-          ],
-          "returnType": "dict[str, Any]",
-          "exported": true,
-          "lineCount": 10
-        },
-        {
-          "name": "_chain_ref_key",
-          "params": [
-            "ref"
-          ],
-          "returnType": "tuple[str, str, str, int]",
-          "exported": true,
-          "lineCount": 7
-        },
-        {
-          "name": "_raise_chain_error",
-          "params": [
-            "code",
-            "path",
-            "detail"
-          ],
-          "returnType": "NoReturn",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "_validated_external_ref",
-          "params": [
-            "payload",
-            "index"
-          ],
-          "returnType": "dict[str, Any]",
-          "exported": true,
-          "lineCount": 11
-        },
-        {
-          "name": "_validate_chain_relationships",
-          "params": [
-            "artifacts",
-            "resolved_refs"
-          ],
-          "returnType": "None",
-          "exported": true,
-          "lineCount": 235
-        },
-        {
-          "name": "validate_artifact_chain",
-          "params": [
-            "payloads",
-            "external_refs"
-          ],
-          "returnType": "tuple[dict[str, Any], ...]",
-          "exported": true,
-          "lineCount": 74
-        },
-        {
-          "name": "get_artifact_schema",
-          "params": [
-            "artifact_type"
-          ],
-          "returnType": "dict[str, Any]",
-          "exported": true,
-          "lineCount": 11
-        }
-      ],
-      "classes": [
-        {
-          "name": "ArtifactValidationError",
-          "methods": [
-            "__init__"
-          ],
-          "properties": [],
-          "exported": true,
-          "lineCount": 8
-        },
-        {
-          "name": "_FrozenModel",
-          "methods": [],
-          "properties": [],
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "ArtifactRef",
-          "methods": [],
-          "properties": [
-            "artifact_id",
-            "artifact_type",
-            "task_ref",
-            "run_ref",
-            "version",
-            "content_digest"
-          ],
-          "exported": true,
-          "lineCount": 7
-        },
-        {
-          "name": "SourceRef",
-          "methods": [],
-          "properties": [
-            "source_ref",
-            "source_kind",
-            "source_digest"
-          ],
-          "exported": true,
-          "lineCount": 13
-        },
-        {
-          "name": "SubjectBinding",
-          "methods": [
-            "validate_snapshot_binding"
-          ],
-          "properties": [
-            "state",
-            "product_snapshot_id",
-            "product_snapshot_digest",
-            "market",
-            "locale",
-            "limitations"
-          ],
-          "exported": true,
-          "lineCount": 31
-        },
-        {
-          "name": "ObservationValue",
-          "methods": [
-            "preserve_missing_semantics"
-          ],
-          "properties": [
-            "observation_ref",
-            "metric",
-            "state",
-            "value",
-            "unit",
-            "source_refs"
-          ],
-          "exported": true,
-          "lineCount": 24
-        },
-        {
-          "name": "PerformanceWindow",
-          "methods": [
-            "validate_window"
-          ],
-          "properties": [
-            "start",
-            "end",
-            "timezone"
-          ],
-          "exported": true,
-          "lineCount": 10
-        },
-        {
-          "name": "ArtifactEnvelope",
-          "methods": [
-            "validate_input_ref_scope",
-            "validate_content_digest"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_id",
-            "artifact_type",
-            "task_ref",
-            "run_ref",
-            "version",
-            "status",
-            "input_refs",
-            "source_refs",
-            "subject_binding",
-            "content_digest",
-            "evidence_level",
-            "proof_level",
-            "limitations",
-            "created_at",
-            "supersedes_artifact_id"
-          ],
-          "exported": true,
-          "lineCount": 37
-        },
-        {
-          "name": "ReferenceBundle",
-          "methods": [
-            "validate_source_locator",
-            "validate_observation_evidence"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "reference_id",
-            "source_locator",
-            "source_digest",
-            "platform",
-            "performance_window",
-            "captured_at",
-            "rights_state",
-            "playability_state",
-            "candidate_state",
-            "observations"
-          ],
-          "exported": true,
-          "lineCount": 49
-        },
-        {
-          "name": "TimelineObservation",
-          "methods": [
-            "validate_time_range"
-          ],
-          "properties": [
-            "start_seconds",
-            "end_seconds",
-            "dimension",
-            "observation",
-            "availability",
-            "source_refs"
-          ],
-          "exported": true,
-          "lineCount": 25
-        },
-        {
-          "name": "PatternIdentity",
-          "methods": [],
-          "properties": [
-            "pattern_key",
-            "pattern_version"
-          ],
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "DecompositionAttentionObservation",
-          "methods": [
-            "validate_time_range"
-          ],
-          "properties": [
-            "component",
-            "start_seconds",
-            "end_seconds",
-            "carrier",
-            "observable_function",
-            "surface_modality",
-            "surface_disposition",
-            "source_refs",
-            "availability",
-            "shot_or_phase_anchor"
-          ],
-          "exported": true,
-          "lineCount": 17
-        },
-        {
-          "name": "AttentionDecompositionObservations",
-          "methods": [],
-          "properties": [
-            "mechanism",
-            "pattern_identity",
-            "observations"
-          ],
-          "exported": true,
-          "lineCount": 4
-        },
-        {
-          "name": "NarrativeBeatObservation",
-          "methods": [
-            "validate_time_range"
-          ],
-          "properties": [
-            "role",
-            "start_seconds",
-            "end_seconds",
-            "observable_function",
-            "surface_expression",
-            "surface_disposition",
-            "availability",
-            "source_refs"
-          ],
-          "exported": true,
-          "lineCount": 15
-        },
-        {
-          "name": "NarrativeDecompositionObservations",
-          "methods": [],
-          "properties": [
-            "mechanism",
-            "beats"
-          ],
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "ProofStepObservation",
-          "methods": [
-            "validate_time_range"
-          ],
-          "properties": [
-            "phase",
-            "start_seconds",
-            "end_seconds",
-            "proof_device",
-            "observable_function",
-            "observed_phenomenon",
-            "allowed_conclusion",
-            "availability",
-            "source_refs",
-            "limitations"
-          ],
-          "exported": true,
-          "lineCount": 19
-        },
-        {
-          "name": "ProofDecompositionObservations",
-          "methods": [],
-          "properties": [
-            "mechanism",
-            "steps"
-          ],
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "ExperienceCueObservation",
-          "methods": [
-            "validate_time_range"
-          ],
-          "properties": [
-            "cue_type",
-            "start_seconds",
-            "end_seconds",
-            "observable_function",
-            "surface_expression",
-            "replaceable_fields",
-            "availability",
-            "source_refs"
-          ],
-          "exported": true,
-          "lineCount": 17
-        },
-        {
-          "name": "ExperienceDecompositionObservations",
-          "methods": [],
-          "properties": [
-            "mechanism",
-            "cues"
-          ],
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "DecompositionComponentObservation",
-          "methods": [
-            "validate_optional_time_range"
-          ],
-          "properties": [
-            "start_seconds",
-            "end_seconds",
-            "observable_function",
-            "surface_modality",
-            "surface_disposition",
-            "availability",
-            "source_refs",
-            "unknowns"
-          ],
-          "exported": true,
-          "lineCount": 27
-        },
-        {
-          "name": "ConversionDecompositionObservation",
-          "methods": [],
-          "properties": [
-            "component"
-          ],
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "ConversionDecompositionObservations",
-          "methods": [
-            "validate_component_partition"
-          ],
-          "properties": [
-            "mechanism",
-            "observations",
-            "reference_surface_is_target_copy"
-          ],
-          "exported": true,
-          "lineCount": 17
-        },
-        {
-          "name": "TrendDecompositionObservation",
-          "methods": [],
-          "properties": [
-            "component"
-          ],
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "TrendSourceReuseBoundary",
-          "methods": [],
-          "properties": [
-            "source_identity",
-            "source_audio",
-            "source_template",
-            "target_execution_inclusion"
-          ],
-          "exported": true,
-          "lineCount": 15
-        },
-        {
-          "name": "TrendDecompositionObservations",
-          "methods": [
-            "validate_component_partition"
-          ],
-          "properties": [
-            "mechanism",
-            "observations",
-            "source_reuse_boundary"
-          ],
-          "exported": true,
-          "lineCount": 17
-        },
-        {
-          "name": "DecompositionMap",
-          "methods": [
-            "validate_direct_refs"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "reference_bundle_ref",
-            "timeline",
-            "primary_mechanism",
-            "secondary_mechanisms",
-            "mechanism_observations",
-            "unsupported_claims",
-            "unknowns"
-          ],
-          "exported": true,
-          "lineCount": 23
-        },
-        {
-          "name": "PatternHypothesis",
-          "methods": [
-            "validate_direct_refs"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "decomposition_map_ref",
-            "primary_mechanism",
-            "hypothesis",
-            "invariant_elements",
-            "replaceable_elements",
-            "prohibited_elements",
-            "adaptation_constraints",
-            "evidence_scope",
-            "unknowns"
-          ],
-          "exported": true,
-          "lineCount": 19
-        },
-        {
-          "name": "ExecutionBudget",
-          "methods": [],
-          "properties": [
-            "max_variants",
-            "max_iterations",
-            "max_duration_seconds",
-            "stop_on_violation"
-          ],
-          "exported": true,
-          "lineCount": 5
-        },
-        {
-          "name": "FrozenConfiguration",
-          "methods": [],
-          "properties": [
-            "language",
-            "market",
-            "platform",
-            "duration_seconds",
-            "model",
-            "material_scope",
-            "execution_budget"
-          ],
-          "exported": true,
-          "lineCount": 8
-        },
-        {
-          "name": "ReplicationPlan",
-          "methods": [
-            "validate_selected_component"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "pattern_hypothesis_ref",
-            "control_reference_ref",
-            "primary_mechanism",
-            "selected_component",
-            "control_id",
-            "variant_id",
-            "changed_dimension",
-            "frozen_components",
-            "target_platform",
-            "target_duration_seconds",
-            "execution_budget",
-            "stop_conditions",
-            "acceptance_gates",
-            "rights_state",
-            "requires_human_approval"
-          ],
-          "exported": true,
-          "lineCount": 36
-        },
-        {
-          "name": "ClaimMapping",
-          "methods": [
-            "validate_fact_binding"
-          ],
-          "properties": [
-            "claim_id",
-            "claim_text",
-            "disposition",
-            "fact_id",
-            "fact_status",
-            "evidence_refs",
-            "reason"
-          ],
-          "exported": true,
-          "lineCount": 23
-        },
-        {
-          "name": "FactMap",
-          "methods": [
-            "validate_fact_sets"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "replication_plan_ref",
-            "claim_scope",
-            "product_snapshot_id",
-            "product_snapshot_digest",
-            "claim_mappings",
-            "selected_fact_ids",
-            "excluded_fact_ids",
-            "unsupported_claims"
-          ],
-          "exported": true,
-          "lineCount": 50
-        },
-        {
-          "name": "ReplicationContract",
-          "methods": [
-            "validate_contract"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "replication_plan_ref",
-            "fact_map_ref",
-            "decomposition_map_ref",
-            "primary_mechanism",
-            "selected_component",
-            "frozen_components",
-            "claim_scope",
-            "control_id",
-            "variant_id",
-            "changed_dimension",
-            "frozen_configuration",
-            "selected_fact_ids",
-            "excluded_fact_ids",
-            "stop_conditions",
-            "acceptance_gates",
-            "rights_state",
-            "approval_ref",
-            "immutable"
-          ],
-          "exported": true,
-          "lineCount": 60
-        },
-        {
-          "name": "NarrativeTransformationPayload",
-          "methods": [],
-          "properties": [
-            "mechanism",
-            "component",
-            "frozen_components",
-            "source_arc",
-            "transformed_arc",
-            "preserved_truths"
-          ],
-          "exported": true,
-          "lineCount": 7
-        },
-        {
-          "name": "ProofDemonstrationPayload",
-          "methods": [],
-          "properties": [
-            "mechanism",
-            "component",
-            "frozen_components",
-            "proof_setup",
-            "observable_result",
-            "boundary_disclosures"
-          ],
-          "exported": true,
-          "lineCount": 7
-        },
-        {
-          "name": "ExperiencePovPayload",
-          "methods": [],
-          "properties": [
-            "mechanism",
-            "component",
-            "frozen_components",
-            "pov_actor",
-            "moment",
-            "sensory_cues"
-          ],
-          "exported": true,
-          "lineCount": 7
-        },
-        {
-          "name": "AttentionAnchor",
-          "methods": [
-            "validate_anchor_range"
-          ],
-          "properties": [
-            "component",
-            "start_seconds",
-            "end_seconds",
-            "carrier",
-            "observable_function",
-            "surface_class",
-            "source_ref",
-            "availability",
-            "shot_or_phase_anchor"
-          ],
-          "exported": true,
-          "lineCount": 16
-        },
-        {
-          "name": "AttentionGrammarPayload",
-          "methods": [
-            "validate_attention_safety"
-          ],
-          "properties": [
-            "mechanism",
-            "component",
-            "frozen_components",
-            "anchors",
-            "pattern_identity",
-            "target_surface_substitutions",
-            "sound_policy",
-            "hook_trigger",
-            "reveal_cadence",
-            "caption_cadence",
-            "visual_contrast",
-            "sonic_timing"
-          ],
-          "exported": true,
-          "lineCount": 27
-        },
-        {
-          "name": "PromotionContractBinding",
-          "methods": [
-            "validate_promotion_binding"
-          ],
-          "properties": [
-            "state",
-            "promotion_fact_id",
-            "promotion_fact_digest",
-            "value_digest",
-            "database_time_valid_at",
-            "product_snapshot_id",
-            "product_snapshot_digest"
-          ],
-          "exported": true,
-          "lineCount": 26
-        },
-        {
-          "name": "CtaPolicy",
-          "methods": [],
-          "properties": [
-            "pattern_policy",
-            "final_cta_role",
-            "visible_copy_owner",
-            "provider_may_write_visible_cta"
-          ],
-          "exported": true,
-          "lineCount": 5
-        },
-        {
-          "name": "ActionPathBinding",
-          "methods": [
-            "validate_action_path"
-          ],
-          "properties": [
-            "state",
-            "destination_ref",
-            "external_execution"
-          ],
-          "exported": true,
-          "lineCount": 10
-        },
-        {
-          "name": "ProviderExclusion",
-          "methods": [],
-          "properties": [
-            "excluded_surfaces",
-            "provider_may_write_visible_copy",
-            "evidence_refs"
-          ],
-          "exported": true,
-          "lineCount": 4
-        },
-        {
-          "name": "ConversionActionPayload",
-          "methods": [
-            "validate_conversion_safety"
-          ],
-          "properties": [
-            "mechanism",
-            "component",
-            "frozen_components",
-            "objection_resolution",
-            "promotion_contract",
-            "cta_invitation",
-            "action_path",
-            "cta_policy",
-            "action_path_binding",
-            "provider_exclusion"
-          ],
-          "exported": true,
-          "lineCount": 18
-        },
-        {
-          "name": "TrendAdmissionRecord",
-          "methods": [],
-          "properties": [
-            "evidence_scope",
-            "freshness_window_days",
-            "source_refs",
-            "limitations",
-            "analysis_evidence_state",
-            "adaptation_evidence_state",
-            "source_audio_evidence_state",
-            "template_evidence_state",
-            "platform_constraints",
-            "market_constraints",
-            "locale_constraints",
-            "assessment_state",
-            "execution_capability",
-            "external_action_requested",
-            "target_text_substitutions",
-            "target_visual_substitutions",
-            "target_audio_substitutions",
-            "source_identity_exclusions",
-            "originality_handoff"
-          ],
-          "exported": true,
-          "lineCount": 20
-        },
-        {
-          "name": "TrendNativePayload",
-          "methods": [
-            "validate_trend_safety"
-          ],
-          "properties": [
-            "mechanism",
-            "component",
-            "frozen_components",
-            "trend_signal_binding",
-            "trend_semantic_frame",
-            "template_grammar",
-            "audio_function",
-            "admission"
-          ],
-          "exported": true,
-          "lineCount": 16
-        },
-        {
-          "name": "AdaptationPackage",
-          "methods": [
-            "validate_payload_cardinality",
-            "validate_mechanism_payload"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "replication_contract_ref",
-            "primary_mechanism",
-            "selected_component",
-            "mechanism_payload"
-          ],
-          "exported": true,
-          "lineCount": 43
-        },
-        {
-          "name": "IntegrityGateCheck",
-          "methods": [
-            "validate_gate_state"
-          ],
-          "properties": [
-            "gate",
-            "state",
-            "findings",
-            "evidence_refs",
-            "blockers",
-            "unknowns",
-            "fallback_strategy"
-          ],
-          "exported": true,
-          "lineCount": 34
-        },
-        {
-          "name": "ScriptVersionRef",
-          "methods": [],
-          "properties": [
-            "artifact_type"
-          ],
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "StoryboardVersionRef",
-          "methods": [],
-          "properties": [
-            "artifact_type"
-          ],
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "ControlledArtifactRef",
-          "methods": [],
-          "properties": [
-            "artifact_type"
-          ],
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "StoryboardLineage",
-          "methods": [],
-          "properties": [
-            "storyboard_version_ref",
-            "source_script_version_ref",
-            "evidence_scope"
-          ],
-          "exported": true,
-          "lineCount": 4
-        },
-        {
-          "name": "MediaIntegrityRecord",
-          "methods": [
-            "validate_integrity_scope"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "replication_contract_ref",
-            "adaptation_package_ref",
-            "script_version_ref",
-            "storyboard_version_ref",
-            "storyboard_lineage",
-            "controlled_artifact_ref",
-            "mode",
-            "gate_checks",
-            "disposition",
-            "fallback_strategy",
-            "blockers",
-            "unknowns",
-            "evidence_limits"
-          ],
-          "exported": true,
-          "lineCount": 83
-        },
-        {
-          "name": "ReplicationFinding",
-          "methods": [
-            "validate_direct_refs"
-          ],
-          "properties": [
-            "schema_version",
-            "artifact_type",
-            "replication_contract_ref",
-            "adaptation_package_ref",
-            "media_integrity_record_ref",
-            "conclusion_scope",
-            "observations",
-            "bounded_inferences",
-            "unknowns",
-            "anomalies",
-            "next_actions",
-            "causal_claim",
-            "production_acceptance"
-          ],
-          "exported": true,
-          "lineCount": 30
-        }
-      ],
+      "contentHash": "f73a8ddac6cef684f2068cec995ef761a0fda52fec7e9ddfd68c1ab3d975e92c",
+      "functions": [],
+      "classes": [],
       "imports": [
         {
-          "source": "hashlib",
+          "source": "app.domain.sv_agent.artifact_contracts",
           "specifiers": [
-            "hashlib"
-          ]
-        },
-        {
-          "source": "ipaddress",
-          "specifiers": [
-            "ipaddress"
-          ]
-        },
-        {
-          "source": "json",
-          "specifiers": [
-            "json"
-          ]
-        },
-        {
-          "source": "math",
-          "specifiers": [
-            "math"
-          ]
-        },
-        {
-          "source": "re",
-          "specifiers": [
-            "re"
-          ]
-        },
-        {
-          "source": "collections.abc",
-          "specifiers": [
-            "Iterable",
-            "Mapping"
-          ]
-        },
-        {
-          "source": "datetime",
-          "specifiers": [
-            "date",
-            "datetime"
-          ]
-        },
-        {
-          "source": "typing",
-          "specifiers": [
-            "Annotated",
-            "Any",
-            "Literal",
-            "NoReturn"
-          ]
-        },
-        {
-          "source": "urllib.parse",
-          "specifiers": [
-            "urlsplit"
-          ]
-        },
-        {
-          "source": "pydantic",
-          "specifiers": [
-            "BaseModel",
-            "ConfigDict",
-            "Field",
-            "ValidationError",
-            "ValidationInfo",
-            "field_validator",
-            "model_validator"
+            "ArtifactValidationError",
+            "bind_artifact_digest",
+            "get_artifact_schema",
+            "validate_artifact",
+            "validate_artifact_chain"
           ]
         }
       ],
-      "exports": [
-        "ArtifactValidationError",
-        "_FrozenModel",
-        "ArtifactRef",
-        "SourceRef",
-        "SubjectBinding",
-        "ObservationValue",
-        "PerformanceWindow",
-        "ArtifactEnvelope",
-        "_validate_direct_refs",
-        "ReferenceBundle",
-        "TimelineObservation",
-        "PatternIdentity",
-        "DecompositionAttentionObservation",
-        "AttentionDecompositionObservations",
-        "NarrativeBeatObservation",
-        "NarrativeDecompositionObservations",
-        "ProofStepObservation",
-        "ProofDecompositionObservations",
-        "ExperienceCueObservation",
-        "ExperienceDecompositionObservations",
-        "DecompositionComponentObservation",
-        "ConversionDecompositionObservation",
-        "ConversionDecompositionObservations",
-        "TrendDecompositionObservation",
-        "TrendSourceReuseBoundary",
-        "TrendDecompositionObservations",
-        "DecompositionMap",
-        "PatternHypothesis",
-        "ExecutionBudget",
-        "FrozenConfiguration",
-        "_validate_mechanism_partition",
-        "ReplicationPlan",
-        "ClaimMapping",
-        "FactMap",
-        "ReplicationContract",
-        "NarrativeTransformationPayload",
-        "ProofDemonstrationPayload",
-        "ExperiencePovPayload",
-        "AttentionAnchor",
-        "AttentionGrammarPayload",
-        "PromotionContractBinding",
-        "CtaPolicy",
-        "ActionPathBinding",
-        "ProviderExclusion",
-        "ConversionActionPayload",
-        "TrendAdmissionRecord",
-        "TrendNativePayload",
-        "AdaptationPackage",
-        "IntegrityGateCheck",
-        "ScriptVersionRef",
-        "StoryboardVersionRef",
-        "ControlledArtifactRef",
-        "StoryboardLineage",
-        "MediaIntegrityRecord",
-        "ReplicationFinding",
-        "_canonical_value",
-        "canonical_artifact_digest",
-        "_validation_error",
-        "_resolve_model",
-        "bind_artifact_digest",
-        "validate_artifact",
-        "_chain_ref_key",
-        "_raise_chain_error",
-        "_validated_external_ref",
-        "_validate_chain_relationships",
-        "validate_artifact_chain",
-        "get_artifact_schema"
-      ],
-      "totalLines": 1820,
+      "exports": [],
+      "totalLines": 22,
       "hasStructuralAnalysis": true
     },
     "tools/viral_replication/tests/__init__.py": {
@@ -24894,6 +29434,26 @@
         "FixtureOracleTests"
       ],
       "totalLines": 326,
+      "hasStructuralAnalysis": true
+    },
+    ".ua/.understandignore": {
+      "filePath": ".ua/.understandignore",
+      "contentHash": "67e2ec7935cc8e8ce5e5964eae10ab7cc2108e7cf59cb1527a709bb0307b8ec2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 106,
+      "hasStructuralAnalysis": false
+    },
+    ".ua/config.json": {
+      "filePath": ".ua/config.json",
+      "contentHash": "5d2ff006cff22c68edd4776249d562ea8c73915a61c6214eb85933865a9402e7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
       "hasStructuralAnalysis": true
     }
   }
