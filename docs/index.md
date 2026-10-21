@@ -20,6 +20,7 @@
 - [SV-Agent UI/UX Taste audit](product/sv-agent-ui-ux-taste-audit.md)：基于真实浏览器三档视口与 Taste App Screen 规则的现状审计、Framed Sheet 方向、优先级和分批验收标准。
 - [Roadmap](product/roadmap.md)：已实现能力、当前 gap、批准门和推荐顺序。
 - [Development and testing](development/testing.md)：本地、CI、证据链和图谱验证方式。
+- Scoped Agent guides：进入高风险目录前读取 [SV-Agent domain](../apps/api/app/domain/sv_agent/AGENTS.md)、[migrations](../migrations/AGENTS.md)、[Momcozy asset tools](../tools/momcozy_assets/AGENTS.md) 或 [SV-Agent Web feature](../apps/web/src/features/sv-agent/AGENTS.md)；它们只增加局部规则，根 `AGENTS.md` 仍是全局 authority。
 
 ## Domain language and decisions
 

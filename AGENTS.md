@@ -19,6 +19,8 @@ Start at `docs/index.md`, then read only the routes relevant to the task:
 12. `docs/product/sv-agent-ui-ux-taste-audit.md` for SV-Agent shell, responsive navigation, information hierarchy, state-system or visual acceptance work.
 13. `docs/research/sv-agent-video-model-selection.md` before adding video generation, model routing, TokenHub/VOD adapters, paid smoke tests or media-provider scope.
 
+Before editing a high-risk subtree, read its scoped guide: [SV-Agent domain](apps/api/app/domain/sv_agent/AGENTS.md), [migrations](migrations/AGENTS.md), [Momcozy asset tools](tools/momcozy_assets/AGENTS.md), or [SV-Agent Web feature](apps/web/src/features/sv-agent/AGENTS.md). These files add local rules and never replace this root guide.
+
 `docs/archive/implementation-plans/` records historical execution and blocked work. It is not the current TODO or architecture authority.
 
 Inspect `git status --short --branch` before writes. Preserve unrelated changes. Work on `main`; do not create worktrees. Prefix every local shell command with `rtk`.

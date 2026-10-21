@@ -1,8 +1,8 @@
 # SV-Agent 项目目录整理方案
 
-状态：SV-ORG-101 已实施，后续门待批准
+状态：SV-ORG-101 与 SV-ORG-301 已实施，后续门待批准
 审计日期：2026-10-21  
-实施状态：SV-ORG-000 与 SV-ORG-101 已完成；未执行 checkout、adapter 或 Web 路径搬移
+实施状态：SV-ORG-000、SV-ORG-101 与 SV-ORG-301 已完成；未执行 checkout、adapter 或 Web 路径搬移
 
 ## 结论
 
@@ -185,9 +185,9 @@ apps/web/src/
 - 不创建 `.claude/` 作为 `.agents/` 的副本。若需要 Claude 兼容入口，应由工具配置指向同一份 authority，
   而不是复制内容。
 
-## Local instruction 文件建议
+## Local instruction 文件
 
-只在隐藏复杂度足以改变操作规则的目录增加 scoped `AGENTS.md`：
+SV-ORG-301 已在隐藏复杂度足以改变操作规则的目录增加 scoped `AGENTS.md`：
 
 1. `apps/api/app/domain/sv_agent/AGENTS.md`：纯领域、无 SQLAlchemy/FastAPI、artifact 和 Task/Run
    不变量、禁止 private reasoning；
@@ -195,8 +195,8 @@ apps/web/src/
 3. `tools/momcozy_assets/AGENTS.md`：Private Gate、只读、禁止真实库进入 CI/图谱；
 4. `apps/web/src/features/sv-agent/AGENTS.md`：read-only public surface 与 browser-local draft 边界。
 
-这些文件应链接回根 `AGENTS.md`，只写局部增量，不复制全局规则。它们属于后续独立 ticket，不能和大规模
-路径 move 同批落地，否则很难判断是规则变化还是路径变化导致回归。
+这些文件均链接回根 `AGENTS.md`，只写局部增量，不复制全局规则。它们作为独立 ticket 落地，没有与
+adapter、Web 路径 move 或运行行为变化混批。
 
 ## 垃圾候选与证据资产的区别
 
@@ -263,6 +263,8 @@ apps/web/src/
 
 ### SV-ORG-301 — Scoped local guides
 
+状态：已完成（2026-10-21）。
+
 - 按上一节增加四个短 local `AGENTS.md`；
 - 每个文件只写局部 invariants、验证命令和禁止事项；
 - 根 `AGENTS.md` 与 `docs/index.md` 增加路由，不复制全文；
@@ -308,6 +310,7 @@ rtk npm --prefix apps/web run build
 ## 当前冲突边界
 
 初次审计时工作区存在 SV-201～SV-204 未提交实现，因此先由 SV-ORG-000 建立了两个本地基线提交。
-SV-ORG-101 随后只执行 application 路径、import、architecture test、测试命令和图谱同步；没有混入行为、
-数据库、adapter、Web、垃圾删除、push 或部署变更。当前后续边界仍是 SV-ORG-102、SV-ORG-201、
-SV-ORG-301 与 SV-ORG-401，各自需要独立批准和可回滚提交。
+SV-ORG-101 随后只执行 application 路径、import、architecture test、测试命令和图谱同步；SV-ORG-301
+只增加四个 scoped guides、根/文档路由与图谱同步。两批都没有混入行为、数据库、adapter、Web 路径、
+垃圾删除、push 或部署变更。当前后续边界仍是 SV-ORG-102、SV-ORG-201 与 SV-ORG-401，各自需要独立
+批准和可回滚提交。
