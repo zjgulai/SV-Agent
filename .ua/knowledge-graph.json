@@ -32,8 +32,8 @@
       "Vitest"
     ],
     "description": "以 PostgreSQL 产品事实与不可变版本为底座的 evidence-first AI 视频工作台；SV-Agent 在其上增加爆款复刻 Task/Run 合同、能力工作流、只读 Native Shell、审计前沿与人工门边界。",
-    "analyzedAt": "2026-10-21T13:31:16Z",
-    "gitCommitHash": "d694b56948ce3b36e5a489ba9a260f1c1fafe3be"
+    "analyzedAt": "2026-10-21T13:41:41Z",
+    "gitCommitHash": "445c219c4747e6e4a7c1de71c40565ac239e2192"
   },
   "nodes": [
     {
@@ -29692,7 +29692,7 @@
       "type": "document",
       "name": "sv-agent-project-layout-proposal.md",
       "filePath": "docs/architecture/sv-agent-project-layout-proposal.md",
-      "summary": "SV-Agent 目录整理与分阶段实施方案，记录已完成的 application locality 和 scoped guides，并为可选 adapter、Web 与导航清理门定义边界、验证和回滚。",
+      "summary": "SV-Agent 目录整理与分阶段实施方案，记录已完成的 application/Web locality、scoped guides 与导航清理，并保留条件式 adapter、page 和 checkout 边界。",
       "tags": [
         "documentation",
         "architecture",

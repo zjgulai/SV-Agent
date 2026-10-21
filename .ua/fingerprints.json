@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "d694b56948ce3b36e5a489ba9a260f1c1fafe3be",
-  "generatedAt": "2026-10-21T13:31:16Z",
+  "gitCommitHash": "445c219c4747e6e4a7c1de71c40565ac239e2192",
+  "generatedAt": "2026-10-21T13:41:41Z",
   "files": {
     ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md": {
       "filePath": ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md",
@@ -665,7 +665,7 @@
     },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
-      "contentHash": "6e7856eb481e06b24266ca6606151f9dd47211b984f7bfe6646fd9eb75db4c58",
+      "contentHash": "6064f68d9b291dc774d48d49a40b707b209c1b743d993321f8954faf8e518f30",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -24368,22 +24368,22 @@
     },
     "docs/architecture/project-layout.md": {
       "filePath": "docs/architecture/project-layout.md",
-      "contentHash": "50d3a98926ef7e105fd6ad8b2e6e47c2a9d945a5216027111f64cf7ef26dd107",
+      "contentHash": "e8fa50a470055924a668f3e8644af7f6956604bb89ed13f72d33c31bb4d75cab",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 58,
+      "totalLines": 65,
       "hasStructuralAnalysis": true
     },
     "docs/architecture/sv-agent-project-layout-proposal.md": {
       "filePath": "docs/architecture/sv-agent-project-layout-proposal.md",
-      "contentHash": "92b732658f5c7f9a567c60ed0fd9338b05ba8dbcdcb296d6a2f22d55aa3aa742",
+      "contentHash": "f0171a0608c2981f048dfc8a33346f80c46b3007bc29cccc2fc82b1e856ad882",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 319,
+      "totalLines": 324,
       "hasStructuralAnalysis": true
     },
     "docs/architecture/system-overview.md": {
@@ -24588,7 +24588,7 @@
     },
     "docs/index.md": {
       "filePath": "docs/index.md",
-      "contentHash": "8b069a684fd165d0263fbf2812f78976a728a888bfa02f7e6505163647390dfb",
+      "contentHash": "e2ec2be075409979514ddcb39f19af80bd5447c6a6c6c7a50f9a76146fde1224",
       "functions": [],
       "classes": [],
       "imports": [],
