@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "9901b4025eb581ec0b22b9635a3030b8f9e29466",
-  "generatedAt": "2026-10-21T11:16:54.934Z",
+  "gitCommitHash": "ea0be38aa7815f39c1d93d2277f660dc283127a9",
+  "generatedAt": "2026-10-21T11:53:38.889Z",
   "files": {
     ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md": {
       "filePath": ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md",
@@ -642,6 +642,26 @@
       "exports": [],
       "totalLines": 2,
       "hasStructuralAnalysis": false
+    },
+    ".ua/.understandignore": {
+      "filePath": ".ua/.understandignore",
+      "contentHash": "67e2ec7935cc8e8ce5e5964eae10ab7cc2108e7cf59cb1527a709bb0307b8ec2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 106,
+      "hasStructuralAnalysis": false
+    },
+    ".ua/config.json": {
+      "filePath": ".ua/config.json",
+      "contentHash": "5d2ff006cff22c68edd4776249d562ea8c73915a61c6214eb85933865a9402e7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
     },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
@@ -3707,7 +3727,7 @@
     },
     "apps/api/app/api/routes/sv_agent.py": {
       "filePath": "apps/api/app/api/routes/sv_agent.py",
-      "contentHash": "9b0ad46130eab532213204dc86f628ab1b04ddd90890f6d84f9c8bec7e2ababb",
+      "contentHash": "1c58ab94e3f7b3941ff39158354733aa531a057277fae5596f70239c3a6f6a3d",
       "functions": [
         {
           "name": "list_tasks",
@@ -3816,19 +3836,19 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_evidence_workspace",
+          "source": "app.application.sv_agent.evidence_workspace",
           "specifiers": [
             "EvidenceArtifactWorkspace"
           ]
         },
         {
-          "source": "app.application.sv_agent_mission_control",
+          "source": "app.application.sv_agent.mission_control",
           "specifiers": [
             "MissionControl"
           ]
         },
         {
-          "source": "app.application.sv_agent_task_inbox",
+          "source": "app.application.sv_agent.task_inbox",
           "specifiers": [
             "TaskInbox"
           ]
@@ -4349,7 +4369,7 @@
     },
     "apps/api/app/api/schemas/sv_agent.py": {
       "filePath": "apps/api/app/api/schemas/sv_agent.py",
-      "contentHash": "8a1d2d8ab31d41d858cb2ce2e15d8259384843cf4b5d26764fcaeb7e20460415",
+      "contentHash": "1646f0f00a133bf714ad0770b211f6ac382973e6fc2e4aabc195db9d9b25e759",
       "functions": [],
       "classes": [
         {
@@ -4750,21 +4770,21 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_evidence_workspace",
+          "source": "app.application.sv_agent.evidence_workspace",
           "specifiers": [
             "EvidencePlaneKind",
             "WorkspaceAvailability"
           ]
         },
         {
-          "source": "app.application.sv_agent_mission_control",
+          "source": "app.application.sv_agent.mission_control",
           "specifiers": [
             "StageKey",
             "StageStatus"
           ]
         },
         {
-          "source": "app.application.sv_agent_task_inbox",
+          "source": "app.application.sv_agent.task_inbox",
           "specifiers": [
             "TaskInboxLane",
             "TaskInboxOrderingReason"
@@ -5937,7 +5957,7 @@
     },
     "apps/api/app/application/job_reads.py": {
       "filePath": "apps/api/app/application/job_reads.py",
-      "contentHash": "5482359fe944b6d2aa9b66e88dcb6b9d9f32a7e7d931e6061a2dd998f0387c45",
+      "contentHash": "9f4940f99b40e70643b2a11ee1d26ae54635192bee66b63def4c7ae99a629c09",
       "functions": [],
       "classes": [
         {
@@ -5973,7 +5993,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_contracts",
+          "source": "app.application.sv_agent.read_tools.contracts",
           "specifiers": [
             "ImportAttemptProjection",
             "JobEventProjection",
@@ -6433,7 +6453,7 @@
     },
     "apps/api/app/application/script_reads.py": {
       "filePath": "apps/api/app/application/script_reads.py",
-      "contentHash": "a219d8a24f4743f4c05e6bdd2d2c5cd455e99d015e23b196817d894878084ec4",
+      "contentHash": "210aea60cc281a5915f6eae54bb44d56f95c0639440c86647244311c48efc019",
       "functions": [],
       "classes": [
         {
@@ -6496,7 +6516,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_contracts",
+          "source": "app.application.sv_agent.read_tools.contracts",
           "specifiers": [
             "ReadResult",
             "ScriptDiffEntry",
@@ -6516,7 +6536,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_errors",
+          "source": "app.application.sv_agent.read_tools.errors",
           "specifiers": [
             "ReadToolSourceFailure"
           ]
@@ -6711,7 +6731,7 @@
     },
     "apps/api/app/application/storyboard_reads.py": {
       "filePath": "apps/api/app/application/storyboard_reads.py",
-      "contentHash": "25af8991988d27bbd6e29a5cb96345a533c7d031cee0eb6463fd51181b4175a8",
+      "contentHash": "1491e5dce6b0ca765408c3b836ee908ae3463035504874ffc76a0f359746950e",
       "functions": [],
       "classes": [
         {
@@ -6758,7 +6778,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_contracts",
+          "source": "app.application.sv_agent.read_tools.contracts",
           "specifiers": [
             "ReadResult",
             "StoryboardApprovalEventProjection",
@@ -7102,8 +7122,18 @@
       "totalLines": 266,
       "hasStructuralAnalysis": true
     },
-    "apps/api/app/application/sv_agent_evidence_workspace.py": {
-      "filePath": "apps/api/app/application/sv_agent_evidence_workspace.py",
+    "apps/api/app/application/sv_agent/__init__.py": {
+      "filePath": "apps/api/app/application/sv_agent/__init__.py",
+      "contentHash": "6712f77365b00042e28509ca07c1b65e0a9d4f1339897f856f5830e80a833c1e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/app/application/sv_agent/evidence_workspace.py": {
+      "filePath": "apps/api/app/application/sv_agent/evidence_workspace.py",
       "contentHash": "b8161dec8ebbe728c1f775c091016f3646a420dff449bf4f397d391fef82d8e2",
       "functions": [
         {
@@ -7631,8 +7661,8 @@
       "totalLines": 1402,
       "hasStructuralAnalysis": true
     },
-    "apps/api/app/application/sv_agent_mission_control.py": {
-      "filePath": "apps/api/app/application/sv_agent_mission_control.py",
+    "apps/api/app/application/sv_agent/mission_control.py": {
+      "filePath": "apps/api/app/application/sv_agent/mission_control.py",
       "contentHash": "cbfe0b12855a603703723efa30077c7e7d32e2a3fb6f84b1bc8e23600aa177ca",
       "functions": [
         {
@@ -8183,8 +8213,8 @@
       "totalLines": 1399,
       "hasStructuralAnalysis": true
     },
-    "apps/api/app/application/sv_agent_orchestration.py": {
-      "filePath": "apps/api/app/application/sv_agent_orchestration.py",
+    "apps/api/app/application/sv_agent/orchestration.py": {
+      "filePath": "apps/api/app/application/sv_agent/orchestration.py",
       "contentHash": "c6309ec99b1c9f91a9e816cdb894866269c87fc19c575a6ba8713b1e30c5c04e",
       "functions": [],
       "classes": [
@@ -8353,287 +8383,18 @@
       "totalLines": 450,
       "hasStructuralAnalysis": true
     },
-    "apps/api/app/application/sv_agent_read_tool_execution.py": {
-      "filePath": "apps/api/app/application/sv_agent_read_tool_execution.py",
-      "contentHash": "9a7066144aa6a3a83a5c253d72f5d9dbd89d4d5b9bf4c98590df67897090e3ba",
+    "apps/api/app/application/sv_agent/read_tools/__init__.py": {
+      "filePath": "apps/api/app/application/sv_agent/read_tools/__init__.py",
+      "contentHash": "9d94f5e197e7106fa35abe995128cd43a45606c36f69ddc8f7263b5bcca76463",
       "functions": [],
-      "classes": [
-        {
-          "name": "ReadToolExecutionContext",
-          "methods": [
-            "__post_init__"
-          ],
-          "properties": [
-            "task_id",
-            "task_revision",
-            "run_id",
-            "run_revision",
-            "initiated_by",
-            "executed_by"
-          ],
-          "exported": true,
-          "lineCount": 11
-        },
-        {
-          "name": "ReadToolExecution",
-          "methods": [],
-          "properties": [
-            "tool_run",
-            "output"
-          ],
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "ReadToolExecutionService",
-          "methods": [
-            "__init__",
-            "execute",
-            "_record_failure"
-          ],
-          "properties": [],
-          "exported": true,
-          "lineCount": 106
-        }
-      ],
-      "imports": [
-        {
-          "source": "collections.abc",
-          "specifiers": [
-            "Mapping"
-          ]
-        },
-        {
-          "source": "dataclasses",
-          "specifiers": [
-            "dataclass"
-          ]
-        },
-        {
-          "source": "uuid",
-          "specifiers": [
-            "UUID"
-          ]
-        },
-        {
-          "source": "app.application.sv_agent_tool_contracts",
-          "specifiers": [
-            "ReadToolName",
-            "ReadToolOutput"
-          ]
-        },
-        {
-          "source": "app.application.sv_agent_tool_errors",
-          "specifiers": [
-            "ReadToolSourceFailure"
-          ]
-        },
-        {
-          "source": "app.application.sv_agent_tool_registry",
-          "specifiers": [
-            "ReadToolContractViolation",
-            "ReadToolUnavailable",
-            "StaticReadToolRegistry"
-          ]
-        },
-        {
-          "source": "app.domain.common.canonical",
-          "specifiers": [
-            "canonical_digest"
-          ]
-        },
-        {
-          "source": "app.domain.sv_agent.runtime_records",
-          "specifiers": [
-            "ActorStamp"
-          ]
-        },
-        {
-          "source": "app.domain.sv_agent.tool_runs",
-          "specifiers": [
-            "ToolRun"
-          ]
-        },
-        {
-          "source": "app.ports.sv_agent_tool_journal",
-          "specifiers": [
-            "ToolRunJournal"
-          ]
-        }
-      ],
-      "exports": [
-        "ReadToolExecutionContext",
-        "ReadToolExecution",
-        "ReadToolExecutionService"
-      ],
-      "totalLines": 149,
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
       "hasStructuralAnalysis": true
     },
-    "apps/api/app/application/sv_agent_task_inbox.py": {
-      "filePath": "apps/api/app/application/sv_agent_task_inbox.py",
-      "contentHash": "53a1c08e57b6c2125431e70cafa080263f4812f5110fc6785530be8e5d70969e",
-      "functions": [],
-      "classes": [
-        {
-          "name": "TaskInboxLane",
-          "methods": [],
-          "properties": [],
-          "exported": true,
-          "lineCount": 9
-        },
-        {
-          "name": "TaskInboxOrderingReason",
-          "methods": [],
-          "properties": [],
-          "exported": true,
-          "lineCount": 10
-        },
-        {
-          "name": "TaskInboxItem",
-          "methods": [],
-          "properties": [
-            "task_id",
-            "task_revision",
-            "goal_track",
-            "subject",
-            "decision_question",
-            "active_run_id",
-            "active_run_revision",
-            "run_state",
-            "pending_decision_count",
-            "pending_gate_kinds",
-            "lane",
-            "ordering_reason",
-            "priority_at"
-          ],
-          "exported": true,
-          "lineCount": 14
-        },
-        {
-          "name": "TaskInboxProjection",
-          "methods": [],
-          "properties": [
-            "schema_version",
-            "authority",
-            "ordering_policy_version",
-            "items",
-            "truncated"
-          ],
-          "exported": true,
-          "lineCount": 6
-        },
-        {
-          "name": "TaskInbox",
-          "methods": [
-            "__init__",
-            "inspect"
-          ],
-          "properties": [],
-          "exported": true,
-          "lineCount": 275
-        }
-      ],
-      "imports": [
-        {
-          "source": "dataclasses",
-          "specifiers": [
-            "dataclass"
-          ]
-        },
-        {
-          "source": "datetime",
-          "specifiers": [
-            "datetime"
-          ]
-        },
-        {
-          "source": "enum",
-          "specifiers": [
-            "StrEnum"
-          ]
-        },
-        {
-          "source": "typing",
-          "specifiers": [
-            "Literal"
-          ]
-        },
-        {
-          "source": "uuid",
-          "specifiers": [
-            "UUID"
-          ]
-        },
-        {
-          "source": "sqlalchemy",
-          "specifiers": [
-            "and_",
-            "case",
-            "exists",
-            "func",
-            "literal",
-            "or_",
-            "select"
-          ]
-        },
-        {
-          "source": "sqlalchemy.ext.asyncio",
-          "specifiers": [
-            "AsyncSession"
-          ]
-        },
-        {
-          "source": "app.adapters.db.sv_agent_models",
-          "specifiers": [
-            "SvApprovalRequestRecord",
-            "SvDecisionEventRecord",
-            "SvRunRecord",
-            "SvTaskRecord",
-            "SvTaskRevisionRecord"
-          ]
-        },
-        {
-          "source": "app.domain.common.canonical",
-          "specifiers": [
-            "canonical_digest"
-          ]
-        },
-        {
-          "source": "app.domain.sv_agent.entities",
-          "specifiers": [
-            "GoalTrack",
-            "PerformanceWindow",
-            "RightsState",
-            "RunState",
-            "TargetPlatform",
-            "TaskBrief"
-          ]
-        },
-        {
-          "source": "app.domain.sv_agent.errors",
-          "specifiers": [
-            "JournalIntegrityError"
-          ]
-        },
-        {
-          "source": "app.domain.sv_agent.runtime_records",
-          "specifiers": [
-            "ApprovalGateKind"
-          ]
-        }
-      ],
-      "exports": [
-        "TaskInboxLane",
-        "TaskInboxOrderingReason",
-        "TaskInboxItem",
-        "TaskInboxProjection",
-        "TaskInbox"
-      ],
-      "totalLines": 358,
-      "hasStructuralAnalysis": true
-    },
-    "apps/api/app/application/sv_agent_tool_contracts.py": {
-      "filePath": "apps/api/app/application/sv_agent_tool_contracts.py",
+    "apps/api/app/application/sv_agent/read_tools/contracts.py": {
+      "filePath": "apps/api/app/application/sv_agent/read_tools/contracts.py",
       "contentHash": "7083643d4b951196fbcfa7c87442de8c8b31726451c8909df7dd04a6bcff064e",
       "functions": [],
       "classes": [
@@ -9268,8 +9029,8 @@
       "totalLines": 436,
       "hasStructuralAnalysis": true
     },
-    "apps/api/app/application/sv_agent_tool_errors.py": {
-      "filePath": "apps/api/app/application/sv_agent_tool_errors.py",
+    "apps/api/app/application/sv_agent/read_tools/errors.py": {
+      "filePath": "apps/api/app/application/sv_agent/read_tools/errors.py",
       "contentHash": "a6a2b7b9022d74003bf724cb370ea3890eb3e61e1d0a4f28f09b4bff0dd35b41",
       "functions": [],
       "classes": [
@@ -9290,9 +9051,125 @@
       "totalLines": 6,
       "hasStructuralAnalysis": true
     },
-    "apps/api/app/application/sv_agent_tool_handler.py": {
-      "filePath": "apps/api/app/application/sv_agent_tool_handler.py",
-      "contentHash": "b0b90aa61814ed772604ed10971239191f5bc4e3536a8195e55f848570e9c2ea",
+    "apps/api/app/application/sv_agent/read_tools/execution.py": {
+      "filePath": "apps/api/app/application/sv_agent/read_tools/execution.py",
+      "contentHash": "89ddc47a9fdab1c36e237227c5fae820a416923d19b108ef8cecc20e0bea8bda",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ReadToolExecutionContext",
+          "methods": [
+            "__post_init__"
+          ],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "run_id",
+            "run_revision",
+            "initiated_by",
+            "executed_by"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "ReadToolExecution",
+          "methods": [],
+          "properties": [
+            "tool_run",
+            "output"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "ReadToolExecutionService",
+          "methods": [
+            "__init__",
+            "execute",
+            "_record_failure"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 106
+        }
+      ],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Mapping"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ActorStamp"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.tool_runs",
+          "specifiers": [
+            "ToolRun"
+          ]
+        },
+        {
+          "source": "app.ports.sv_agent_tool_journal",
+          "specifiers": [
+            "ToolRunJournal"
+          ]
+        },
+        {
+          "source": ".contracts",
+          "specifiers": [
+            "ReadToolName",
+            "ReadToolOutput"
+          ]
+        },
+        {
+          "source": ".errors",
+          "specifiers": [
+            "ReadToolSourceFailure"
+          ]
+        },
+        {
+          "source": ".registry",
+          "specifiers": [
+            "ReadToolContractViolation",
+            "ReadToolUnavailable",
+            "StaticReadToolRegistry"
+          ]
+        }
+      ],
+      "exports": [
+        "ReadToolExecutionContext",
+        "ReadToolExecution",
+        "ReadToolExecutionService"
+      ],
+      "totalLines": 150,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/app/application/sv_agent/read_tools/handler.py": {
+      "filePath": "apps/api/app/application/sv_agent/read_tools/handler.py",
+      "contentHash": "0fda9f468d381a9ce28f365e4fffff70a4d23bdfc2925c21374e3d93d6f73079",
       "functions": [],
       "classes": [
         {
@@ -9353,7 +9230,14 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_contracts",
+          "source": "app.domain.scripts.patterns",
+          "specifiers": [
+            "PatternCompileError",
+            "compile_pattern"
+          ]
+        },
+        {
+          "source": ".contracts",
           "specifiers": [
             "CreativeComparisonReadInput",
             "CreativeComparisonReadOutput",
@@ -9374,28 +9258,21 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_errors",
+          "source": ".errors",
           "specifiers": [
             "ReadToolSourceFailure"
-          ]
-        },
-        {
-          "source": "app.domain.scripts.patterns",
-          "specifiers": [
-            "PatternCompileError",
-            "compile_pattern"
           ]
         }
       ],
       "exports": [
         "ApplicationReadToolRuntime"
       ],
-      "totalLines": 167,
+      "totalLines": 168,
       "hasStructuralAnalysis": true
     },
-    "apps/api/app/application/sv_agent_tool_registry.py": {
-      "filePath": "apps/api/app/application/sv_agent_tool_registry.py",
-      "contentHash": "4f2c1ca4465675c54da453ae9a248cc5809943f6925b45e37e57f962d4d8ab43",
+    "apps/api/app/application/sv_agent/read_tools/registry.py": {
+      "filePath": "apps/api/app/application/sv_agent/read_tools/registry.py",
+      "contentHash": "7ad6d943ef97e5af169967f473122a57ee321914a0b7ab9316429b2c72199b23",
       "functions": [],
       "classes": [
         {
@@ -9500,7 +9377,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_contracts",
+          "source": ".contracts",
           "specifiers": [
             "CreativeComparisonReadInput",
             "CreativeComparisonReadOutput",
@@ -9531,6 +9408,169 @@
         "StaticReadToolRegistry"
       ],
       "totalLines": 167,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/app/application/sv_agent/task_inbox.py": {
+      "filePath": "apps/api/app/application/sv_agent/task_inbox.py",
+      "contentHash": "53a1c08e57b6c2125431e70cafa080263f4812f5110fc6785530be8e5d70969e",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TaskInboxLane",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "TaskInboxOrderingReason",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "TaskInboxItem",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "goal_track",
+            "subject",
+            "decision_question",
+            "active_run_id",
+            "active_run_revision",
+            "run_state",
+            "pending_decision_count",
+            "pending_gate_kinds",
+            "lane",
+            "ordering_reason",
+            "priority_at"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "TaskInboxProjection",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "ordering_policy_version",
+            "items",
+            "truncated"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "TaskInbox",
+          "methods": [
+            "__init__",
+            "inspect"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 275
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "enum",
+          "specifiers": [
+            "StrEnum"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Literal"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "and_",
+            "case",
+            "exists",
+            "func",
+            "literal",
+            "or_",
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvApprovalRequestRecord",
+            "SvDecisionEventRecord",
+            "SvRunRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "GoalTrack",
+            "PerformanceWindow",
+            "RightsState",
+            "RunState",
+            "TargetPlatform",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ApprovalGateKind"
+          ]
+        }
+      ],
+      "exports": [
+        "TaskInboxLane",
+        "TaskInboxOrderingReason",
+        "TaskInboxItem",
+        "TaskInboxProjection",
+        "TaskInbox"
+      ],
+      "totalLines": 358,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/application/version_diff.py": {
@@ -16345,7 +16385,7 @@
     },
     "apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py": {
       "filePath": "apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py",
-      "contentHash": "7ea8b0f3de0cbfac013f819747a2d93d8dff77ba37ab5ec46385e2ad2cce632c",
+      "contentHash": "98d54645a63f207529e28645ad5ba3bd87e0424dd61830cfb5c0c7254cd6f71d",
       "functions": [
         {
           "name": "_field_names",
@@ -16739,7 +16779,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_evidence_workspace",
+          "source": "app.application.sv_agent.evidence_workspace",
           "specifiers": [
             "EvidenceArtifactWorkspace"
           ]
@@ -16814,7 +16854,7 @@
     },
     "apps/api/tests/integration/sv_agent/test_mission_control.py": {
       "filePath": "apps/api/tests/integration/sv_agent/test_mission_control.py",
-      "contentHash": "b848b9aa76e8d2fd82f8dd7e42136ba548efdfbab7757d37a1e72f98ccd7bfec",
+      "contentHash": "6340ace999d69ae51eb8c0811c391b28777835f3f67e208d38a1477fb3b99bd8",
       "functions": [
         {
           "name": "_task",
@@ -17079,7 +17119,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_mission_control",
+          "source": "app.application.sv_agent.mission_control",
           "specifiers": [
             "MissionArtifact",
             "MissionBlocker",
@@ -17164,7 +17204,7 @@
     },
     "apps/api/tests/integration/sv_agent/test_read_tool_execution.py": {
       "filePath": "apps/api/tests/integration/sv_agent/test_read_tool_execution.py",
-      "contentHash": "ac06f41a90d7e94095e05380fcd08e189354df51866480653df34ecc42190a24",
+      "contentHash": "0dd60db5253df234a8d75f43c7be157b65625ee4c13851361079b1b58f1baff9",
       "functions": [
         {
           "name": "_business_counts",
@@ -17382,14 +17422,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_read_tool_execution",
-          "specifiers": [
-            "ReadToolExecutionContext",
-            "ReadToolExecutionService"
-          ]
-        },
-        {
-          "source": "app.application.sv_agent_tool_contracts",
+          "source": "app.application.sv_agent.read_tools.contracts",
           "specifiers": [
             "JobReadOutput",
             "ReadResultState",
@@ -17401,19 +17434,26 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_errors",
+          "source": "app.application.sv_agent.read_tools.errors",
           "specifiers": [
             "ReadToolSourceFailure"
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_handler",
+          "source": "app.application.sv_agent.read_tools.execution",
+          "specifiers": [
+            "ReadToolExecutionContext",
+            "ReadToolExecutionService"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent.read_tools.handler",
           "specifiers": [
             "ApplicationReadToolRuntime"
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_registry",
+          "source": "app.application.sv_agent.read_tools.registry",
           "specifiers": [
             "StaticReadToolRegistry"
           ]
@@ -17836,7 +17876,7 @@
     },
     "apps/api/tests/integration/sv_agent/test_task_inbox.py": {
       "filePath": "apps/api/tests/integration/sv_agent/test_task_inbox.py",
-      "contentHash": "6b49be6244ed7a6142e7c91fff5c93803abd7616047689160659643ef5891f86",
+      "contentHash": "9e6f28dab36caae8684d4c3c7b0f07bf0b7f3297f69d6630f37e18f6d5f4f881",
       "functions": [
         {
           "name": "_task",
@@ -17986,7 +18026,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_task_inbox",
+          "source": "app.application.sv_agent.task_inbox",
           "specifiers": [
             "TaskInbox",
             "TaskInboxLane",
@@ -21054,7 +21094,7 @@
     },
     "apps/api/tests/unit/test_sv_agent_orchestration.py": {
       "filePath": "apps/api/tests/unit/test_sv_agent_orchestration.py",
-      "contentHash": "924746f8b44b9a55e94a7fbb83a21a20b8d81ff6564485194a064820b162805a",
+      "contentHash": "094a391173c8cce0d13f0c758fabd6269d9bd37b6c36b925f5d5ec45d874b1fe",
       "functions": [
         {
           "name": "_task",
@@ -21337,7 +21377,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_orchestration",
+          "source": "app.application.sv_agent.orchestration",
           "specifiers": [
             "OrchestrationEvaluator",
             "PlanningDisposition",
@@ -21446,7 +21486,7 @@
     },
     "apps/api/tests/unit/test_sv_agent_read_tool_registry.py": {
       "filePath": "apps/api/tests/unit/test_sv_agent_read_tool_registry.py",
-      "contentHash": "40bb7ef5ccc218f2c110bfe2b85f441ed10d15c044a5b6b4ae5c420637bff81e",
+      "contentHash": "4bc044075490be50f0e7540db6a3957ce9b443b1feaa0fcd2f97516f1c5e840f",
       "functions": [
         {
           "name": "_product_payload",
@@ -21543,7 +21583,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_contracts",
+          "source": "app.application.sv_agent.read_tools.contracts",
           "specifiers": [
             "ProductTruthReadOutput",
             "ReadResult",
@@ -21560,7 +21600,7 @@
           ]
         },
         {
-          "source": "app.application.sv_agent_tool_registry",
+          "source": "app.application.sv_agent.read_tools.registry",
           "specifiers": [
             "ReadToolNotRegistered",
             "ReadToolRuntime",
@@ -21584,14 +21624,28 @@
     },
     "apps/api/tests/unit/test_sv_agent_tool_architecture.py": {
       "filePath": "apps/api/tests/unit/test_sv_agent_tool_architecture.py",
-      "contentHash": "3d7d4af14bcc7841801add978c32257b66341858016a63170cb2613cb964d9b1",
+      "contentHash": "fa7b2ea48dbc9fbd8ede52d56e22d6c24a96247dc1711d44e338e5ee6cd4d7ae",
       "functions": [
+        {
+          "name": "test_sv_agent_application_modules_are_localized_without_legacy_facades",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_sv_agent_package_initializers_do_not_import_implementation",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        },
         {
           "name": "test_tool_registry_and_handlers_do_not_import_persistence_or_workers",
           "params": [],
           "returnType": "None",
           "exported": true,
-          "lineCount": 27
+          "lineCount": 26
         }
       ],
       "classes": [],
@@ -21610,9 +21664,11 @@
         }
       ],
       "exports": [
+        "test_sv_agent_application_modules_are_localized_without_legacy_facades",
+        "test_sv_agent_package_initializers_do_not_import_implementation",
         "test_tool_registry_and_handlers_do_not_import_persistence_or_workers"
       ],
-      "totalLines": 32,
+      "totalLines": 82,
       "hasStructuralAnalysis": true
     },
     "apps/web/Dockerfile": {
@@ -24302,22 +24358,22 @@
     },
     "docs/architecture/sv-agent-project-layout-proposal.md": {
       "filePath": "docs/architecture/sv-agent-project-layout-proposal.md",
-      "contentHash": "5e2750b5492bfa418e0c45e090c92beb3172e09327d3b0ea606c6e476d5f6d29",
+      "contentHash": "960f4d43e2f09f7a7e6f79e3814a2d7df0fa336e19d8e79eabfc74de02aedff5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 313,
+      "totalLines": 314,
       "hasStructuralAnalysis": true
     },
     "docs/architecture/system-overview.md": {
       "filePath": "docs/architecture/system-overview.md",
-      "contentHash": "f0365ed51f21c22e89ac66f480569b2c5b4ad3d348fccf47a0708b1113a4e833",
+      "contentHash": "22ac9e0dc25ed39b6ba7aebc47bf032a28a668b00166c3b5ba5761cfa7da5745",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 188,
+      "totalLines": 194,
       "hasStructuralAnalysis": true
     },
     "docs/archive/implementation-plans/2026-08-10-product-facts-viral-script-p0.md": {
@@ -24502,7 +24558,7 @@
     },
     "docs/development/testing.md": {
       "filePath": "docs/development/testing.md",
-      "contentHash": "182cec8a6fb115557f62a75f32ec5e2063e615cb953210e2729bc0d9078e81f5",
+      "contentHash": "6562b19086a5942e8459d5fef5a72a82da097d7067531584ea28503d45df461f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -24642,7 +24698,7 @@
     },
     "docs/product/viral-replication-graph-consistency.md": {
       "filePath": "docs/product/viral-replication-graph-consistency.md",
-      "contentHash": "dcabb6d8d2921308e17aceb00c717871b74771c0df3a19a81a0cc35f1515fe80",
+      "contentHash": "4c0d7ab6e40208de557995d3184a2480adf661bd699086c672723fb71932689e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -29434,26 +29490,6 @@
         "FixtureOracleTests"
       ],
       "totalLines": 326,
-      "hasStructuralAnalysis": true
-    },
-    ".ua/.understandignore": {
-      "filePath": ".ua/.understandignore",
-      "contentHash": "67e2ec7935cc8e8ce5e5964eae10ab7cc2108e7cf59cb1527a709bb0307b8ec2",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 106,
-      "hasStructuralAnalysis": false
-    },
-    ".ua/config.json": {
-      "filePath": ".ua/config.json",
-      "contentHash": "5d2ff006cff22c68edd4776249d562ea8c73915a61c6214eb85933865a9402e7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 4,
       "hasStructuralAnalysis": true
     }
   }
