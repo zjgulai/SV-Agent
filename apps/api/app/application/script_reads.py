@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.adapters.db.models import ScriptGenerationRecord, ScriptVersionRecord
 from app.adapters.db.repositories import ProductRepository, ScriptRepository
 from app.application.exports import export_json, export_markdown
-from app.application.sv_agent_tool_contracts import (
+from app.application.sv_agent.read_tools.contracts import (
     ReadResult,
     ScriptDiffEntry,
     ScriptDiffProjection,
@@ -25,7 +25,7 @@ from app.application.sv_agent_tool_contracts import (
     ScriptVersionProjection,
     ScriptVersionQuery,
 )
-from app.application.sv_agent_tool_errors import ReadToolSourceFailure
+from app.application.sv_agent.read_tools.errors import ReadToolSourceFailure
 from app.application.version_diff import diff_versions
 from app.domain.scripts.models import ScriptDraft, ValidationReport
 

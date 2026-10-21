@@ -164,7 +164,7 @@ Agent 项目目录重整与 bounded `SV-104A/B` 纯规划契约完成后，本�
 - architecture：`10` layers；`384` 个 canonical 文件节点和 `4` 个 Docker stage service 节点均恰好进入一层；
 - tour：`13` steps、`49` 个有效 node references，沿 evidence-first 主线覆盖入口、Product Truth、Task/Run、纯规划、只读工具、workflow、决策投影、Storyboard gate 与验证闭环；
 - assembly review：`pass`，`0` issues / `0` warnings；inline structural validator：`0` issues，保留 `64` 个 orphan richness warnings；
-- full graph reviewer：`approved` with non-blocking warnings。对 `sv_agent_orchestration.py` 的一处能力夸大摘要已收窄为纯规划/前置条件评估，并明确不持久化 RunPlan、不推进状态、不执行步骤或更新 Evidence Graph；其余 warnings 仅涉及关系丰富度，不构成 dangling edge、文件缺失、层覆盖或 tour 引用错误；
+- full graph reviewer：`approved` with non-blocking warnings。对当时路径 `sv_agent_orchestration.py`（SV-ORG-101 后为 `apps/api/app/application/sv_agent/orchestration.py`）的一处能力夸大摘要已收窄为纯规划/前置条件评估，并明确不持久化 RunPlan、不推进状态、不执行步骤或更新 Evidence Graph；其余 warnings 仅涉及关系丰富度，不构成 dangling edge、文件缺失、层覆盖或 tour 引用错误；
 - fingerprints 与 meta 覆盖同一 `384` 文件 source baseline；graph-only artifact commit 不改变该 source baseline。
 
 该 graph 仍只是生成式导航和架构理解产物。它不证明 durable orchestration、授权运行时、部署、发布、真实素材验收、商业批准或 production acceptance。

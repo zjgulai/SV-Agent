@@ -6,7 +6,7 @@ from typing import Protocol, cast
 
 from pydantic import TypeAdapter
 
-from app.application.sv_agent_tool_contracts import (
+from .contracts import (
     CreativeComparisonReadInput,
     CreativeComparisonReadOutput,
     JobReadInput,

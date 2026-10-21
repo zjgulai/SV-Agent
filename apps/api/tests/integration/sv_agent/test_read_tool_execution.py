@@ -31,11 +31,7 @@ from app.adapters.db.sv_agent_repository import SvAgentRepository
 from app.adapters.db.sv_agent_tool_run_repository import SvToolRunRepository
 from app.adapters.providers.deterministic import DeterministicScriptProvider
 from app.application.storyboard_reviews import StoryboardReviewService
-from app.application.sv_agent_read_tool_execution import (
-    ReadToolExecutionContext,
-    ReadToolExecutionService,
-)
-from app.application.sv_agent_tool_contracts import (
+from app.application.sv_agent.read_tools.contracts import (
     JobReadOutput,
     ReadResultState,
     ReadToolInput,
@@ -44,9 +40,13 @@ from app.application.sv_agent_tool_contracts import (
     ScriptProjection,
     ScriptReadOutput,
 )
-from app.application.sv_agent_tool_errors import ReadToolSourceFailure
-from app.application.sv_agent_tool_handler import ApplicationReadToolRuntime
-from app.application.sv_agent_tool_registry import StaticReadToolRegistry
+from app.application.sv_agent.read_tools.errors import ReadToolSourceFailure
+from app.application.sv_agent.read_tools.execution import (
+    ReadToolExecutionContext,
+    ReadToolExecutionService,
+)
+from app.application.sv_agent.read_tools.handler import ApplicationReadToolRuntime
+from app.application.sv_agent.read_tools.registry import StaticReadToolRegistry
 from app.domain.common.canonical import canonical_digest
 from app.domain.jobs.entities import JobState, JobType
 from app.domain.products.entities import (

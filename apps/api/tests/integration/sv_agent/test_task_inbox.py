@@ -11,7 +11,7 @@ from app.adapters.db.sv_agent_models import (
     SvTaskRecord,
     SvTaskRevisionRecord,
 )
-from app.application.sv_agent_task_inbox import (
+from app.application.sv_agent.task_inbox import (
     TaskInbox,
     TaskInboxLane,
     TaskInboxOrderingReason,

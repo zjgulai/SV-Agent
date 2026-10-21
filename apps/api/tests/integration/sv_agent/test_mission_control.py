@@ -15,7 +15,7 @@ from app.adapters.db.sv_agent_models import (
     SvTaskRevisionRecord,
     SvToolRunRecord,
 )
-from app.application.sv_agent_mission_control import (
+from app.application.sv_agent.mission_control import (
     MissionArtifact,
     MissionBlocker,
     MissionControl,

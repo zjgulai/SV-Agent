@@ -18,7 +18,7 @@ from app.adapters.db.sv_agent_models import (
     SvTaskRecord,
     SvTaskRevisionRecord,
 )
-from app.application.sv_agent_evidence_workspace import EvidenceArtifactWorkspace
+from app.application.sv_agent.evidence_workspace import EvidenceArtifactWorkspace
 from app.domain.common.canonical import canonical_digest
 from app.domain.sv_agent.artifact_contracts import bind_artifact_digest
 from app.domain.sv_agent.entities import (

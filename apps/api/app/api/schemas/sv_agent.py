@@ -4,12 +4,12 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
-from app.application.sv_agent_evidence_workspace import (
+from app.application.sv_agent.evidence_workspace import (
     EvidencePlaneKind,
     WorkspaceAvailability,
 )
-from app.application.sv_agent_mission_control import StageKey, StageStatus
-from app.application.sv_agent_task_inbox import (
+from app.application.sv_agent.mission_control import StageKey, StageStatus
+from app.application.sv_agent.task_inbox import (
     TaskInboxLane,
     TaskInboxOrderingReason,
 )

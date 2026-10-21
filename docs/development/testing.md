@@ -131,8 +131,8 @@ Run the contract, dependency, domain-state and real PostgreSQL behavior checks t
 ```bash
 rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent/test_tool_runs.py apps/api/tests/unit/test_sv_agent_read_tool_registry.py apps/api/tests/unit/test_sv_agent_tool_architecture.py -q
 rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_read_tool_execution.py -q
-rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_tool_contracts.py apps/api/app/application/sv_agent_tool_registry.py apps/api/app/application/sv_agent_tool_handler.py apps/api/app/application/sv_agent_read_tool_execution.py apps/api/app/application/job_reads.py apps/api/app/application/script_reads.py apps/api/app/application/storyboard_reads.py apps/api/app/ports/sv_agent_tool_journal.py apps/api/app/adapters/db/sv_agent_tool_run_repository.py apps/api/tests/unit/domain/sv_agent/test_tool_runs.py apps/api/tests/unit/test_sv_agent_read_tool_registry.py apps/api/tests/unit/test_sv_agent_tool_architecture.py apps/api/tests/integration/sv_agent/test_read_tool_execution.py
-rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_tool_contracts.py apps/api/app/application/sv_agent_tool_registry.py apps/api/app/application/sv_agent_tool_handler.py apps/api/app/application/sv_agent_read_tool_execution.py apps/api/app/application/job_reads.py apps/api/app/application/script_reads.py apps/api/app/application/storyboard_reads.py apps/api/app/ports/sv_agent_tool_journal.py apps/api/app/adapters/db/sv_agent_tool_run_repository.py
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/read_tools apps/api/app/application/job_reads.py apps/api/app/application/script_reads.py apps/api/app/application/storyboard_reads.py apps/api/app/ports/sv_agent_tool_journal.py apps/api/app/adapters/db/sv_agent_tool_run_repository.py apps/api/tests/unit/domain/sv_agent/test_tool_runs.py apps/api/tests/unit/test_sv_agent_read_tool_registry.py apps/api/tests/unit/test_sv_agent_tool_architecture.py apps/api/tests/integration/sv_agent/test_read_tool_execution.py
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/read_tools apps/api/app/application/job_reads.py apps/api/app/application/script_reads.py apps/api/app/application/storyboard_reads.py apps/api/app/ports/sv_agent_tool_journal.py apps/api/app/adapters/db/sv_agent_tool_run_repository.py
 ```
 
 A green result proves the local closed registry, strict typed inputs/outputs, application
@@ -152,9 +152,9 @@ closed RunPlan, route, guard, dependency and static checks together:
 ```bash
 rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent/test_planning.py apps/api/tests/unit/test_sv_agent_orchestration.py apps/api/tests/unit/test_sv_agent_tool_architecture.py -q
 rtk uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent -q
-rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_orchestration.py apps/api/tests/unit/domain/sv_agent/test_planning.py apps/api/tests/unit/test_sv_agent_orchestration.py apps/api/tests/unit/test_sv_agent_tool_architecture.py
-rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_orchestration.py apps/api/tests/unit/domain/sv_agent/test_planning.py apps/api/tests/unit/test_sv_agent_orchestration.py apps/api/tests/unit/test_sv_agent_tool_architecture.py
-rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_orchestration.py
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/orchestration.py apps/api/tests/unit/domain/sv_agent/test_planning.py apps/api/tests/unit/test_sv_agent_orchestration.py apps/api/tests/unit/test_sv_agent_tool_architecture.py
+rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/orchestration.py apps/api/tests/unit/domain/sv_agent/test_planning.py apps/api/tests/unit/test_sv_agent_orchestration.py apps/api/tests/unit/test_sv_agent_tool_architecture.py
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/orchestration.py
 ```
 
 A green result proves the typed `sv-run-plan/v1` value, digest-bound static six-mechanism
@@ -194,9 +194,9 @@ Run its current-head, approval-currentness, HTTP contract and browser authority-
 
 ```bash
 rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_task_inbox.py apps/api/tests/integration/api/test_sv_agent_tasks.py -q
-rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
-rtk uv run --project apps/api ruff check apps/api/app/application/sv_agent_task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_task_inbox.py apps/api/tests/integration/api/test_sv_agent_tasks.py
-rtk uv run --project apps/api ruff format --check apps/api/app/application/sv_agent_task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_task_inbox.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
+rtk uv run --project apps/api ruff check apps/api/app/application/sv_agent/task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_task_inbox.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk uv run --project apps/api ruff format --check apps/api/app/application/sv_agent/task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_task_inbox.py apps/api/tests/integration/api/test_sv_agent_tasks.py
 rtk npm --prefix apps/web test -- --run
 rtk npm --prefix apps/web run lint
 rtk npm --prefix apps/web run typecheck
@@ -243,9 +243,9 @@ current-head, frontier-integrity, stage-semantics, HTTP and browser command-boun
 
 ```bash
 rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_mission_control.py apps/api/tests/integration/api/test_sv_agent_tasks.py -q
-rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
-rtk uv run --project apps/api ruff check apps/api/app/application/sv_agent_mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_mission_control.py apps/api/tests/integration/api/test_sv_agent_tasks.py
-rtk uv run --project apps/api ruff format --check apps/api/app/application/sv_agent_mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_mission_control.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
+rtk uv run --project apps/api ruff check apps/api/app/application/sv_agent/mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_mission_control.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk uv run --project apps/api ruff format --check apps/api/app/application/sv_agent/mission_control.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/app/main.py apps/api/tests/integration/sv_agent/test_mission_control.py apps/api/tests/integration/api/test_sv_agent_tasks.py
 rtk npm --prefix apps/web test -- --run src/routes/__tests__/mission-control.test.tsx src/routes/__tests__/task-inbox.test.tsx
 rtk npm --prefix apps/web test -- --run
 rtk npm --prefix apps/web run lint
@@ -274,9 +274,9 @@ graph, evidence-plane, HTTP and browser boundary checks:
 rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py -q
 rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent apps/api/tests/integration/sv_agent apps/api/tests/integration/api/test_sv_agent_tasks.py -q
 rtk uv run --project apps/api python -m pytest tools/viral_replication/tests/test_artifact_contracts.py -q
-rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent_evidence_workspace.py apps/api/app/application/sv_agent_mission_control.py apps/api/app/application/sv_agent_task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
-rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent/artifact_contracts.py apps/api/app/application/sv_agent_evidence_workspace.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py tools/viral_replication/artifact_contracts.py
-rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent/artifact_contracts.py apps/api/app/application/sv_agent_evidence_workspace.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py tools/viral_replication/artifact_contracts.py
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/evidence_workspace.py apps/api/app/application/sv_agent/mission_control.py apps/api/app/application/sv_agent/task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
+rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent/artifact_contracts.py apps/api/app/application/sv_agent/evidence_workspace.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py tools/viral_replication/artifact_contracts.py
+rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent/artifact_contracts.py apps/api/app/application/sv_agent/evidence_workspace.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py tools/viral_replication/artifact_contracts.py
 rtk npm --prefix apps/web test -- --run src/routes/__tests__/evidence-artifacts.test.tsx src/routes/__tests__/mission-control.test.tsx
 rtk npm --prefix apps/web test -- --run
 rtk npm --prefix apps/web run lint

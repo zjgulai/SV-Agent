@@ -32,6 +32,12 @@ ProductSource → immutable ProductSnapshot → ProductFact ledger
 
 The deployment is a modular monolith. Domain models do not depend on FastAPI or SQLAlchemy. API routes convert typed HTTP schemas to application commands. Repositories flush but do not implicitly commit; transaction boundaries live in use cases/routes/workers.
 
+SV-Agent application use cases are localized under `apps/api/app/application/sv_agent/`.
+Orchestration and the three read-only projections are explicit submodules; closed read-tool contracts,
+execution and registry support live under `sv_agent/read_tools/`. Both package initializers remain
+side-effect free, so callers import the named submodule Interface instead of depending on an umbrella
+façade. Domain, ports, PostgreSQL adapters and HTTP modules remain separate seams.
+
 ## Capability planes
 
 The repository contains two local evidence planes and one bounded external signal source that are deliberately outside the application runtime:

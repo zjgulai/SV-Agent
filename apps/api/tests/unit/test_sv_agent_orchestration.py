@@ -4,7 +4,7 @@ from uuid import UUID
 
 import pytest
 
-from app.application.sv_agent_orchestration import (
+from app.application.sv_agent.orchestration import (
     OrchestrationEvaluator,
     PlanningDisposition,
     RunPlanner,

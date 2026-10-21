@@ -35,9 +35,9 @@ from app.api.schemas.sv_agent import (
     TaskInboxItemOutput,
     TaskInboxOutput,
 )
-from app.application.sv_agent_evidence_workspace import EvidenceArtifactWorkspace
-from app.application.sv_agent_mission_control import MissionControl
-from app.application.sv_agent_task_inbox import TaskInbox
+from app.application.sv_agent.evidence_workspace import EvidenceArtifactWorkspace
+from app.application.sv_agent.mission_control import MissionControl
+from app.application.sv_agent.task_inbox import TaskInbox
 from app.domain.sv_agent.errors import JournalIntegrityError, TaskNotFound
 
 router = APIRouter(prefix="/api/v1/sv-agent", tags=["sv-agent"])

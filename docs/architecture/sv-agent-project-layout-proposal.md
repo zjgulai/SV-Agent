@@ -1,8 +1,8 @@
 # SV-Agent 项目目录整理方案
 
-状态：结构审计与实施提案  
+状态：SV-ORG-101 已实施，后续门待批准
 审计日期：2026-10-21  
-实施状态：未执行文件搬移
+实施状态：SV-ORG-000 与 SV-ORG-101 已完成；未执行 checkout、adapter 或 Web 路径搬移
 
 ## 结论
 
@@ -12,10 +12,11 @@ SV-Agent 以当前 repository root 为 Git 根，`origin` 指向
 `docs/` / `outputs/`，确定性工具在 `tools/`，数据库历史在 `migrations/`，公开静态体验在
 `sites/`，生成式导航在 `.ua/`。
 
-推荐保留这套顶层结构，不新增 `specs/`、`prompts/`、`plans/`、`build/`、`.claude/` 或第二棵
-`SV-Agent/` 门面树。下一步只在现有运行目录内部提高 SV-Agent 的 locality：先把 API
-application 文件收拢为一个 package，再选择性收拢 PostgreSQL adapter 和 Web feature；每次移动都
-保留有时限的兼容 import、同步测试与图谱，并在当前 SV-201～SV-204 改动提交成基线后进行。
+保留这套顶层结构，不新增 `specs/`、`prompts/`、`plans/`、`build/`、`.claude/` 或第二棵
+`SV-Agent/` 门面树。SV-ORG-101 已把 API application implementation 收拢到
+`application/sv_agent/` package；调用方盘点没有发现动态导入、entry point 或已声明的仓库外 caller，
+因此同批更新全部 imports，不保留旧 flat-module façade。PostgreSQL adapter 与 Web feature 是否继续
+收拢，仍分别受后续 ticket 和独立批准门约束。
 
 Git 仓库身份已经是 `SV-Agent`，但本地 checkout 文件夹名尚未与仓库名对齐。这只是物理路径，不应通过在
 其中再建一层 `SV-Agent/` 来修正。若要把 checkout 文件夹改名，必须作为独立运维 ticket：先形成
@@ -46,7 +47,7 @@ Git 仓库身份已经是 `SV-Agent`，但本地 checkout 文件夹名尚未与�
 
 因此，参考结构带来的主要缺口不是顶层文件夹，而是：
 
-- SV-Agent application implementation 仍以多个 `sv_agent_*.py` 平铺在共享目录；
+- SV-Agent application locality 已由 SV-ORG-101 闭合；后续改动必须保持 package Interface 无副作用；
 - PostgreSQL models/repositories 分散为三个同前缀文件；
 - Web 的 route、feature state 和 CSS 分处两层，页面内部的 feature locality 不够；
 - 高风险目录还没有 scoped local guide；
@@ -60,7 +61,7 @@ Git 仓库身份已经是 `SV-Agent`，但本地 checkout 文件夹名尚未与�
 | 产品与架构合同 | `docs/product/sv-agent-*.md`、`docs/architecture/`、`docs/adr/0007-*` | Native Agent spec、实施 tickets、运行和授权决策 |
 | 领域语言 | `CONTEXT-MAP.md`、`docs/contexts/viral-replication/` | 五个上下文及 Viral Replication 语言 |
 | Domain | `apps/api/app/domain/sv_agent/` | Task/Run、planning、reviewing、ToolRun、canonical artifact contracts |
-| Application | `apps/api/app/application/sv_agent_*.py` | orchestration、read tools、Task Inbox、Mission Control、Evidence Workspace |
+| Application | `apps/api/app/application/sv_agent/` | orchestration、read tools、Task Inbox、Mission Control、Evidence Workspace；package initializer 不导入 implementation |
 | HTTP interface | `apps/api/app/api/routes/sv_agent.py`、`apps/api/app/api/schemas/sv_agent.py` | 目前只有只读 SV-Agent HTTP projection 和 browser-local brief 配套契约 |
 | PostgreSQL adapter | `apps/api/app/adapters/db/sv_agent_*.py` | models、repository、ToolRun journal adapter |
 | Port | `apps/api/app/ports/sv_agent_tool_journal.py` | 已有 ToolRun journal seam；不要为目录美观制造没有第二 adapter 的 port |
@@ -157,9 +158,9 @@ apps/web/src/
 
 | Current | Target | 动作 | 兼容策略 |
 | --- | --- | --- | --- |
-| `application/sv_agent_orchestration.py` | `application/sv_agent/orchestration.py` | `git mv` | 一批内更新全部 imports；如外部工具仍依赖旧路径，保留一版显式 re-export |
-| `application/sv_agent_{task_inbox,mission_control,evidence_workspace}.py` | `application/sv_agent/{task_inbox,mission_control,evidence_workspace}.py` | `git mv` | HTTP route 与 tests 同批更新 |
-| `application/sv_agent_tool_*.py`、`sv_agent_read_tool_execution.py` | `application/sv_agent/read_tools/` | `git mv` | `read_tools/__init__.py` 只导出稳定 Interface，不导出 implementation helpers |
+| `application/sv_agent_orchestration.py` | `application/sv_agent/orchestration.py` | 已完成 `git mv` | 仓库内 callers 已更新；无外部 caller 证据，不保留旧 façade |
+| `application/sv_agent_{task_inbox,mission_control,evidence_workspace}.py` | `application/sv_agent/{task_inbox,mission_control,evidence_workspace}.py` | 已完成 `git mv` | HTTP route 与 tests 已同批更新 |
+| `application/sv_agent_tool_*.py`、`sv_agent_read_tool_execution.py` | `application/sv_agent/read_tools/` | 已完成 `git mv` | `read_tools/__init__.py` 无副作用；callers 从明确 submodule 导入 |
 | `adapters/db/sv_agent_models.py` 等 | `adapters/db/sv_agent/` | 第二阶段可选 move | 保留一版旧 module re-export；migration 不移动 |
 | `features/sv-agent/*.css` | `features/sv-agent/styles/` | Web 阶段 move | 页面 import 同批更新 |
 | `features/sv-agent/browser*Drafts.ts` | `features/sv-agent/state/` | Web 阶段 move | 不改变 storage key/version |
@@ -236,6 +237,8 @@ apps/web/src/
 
 ### SV-ORG-101 — Application locality
 
+状态：已完成（2026-10-21）。
+
 - 新建 `apps/api/app/application/sv_agent/`；
 - 用 `git mv` 收拢 orchestration、三类 read projection 与 read-tool implementation；
 - 保持 domain、ports、adapters 和 HTTP interface 不动；
@@ -304,9 +307,7 @@ rtk npm --prefix apps/web run build
 
 ## 当前冲突边界
 
-审计时工作区在 `main`，SV-201～SV-204 涉及的 API、Web、文档与 `.ua` 文件仍有大量未提交修改，
-其中包括本提案希望后续移动的所有 application pages/modules。此时直接搬移会把功能实现、格式化、import
-变更和目录重构混在一个 diff 中，也可能覆盖其他 Agent 正在完成的工作。
-
-因此本次只新增方案，不执行目录 move、垃圾删除、commit、push 或部署。第一个可执行门是
-`SV-ORG-000`，不是 `SV-ORG-101`。
+初次审计时工作区存在 SV-201～SV-204 未提交实现，因此先由 SV-ORG-000 建立了两个本地基线提交。
+SV-ORG-101 随后只执行 application 路径、import、architecture test、测试命令和图谱同步；没有混入行为、
+数据库、adapter、Web、垃圾删除、push 或部署变更。当前后续边界仍是 SV-ORG-102、SV-ORG-201、
+SV-ORG-301 与 SV-ORG-401，各自需要独立批准和可回滚提交。

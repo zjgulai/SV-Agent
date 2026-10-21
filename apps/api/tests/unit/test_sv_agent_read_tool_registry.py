@@ -5,7 +5,7 @@ from uuid import UUID
 import pytest
 from pydantic import ValidationError
 
-from app.application.sv_agent_tool_contracts import (
+from app.application.sv_agent.read_tools.contracts import (
     ProductTruthReadOutput,
     ReadResult,
     ReadResultState,
@@ -19,7 +19,7 @@ from app.application.sv_agent_tool_contracts import (
     StoryboardReadOutput,
     StoryboardReadValue,
 )
-from app.application.sv_agent_tool_registry import (
+from app.application.sv_agent.read_tools.registry import (
     ReadToolNotRegistered,
     ReadToolRuntime,
     ReadToolUnavailable,
