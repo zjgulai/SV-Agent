@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "445c219c4747e6e4a7c1de71c40565ac239e2192",
-  "generatedAt": "2026-10-21T13:41:41Z",
+  "gitCommitHash": "ff85cb8caee40a01015f9b3b4f097bd3d7477161",
+  "generatedAt": "2026-10-22T02:36:26.057Z",
   "files": {
     ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md": {
       "filePath": ".agents/workflows/viral-replication/01-narrative-transformation/SOP.md",
@@ -2087,7 +2087,7 @@
     },
     "apps/api/app/adapters/db/sv_agent_repository.py": {
       "filePath": "apps/api/app/adapters/db/sv_agent_repository.py",
-      "contentHash": "7a9f977a883256b515504da2ec297673700ec9f960aa3a214796689400ecedf0",
+      "contentHash": "b9e3d986e7bb68d823d141d6592a94aa16027890fc24e007899cbad2f0fe2c20",
       "functions": [
         {
           "name": "_validate_idempotency_key",
@@ -2172,7 +2172,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 295
+          "lineCount": 312
         }
       ],
       "imports": [
@@ -2277,7 +2277,7 @@
         "_replay_union",
         "_replay_entry_from_row"
       ],
-      "totalLines": 480,
+      "totalLines": 497,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/adapters/db/sv_agent_tool_run_repository.py": {
@@ -3727,7 +3727,7 @@
     },
     "apps/api/app/api/routes/sv_agent.py": {
       "filePath": "apps/api/app/api/routes/sv_agent.py",
-      "contentHash": "1c58ab94e3f7b3941ff39158354733aa531a057277fae5596f70239c3a6f6a3d",
+      "contentHash": "174f5659d58bd16d3bdabfbdfaa801a46f337813432a34c78291642e1b6a9cfc",
       "functions": [
         {
           "name": "list_tasks",
@@ -3747,6 +3747,16 @@
           "returnType": "EvidenceArtifactWorkspaceOutput",
           "exported": true,
           "lineCount": 141
+        },
+        {
+          "name": "get_task_approval_replay",
+          "params": [
+            "task_id",
+            "session"
+          ],
+          "returnType": "ApprovalReplayOutput",
+          "exported": true,
+          "lineCount": 112
         },
         {
           "name": "get_task_mission_control",
@@ -3807,6 +3817,12 @@
         {
           "source": "app.api.schemas.sv_agent",
           "specifiers": [
+            "ApprovalAuditOutput",
+            "ApprovalCardOutput",
+            "ApprovalReplayOutput",
+            "ApprovalReplayRunOutput",
+            "ApprovalReplaySummaryOutput",
+            "ApprovalReplayTaskOutput",
             "EvidenceArtifactEdgeOutput",
             "EvidenceArtifactGraphOutput",
             "EvidenceArtifactNodeOutput",
@@ -3831,8 +3847,16 @@
             "MissionTaskOutput",
             "MissionToolRunOutput",
             "PerformanceWindowOutput",
+            "ReplayTimelineEntryOutput",
+            "ReplayTimelineOutput",
             "TaskInboxItemOutput",
             "TaskInboxOutput"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent.approval_replay",
+          "specifiers": [
+            "ApprovalReplayWorkspace"
           ]
         },
         {
@@ -3856,6 +3880,8 @@
         {
           "source": "app.domain.sv_agent.errors",
           "specifiers": [
+            "EventDigestMismatch",
+            "EventSchemaUnsupported",
             "JournalIntegrityError",
             "TaskNotFound"
           ]
@@ -3864,9 +3890,10 @@
       "exports": [
         "list_tasks",
         "get_task_evidence_artifacts",
+        "get_task_approval_replay",
         "get_task_mission_control"
       ],
-      "totalLines": 387,
+      "totalLines": 516,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/api/schemas/__init__.py": {
@@ -4369,7 +4396,7 @@
     },
     "apps/api/app/api/schemas/sv_agent.py": {
       "filePath": "apps/api/app/api/schemas/sv_agent.py",
-      "contentHash": "1646f0f00a133bf714ad0770b211f6ac382973e6fc2e4aabc195db9d9b25e759",
+      "contentHash": "53605b5ece7d11192a5a7da3cb1a57168c82c1ba7f74167445ce540480930bbe",
       "functions": [],
       "classes": [
         {
@@ -4740,6 +4767,116 @@
           ],
           "exported": true,
           "lineCount": 11
+        },
+        {
+          "name": "ApprovalReplayTaskOutput",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "subject"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "ApprovalReplayRunOutput",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "run_revision",
+            "state"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "ApprovalReplaySummaryOutput",
+          "methods": [],
+          "properties": [
+            "pending",
+            "decided",
+            "stale"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "ApprovalAuditOutput",
+          "methods": [],
+          "properties": [
+            "task_revision",
+            "run_revision"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "ApprovalCardOutput",
+          "methods": [],
+          "properties": [
+            "request_version",
+            "gate_kind",
+            "target_artifact_type",
+            "target_version",
+            "decision_state",
+            "scope_state",
+            "predicted_effects",
+            "explicit_non_effects",
+            "evidence",
+            "limitations",
+            "stale_conditions",
+            "decision",
+            "decided_at",
+            "audit"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "ReplayTimelineEntryOutput",
+          "methods": [],
+          "properties": [
+            "event_sequence",
+            "kind",
+            "event_type",
+            "summary",
+            "task_revision",
+            "run_revision"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "ReplayTimelineOutput",
+          "methods": [],
+          "properties": [
+            "snapshot_through_sequence",
+            "next_after_sequence",
+            "truncated",
+            "entries"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "ApprovalReplayOutput",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "task",
+            "run",
+            "summary",
+            "decision_vocabulary",
+            "decision_available",
+            "approvals",
+            "approvals_truncated",
+            "timeline",
+            "explicit_non_effects"
+          ],
+          "exported": true,
+          "lineCount": 14
         }
       ],
       "imports": [
@@ -4767,6 +4904,14 @@
           "specifiers": [
             "BaseModel",
             "ConfigDict"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent.approval_replay",
+          "specifiers": [
+            "ApprovalDecisionState",
+            "ApprovalScopeState",
+            "ReplayTimelineKind"
           ]
         },
         {
@@ -4804,6 +4949,7 @@
         {
           "source": "app.domain.sv_agent.runtime_records",
           "specifiers": [
+            "ApprovalDecision",
             "ApprovalGateKind",
             "ArtifactStatus",
             "ArtifactType",
@@ -4840,9 +4986,17 @@
         "EvidenceArtifactGraphOutput",
         "EvidencePlaneOutput",
         "EvidenceComparisonOutput",
-        "EvidenceArtifactWorkspaceOutput"
+        "EvidenceArtifactWorkspaceOutput",
+        "ApprovalReplayTaskOutput",
+        "ApprovalReplayRunOutput",
+        "ApprovalReplaySummaryOutput",
+        "ApprovalAuditOutput",
+        "ApprovalCardOutput",
+        "ReplayTimelineEntryOutput",
+        "ReplayTimelineOutput",
+        "ApprovalReplayOutput"
       ],
-      "totalLines": 324,
+      "totalLines": 416,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/application/__init__.py": {
@@ -7130,6 +7284,440 @@
       "imports": [],
       "exports": [],
       "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/app/application/sv_agent/approval_replay.py": {
+      "filePath": "apps/api/app/application/sv_agent/approval_replay.py",
+      "contentHash": "2b2d1dce63379a81db235054cc2f07260c2d6320a5be916aeaa122edd9b4693b",
+      "functions": [
+        {
+          "name": "_statement_list",
+          "params": [
+            "value",
+            "field"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_statement_mapping",
+          "params": [
+            "value",
+            "field"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_safe_visible_text",
+          "params": [
+            "value",
+            "field",
+            "max_length"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_closed_handle",
+          "params": [
+            "payload",
+            "keys"
+          ],
+          "returnType": "Mapping[str, Any]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_uuid",
+          "params": [
+            "value"
+          ],
+          "returnType": "UUID",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_positive_int",
+          "params": [
+            "value"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_digest",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_text",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_task_event_summary",
+          "params": [
+            "event_type"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_tool_event_summary",
+          "params": [
+            "event_type"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_task_replay_entry",
+          "params": [
+            "record"
+          ],
+          "returnType": "ReplayEntry",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [
+        {
+          "name": "ApprovalDecisionState",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "ApprovalScopeState",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "ReplayTimelineKind",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "ApprovalReplayTask",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "task_revision",
+            "subject"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "ApprovalReplayRun",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "run_revision",
+            "state"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "ApprovalAudit",
+          "methods": [],
+          "properties": [
+            "task_revision",
+            "run_revision"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "ApprovalCard",
+          "methods": [],
+          "properties": [
+            "request_version",
+            "gate_kind",
+            "target_artifact_type",
+            "target_version",
+            "decision_state",
+            "scope_state",
+            "predicted_effects",
+            "explicit_non_effects",
+            "evidence",
+            "limitations",
+            "stale_conditions",
+            "decision",
+            "decided_at",
+            "audit"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "ApprovalSummary",
+          "methods": [],
+          "properties": [
+            "pending",
+            "decided",
+            "stale"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "ReplayTimelineEntry",
+          "methods": [],
+          "properties": [
+            "event_sequence",
+            "kind",
+            "event_type",
+            "summary",
+            "task_revision",
+            "run_revision"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "ReplayTimeline",
+          "methods": [],
+          "properties": [
+            "snapshot_through_sequence",
+            "next_after_sequence",
+            "truncated",
+            "entries"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "ApprovalReplayProjection",
+          "methods": [],
+          "properties": [
+            "schema_version",
+            "authority",
+            "task",
+            "run",
+            "summary",
+            "decision_vocabulary",
+            "decision_available",
+            "approvals",
+            "approvals_truncated",
+            "timeline",
+            "explicit_non_effects"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_TaskSnapshot",
+          "methods": [],
+          "properties": [
+            "task_id",
+            "current_revision",
+            "active_run_id",
+            "updated_at"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_RunSnapshot",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "task_id",
+            "task_revision",
+            "revision",
+            "state",
+            "updated_at"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "ApprovalReplayWorkspace",
+          "methods": [
+            "__init__",
+            "inspect",
+            "_load_task",
+            "_load_run",
+            "_load_approvals",
+            "_load_decisions",
+            "_project_approval",
+            "_load_approval_target",
+            "_validate_decision",
+            "_project_timeline_entry",
+            "_validate_plan_event",
+            "_validate_artifact_event",
+            "_validate_approval_event",
+            "_validate_decision_event",
+            "_validate_tool_run_event",
+            "_assert_snapshot_unchanged",
+            "_assert_approval_journal_complete"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 629
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Mapping"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "enum",
+          "specifiers": [
+            "StrEnum"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "String",
+            "cast",
+            "exists",
+            "func",
+            "select",
+            "tuple_"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvApprovalRequestRecord",
+            "SvArtifactRecord",
+            "SvDecisionEventRecord",
+            "SvRunPlanRecord",
+            "SvRunRecord",
+            "SvTaskEventRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord",
+            "SvToolRunEventRecord",
+            "SvToolRunRecord"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_repository",
+          "specifiers": [
+            "SvAgentRepository"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "RunState"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError",
+            "TaskNotFound"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ApprovalDecision",
+            "ApprovalGateKind",
+            "ArtifactStatus",
+            "ArtifactType",
+            "DecisionEventType",
+            "EventStream",
+            "ReplayEntry",
+            "ReplayQuery",
+            "TaskEventType",
+            "ToolRunEventType",
+            "ToolRunStatus"
+          ]
+        }
+      ],
+      "exports": [
+        "ApprovalDecisionState",
+        "ApprovalScopeState",
+        "ReplayTimelineKind",
+        "ApprovalReplayTask",
+        "ApprovalReplayRun",
+        "ApprovalAudit",
+        "ApprovalCard",
+        "ApprovalSummary",
+        "ReplayTimelineEntry",
+        "ReplayTimeline",
+        "ApprovalReplayProjection",
+        "_TaskSnapshot",
+        "_RunSnapshot",
+        "ApprovalReplayWorkspace",
+        "_statement_list",
+        "_statement_mapping",
+        "_safe_visible_text",
+        "_closed_handle",
+        "_uuid",
+        "_positive_int",
+        "_digest",
+        "_text",
+        "_task_event_summary",
+        "_tool_event_summary",
+        "_task_replay_entry"
+      ],
+      "totalLines": 956,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/application/sv_agent/evidence_workspace.py": {
@@ -13444,7 +14032,7 @@
     },
     "apps/api/app/domain/sv_agent/runtime_records.py": {
       "filePath": "apps/api/app/domain/sv_agent/runtime_records.py",
-      "contentHash": "ac0c8b306089b27cb1271aa183036c431854ca20740ac16c29a6c19106866f92",
+      "contentHash": "f038eba7a572c5ed2e083aa9124deb1d98895685e45637e21dbdc66b27738d49",
       "functions": [
         {
           "name": "_find_private_field",
@@ -13612,11 +14200,12 @@
             "task_id",
             "entries",
             "snapshot_through_sequence",
+            "snapshot_event_count",
             "next_after_sequence",
             "integrity"
           ],
           "exported": true,
-          "lineCount": 15
+          "lineCount": 20
         }
       ],
       "imports": [
@@ -13698,7 +14287,7 @@
         "ReplayQuery",
         "ReplayPage"
       ],
-      "totalLines": 273,
+      "totalLines": 278,
       "hasStructuralAnalysis": true
     },
     "apps/api/app/domain/sv_agent/tool_runs.py": {
@@ -16057,7 +16646,7 @@
     },
     "apps/api/tests/integration/api/test_sv_agent_tasks.py": {
       "filePath": "apps/api/tests/integration/api/test_sv_agent_tasks.py",
-      "contentHash": "97876500b67b04a69c99d39c3fa68e4fdbff4c7511ace0f9591bf006df701b44",
+      "contentHash": "09015cad38601ded999ca1f0e2d561b847ce0abab4deb88d7a24600187ee6be4",
       "functions": [
         {
           "name": "_runtime_row_counts",
@@ -16122,6 +16711,38 @@
         },
         {
           "name": "test_evidence_artifact_route_returns_stable_problem_details",
+          "params": [
+            "client",
+            "monkeypatch",
+            "error",
+            "status",
+            "code"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "test_approval_replay_route_returns_a_read_only_closed_projection",
+          "params": [
+            "client",
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 89
+        },
+        {
+          "name": "test_approval_replay_route_returns_stable_task_not_found_problem",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_approval_replay_route_returns_stable_problem_details",
           "params": [
             "client",
             "monkeypatch",
@@ -16225,6 +16846,8 @@
             "SvTaskEventRecord",
             "SvTaskRecord",
             "SvTaskRevisionRecord",
+            "SvToolJobLinkRecord",
+            "SvToolRunEventRecord",
             "SvToolRunRecord"
           ]
         },
@@ -16254,6 +16877,8 @@
         {
           "source": "app.domain.sv_agent.errors",
           "specifiers": [
+            "EventDigestMismatch",
+            "EventSchemaUnsupported",
             "JournalIntegrityError"
           ]
         },
@@ -16273,11 +16898,14 @@
         "test_evidence_artifact_route_returns_a_read_only_closed_projection",
         "test_evidence_artifact_route_returns_stable_task_not_found_problem",
         "test_evidence_artifact_route_returns_stable_problem_details",
+        "test_approval_replay_route_returns_a_read_only_closed_projection",
+        "test_approval_replay_route_returns_stable_task_not_found_problem",
+        "test_approval_replay_route_returns_stable_problem_details",
         "test_mission_control_route_returns_stable_task_not_found_problem",
         "test_mission_control_route_returns_stable_problem_details",
         "_nested_keys"
       ],
-      "totalLines": 407,
+      "totalLines": 556,
       "hasStructuralAnalysis": true
     },
     "apps/api/tests/integration/conftest.py": {
@@ -16391,6 +17019,440 @@
       "imports": [],
       "exports": [],
       "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/tests/integration/sv_agent/test_approval_replay.py": {
+      "filePath": "apps/api/tests/integration/sv_agent/test_approval_replay.py",
+      "contentHash": "032505251d6d53f7ece215cf5bc31931170e933866a63d4bd3ab45d94c744ca1",
+      "functions": [
+        {
+          "name": "_task",
+          "params": [
+            "subject"
+          ],
+          "returnType": "Task",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_seed_reviewable_run",
+          "params": [
+            "session",
+            "decision_request_digest",
+            "limitation_message",
+            "approval_artifact_id",
+            "approval_artifact_digest",
+            "approval_artifact_type",
+            "artifact_status",
+            "tool_payload_id",
+            "tool_payload_overrides",
+            "tool_event_run_revision",
+            "include_approval_event",
+            "task_subject"
+          ],
+          "returnType": "Task",
+          "exported": true,
+          "lineCount": 278
+        },
+        {
+          "name": "test_workspace_projects_version_bound_approval_and_ordered_replay",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 53
+        },
+        {
+          "name": "test_workspace_fails_closed_on_decision_binding_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_workspace_rejects_private_paths_in_public_approval_statements",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_workspace_rejects_embedded_private_identifiers_in_public_statements",
+          "params": [
+            "db_session",
+            "limitation_message"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_workspace_rejects_credentials_in_public_statements",
+          "params": [
+            "db_session",
+            "limitation_message"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_workspace_rejects_unsafe_task_subjects",
+          "params": [
+            "db_session",
+            "task_subject"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_workspace_fails_closed_when_approval_target_binding_drifts",
+          "params": [
+            "db_session",
+            "field",
+            "value"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_workspace_marks_an_inactive_target_as_stale",
+          "params": [
+            "db_session",
+            "artifact_status"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_workspace_marks_a_target_with_a_newer_version_as_stale",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "test_workspace_rejects_unknown_approval_target_types",
+          "params": [
+            "db_session",
+            "approval_artifact_type"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_workspace_rejects_tool_run_event_payload_binding_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_workspace_rejects_tool_run_payload_contract_drift",
+          "params": [
+            "db_session",
+            "field",
+            "value"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_workspace_rejects_tool_run_scope_drift",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_workspace_rejects_approval_rows_without_a_journal_event",
+          "params": [
+            "db_session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_workspace_fails_closed_when_event_highwater_changes_mid_projection",
+          "params": [
+            "db_session",
+            "monkeypatch"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "test_workspace_fails_closed_when_run_head_changes_mid_projection",
+          "params": [
+            "db_session",
+            "monkeypatch"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "update"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvApprovalRequestRecord",
+            "SvArtifactRecord",
+            "SvDecisionEventRecord",
+            "SvRunPlanRecord",
+            "SvRunRecord",
+            "SvTaskEventRecord",
+            "SvTaskRecord",
+            "SvTaskRevisionRecord",
+            "SvToolRunEventRecord",
+            "SvToolRunRecord"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent.approval_replay",
+          "specifiers": [
+            "ApprovalReplayWorkspace"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "GoalTrack",
+            "PerformanceWindow",
+            "RightsState",
+            "TargetPlatform",
+            "Task",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ActorKind",
+            "ActorStamp",
+            "DecisionEventType",
+            "TaskEventType",
+            "ToolRunEventType"
+          ]
+        }
+      ],
+      "exports": [
+        "_task",
+        "_seed_reviewable_run",
+        "test_workspace_projects_version_bound_approval_and_ordered_replay",
+        "test_workspace_fails_closed_on_decision_binding_drift",
+        "test_workspace_rejects_private_paths_in_public_approval_statements",
+        "test_workspace_rejects_embedded_private_identifiers_in_public_statements",
+        "test_workspace_rejects_credentials_in_public_statements",
+        "test_workspace_rejects_unsafe_task_subjects",
+        "test_workspace_fails_closed_when_approval_target_binding_drifts",
+        "test_workspace_marks_an_inactive_target_as_stale",
+        "test_workspace_marks_a_target_with_a_newer_version_as_stale",
+        "test_workspace_rejects_unknown_approval_target_types",
+        "test_workspace_rejects_tool_run_event_payload_binding_drift",
+        "test_workspace_rejects_tool_run_payload_contract_drift",
+        "test_workspace_rejects_tool_run_scope_drift",
+        "test_workspace_rejects_approval_rows_without_a_journal_event",
+        "test_workspace_fails_closed_when_event_highwater_changes_mid_projection",
+        "test_workspace_fails_closed_when_run_head_changes_mid_projection"
+      ],
+      "totalLines": 730,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/tests/integration/sv_agent/test_approval_replay_concurrency.py": {
+      "filePath": "apps/api/tests/integration/sv_agent/test_approval_replay_concurrency.py",
+      "contentHash": "ce9b09291889b1702c4ce783ff3379bd2cc59857051d6417e47caa8346f7857b",
+      "functions": [
+        {
+          "name": "_database_url",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_task",
+          "params": [],
+          "returnType": "Task",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_task_event",
+          "params": [
+            "task",
+            "marker"
+          ],
+          "returnType": "SvTaskEventRecord",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "test_workspace_detects_a_lower_sequence_committed_after_its_highwater",
+          "params": [
+            "monkeypatch"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 54
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID",
+            "uuid4"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "async_sessionmaker",
+            "create_async_engine"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_models",
+          "specifiers": [
+            "SvTaskEventRecord"
+          ]
+        },
+        {
+          "source": "app.adapters.db.sv_agent_repository",
+          "specifiers": [
+            "SvAgentRepository"
+          ]
+        },
+        {
+          "source": "app.application.sv_agent.approval_replay",
+          "specifiers": [
+            "ApprovalReplayWorkspace"
+          ]
+        },
+        {
+          "source": "app.domain.common.canonical",
+          "specifiers": [
+            "canonical_digest"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.entities",
+          "specifiers": [
+            "GoalTrack",
+            "PerformanceWindow",
+            "RightsState",
+            "TargetPlatform",
+            "Task",
+            "TaskBrief"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.errors",
+          "specifiers": [
+            "JournalIntegrityError"
+          ]
+        },
+        {
+          "source": "app.domain.sv_agent.runtime_records",
+          "specifiers": [
+            "ActorKind",
+            "ActorStamp",
+            "TaskEventType"
+          ]
+        }
+      ],
+      "exports": [
+        "_database_url",
+        "_task",
+        "_task_event",
+        "test_workspace_detects_a_lower_sequence_committed_after_its_highwater"
+      ],
+      "totalLines": 129,
       "hasStructuralAnalysis": true
     },
     "apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py": {
@@ -17575,7 +18637,7 @@
     },
     "apps/api/tests/integration/sv_agent/test_runtime_journal_schema.py": {
       "filePath": "apps/api/tests/integration/sv_agent/test_runtime_journal_schema.py",
-      "contentHash": "48bdace44221a4ee3e2b53880d4a199cd8ae5a59d2e640e87752c59f0a5d4d61",
+      "contentHash": "535e99832e86bcef93ed43bbded29358f00d777d1907d47046e0d851d51a7d54",
       "functions": [
         {
           "name": "_task",
@@ -17618,7 +18680,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 151
+          "lineCount": 154
         },
         {
           "name": "test_replay_fails_closed_on_private_or_digest_invalid_events",
@@ -17758,7 +18820,7 @@
         "test_replay_fails_closed_on_private_or_digest_invalid_events",
         "test_database_rejects_oversized_event_payloads"
       ],
-      "totalLines": 400,
+      "totalLines": 403,
       "hasStructuralAnalysis": true
     },
     "apps/api/tests/integration/sv_agent/test_task_concurrency.py": {
@@ -21782,13 +22844,13 @@
     },
     "apps/web/src/App.tsx": {
       "filePath": "apps/web/src/App.tsx",
-      "contentHash": "95320fbb1d0cf696c1f4596a1e9337a10c38c81fdf1676b21c7bd8f847254007",
+      "contentHash": "c563ac5ae33c30b3a1018ad676e154a768f2351f315f80713ad0f2f0bf4a3dda",
       "functions": [
         {
           "name": "AppRoutes",
           "params": [],
           "exported": true,
-          "lineCount": 36
+          "lineCount": 37
         }
       ],
       "classes": [],
@@ -21825,6 +22887,12 @@
           "source": "./routes/CompareVersionsPage",
           "specifiers": [
             "CompareVersionsPage"
+          ]
+        },
+        {
+          "source": "./routes/ApprovalReplayPage",
+          "specifiers": [
+            "ApprovalReplayPage"
           ]
         },
         {
@@ -21891,12 +22959,12 @@
       "exports": [
         "AppRoutes"
       ],
-      "totalLines": 58,
+      "totalLines": 60,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/api/client.ts": {
       "filePath": "apps/web/src/api/client.ts",
-      "contentHash": "0a991588c8d345437c2aa73a2209e3a61e932a268311d6973ad53e8489b82390",
+      "contentHash": "2b66003a270c2e46f11701a31d2b42df49778feab0c87a081be6a4d126a2b259",
       "functions": [
         {
           "name": "safeJobPathFromLocation",
@@ -21955,7 +23023,7 @@
         "safeJobPathFromLocation",
         "api"
       ],
-      "totalLines": 835,
+      "totalLines": 924,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/features/generations/useJobPolling.test.ts": {
@@ -22372,7 +23440,7 @@
     },
     "apps/web/src/features/sv-agent/AGENTS.md": {
       "filePath": "apps/web/src/features/sv-agent/AGENTS.md",
-      "contentHash": "638612b28ac0bbf447d50d9117c947cef02fb3d0795f6d2579a44e783223dd66",
+      "contentHash": "ebd4e33d5eccdf4e9736187a7d05f4eefa5f17f20c73adf75d4e474a12e6ba22",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -22542,6 +23610,16 @@
       "totalLines": 82,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/features/sv-agent/styles/approval-replay.css": {
+      "filePath": "apps/web/src/features/sv-agent/styles/approval-replay.css",
+      "contentHash": "bf86b11b32cbd70b9231bbf65e1c5176940c559bb0f6ff71ed24b067ecc1a685",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 127,
+      "hasStructuralAnalysis": false
+    },
     "apps/web/src/features/sv-agent/styles/evidence-artifacts.css": {
       "filePath": "apps/web/src/features/sv-agent/styles/evidence-artifacts.css",
       "contentHash": "1eb6cbdd8d9785105255141349c0e0ae80b4f668462e5b43da37f60505d5ae4e",
@@ -22626,6 +23704,69 @@
       ],
       "exports": [],
       "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/routes/ApprovalReplayPage.tsx": {
+      "filePath": "apps/web/src/routes/ApprovalReplayPage.tsx",
+      "contentHash": "25c03bc70d0b5e8a785003a6b0291d7031981f6c7822eb45a40c3987023d6645",
+      "functions": [
+        {
+          "name": "ListBlock",
+          "params": [
+            "{\n  title,\n  items,\n  empty,\n}"
+          ],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "ApprovalCard",
+          "params": [
+            "{\n  approval,\n}"
+          ],
+          "exported": false,
+          "lineCount": 61
+        },
+        {
+          "name": "ApprovalReplayPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 160
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Link",
+            "useParams"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "api",
+            "ApprovalDecision",
+            "ApprovalReplayProjection",
+            "EvidenceArtifactType",
+            "ReplayTimelineKind"
+          ]
+        },
+        {
+          "source": "../features/sv-agent/styles/approval-replay.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "ApprovalReplayPage"
+      ],
+      "totalLines": 292,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/routes/CompareVersionsPage.tsx": {
@@ -22831,7 +23972,7 @@
     },
     "apps/web/src/routes/EvidenceArtifactsPage.tsx": {
       "filePath": "apps/web/src/routes/EvidenceArtifactsPage.tsx",
-      "contentHash": "dd4e6d6045e9dd0d893af80a2408319670b4f005041040ae3ca98dd8fe4ed46a",
+      "contentHash": "d35b11ccd35604dbd6226195670de78c47351aa720fde1d22ff9e74d399c50e6",
       "functions": [
         {
           "name": "localizedPlaneLimitations",
@@ -22869,7 +24010,7 @@
           "name": "EvidenceArtifactsPage",
           "params": [],
           "exported": true,
-          "lineCount": 202
+          "lineCount": 205
         }
       ],
       "classes": [],
@@ -22907,7 +24048,7 @@
       "exports": [
         "EvidenceArtifactsPage"
       ],
-      "totalLines": 428,
+      "totalLines": 431,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/routes/GenerateScriptPage.tsx": {
@@ -23048,7 +24189,7 @@
     },
     "apps/web/src/routes/MissionControlPage.tsx": {
       "filePath": "apps/web/src/routes/MissionControlPage.tsx",
-      "contentHash": "16ef4a6ed0ded8ea993ac49e6ac4fdf20f2e872a8b1a560deadc864f7763eb15",
+      "contentHash": "c552638f8e683a848411983e4f4f772d6cbb4dedcdccd73c3544b2a0e3885509",
       "functions": [
         {
           "name": "localizedBlockerMessage",
@@ -23070,7 +24211,7 @@
           "name": "MissionControlPage",
           "params": [],
           "exported": true,
-          "lineCount": 323
+          "lineCount": 329
         }
       ],
       "classes": [],
@@ -23111,7 +24252,7 @@
       "exports": [
         "MissionControlPage"
       ],
-      "totalLines": 463,
+      "totalLines": 469,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/routes/NewProductPage.tsx": {
@@ -23615,6 +24756,58 @@
         "TaskInboxPage"
       ],
       "totalLines": 181,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/routes/__tests__/approval-replay.test.tsx": {
+      "filePath": "apps/web/src/routes/__tests__/approval-replay.test.tsx",
+      "contentHash": "a8ead978e2cded8d84752ac063cbec8530a84d56509238b2ece8eacc0776ea1e",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@testing-library/react",
+          "specifiers": [
+            "render",
+            "screen",
+            "within"
+          ]
+        },
+        {
+          "source": "@testing-library/user-event",
+          "specifiers": [
+            "userEvent"
+          ]
+        },
+        {
+          "source": "msw",
+          "specifiers": [
+            "http",
+            "HttpResponse"
+          ]
+        },
+        {
+          "source": "vitest",
+          "specifiers": [
+            "describe",
+            "expect",
+            "it"
+          ]
+        },
+        {
+          "source": "../../test/TestApp",
+          "specifiers": [
+            "TestApp"
+          ]
+        },
+        {
+          "source": "../../test/server",
+          "specifiers": [
+            "server"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 180,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/routes/__tests__/evidence-artifacts.test.tsx": {
@@ -24368,7 +25561,7 @@
     },
     "docs/architecture/project-layout.md": {
       "filePath": "docs/architecture/project-layout.md",
-      "contentHash": "e8fa50a470055924a668f3e8644af7f6956604bb89ed13f72d33c31bb4d75cab",
+      "contentHash": "cc0c47c46eb4ecaf91afa1fc152c85dc89016a78f47736efa49a4a5bb8ca2750",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -24378,7 +25571,7 @@
     },
     "docs/architecture/sv-agent-project-layout-proposal.md": {
       "filePath": "docs/architecture/sv-agent-project-layout-proposal.md",
-      "contentHash": "f0171a0608c2981f048dfc8a33346f80c46b3007bc29cccc2fc82b1e856ad882",
+      "contentHash": "adc29861f904ba432194d51fa1017fdc20259ec4653720bccadabf66c24e86f4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -24388,12 +25581,12 @@
     },
     "docs/architecture/system-overview.md": {
       "filePath": "docs/architecture/system-overview.md",
-      "contentHash": "22ac9e0dc25ed39b6ba7aebc47bf032a28a668b00166c3b5ba5761cfa7da5745",
+      "contentHash": "bb7afcb6fd9258ddf3be6e217e955d8aa9e5027edac3d683dc416523df756977",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 194,
+      "totalLines": 216,
       "hasStructuralAnalysis": true
     },
     "docs/archive/implementation-plans/2026-08-10-product-facts-viral-script-p0.md": {
@@ -24578,17 +25771,17 @@
     },
     "docs/development/testing.md": {
       "filePath": "docs/development/testing.md",
-      "contentHash": "6562b19086a5942e8459d5fef5a72a82da097d7067531584ea28503d45df461f",
+      "contentHash": "e6389800cdc284fe03998f6bbbe44f6e538e05aaf534a9ff4f8a7c3a2bcf0147",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 409,
+      "totalLines": 446,
       "hasStructuralAnalysis": true
     },
     "docs/index.md": {
       "filePath": "docs/index.md",
-      "contentHash": "e2ec2be075409979514ddcb39f19af80bd5447c6a6c6c7a50f9a76146fde1224",
+      "contentHash": "3a4f7c69e6652e1b434ebf623b2e1ad1cc11e862e76da56c7ef99d9c7cf44ef4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -24668,22 +25861,22 @@
     },
     "docs/product/sv-agent-implementation-tickets.md": {
       "filePath": "docs/product/sv-agent-implementation-tickets.md",
-      "contentHash": "f4aa20efaf004a3549c6f9e691229bd58e3b097c19fd303de48200934f6be63e",
+      "contentHash": "0949f407d00406073c37a22ae6cd2b3f958c44e11bb9ea5c5eb28809365ef17a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 574,
+      "totalLines": 610,
       "hasStructuralAnalysis": true
     },
     "docs/product/sv-agent-native-agent-spec.md": {
       "filePath": "docs/product/sv-agent-native-agent-spec.md",
-      "contentHash": "34eaf686510231c5975fdb673580793585f0715dbb7ddcf45e645fd332167790",
+      "contentHash": "7a57aea642affa835f39f3c0b174ac80db8d803eea122999e83d151599586ccf",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 457,
+      "totalLines": 468,
       "hasStructuralAnalysis": true
     },
     "docs/product/sv-agent-sv104-planner-orchestrator-plan.md": {
