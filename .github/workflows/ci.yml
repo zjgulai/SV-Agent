@@ -65,7 +65,7 @@ jobs:
           uv run --project apps/api python -m tools.viral_replication_oracle
           uv run --project apps/api ruff check tools/viral_replication tools/viral_replication_oracle
           uv run --project apps/api ruff format --check tools/viral_replication tools/viral_replication_oracle
-          uv run --project apps/api python -m mypy --explicit-package-bases tools/viral_replication tools/viral_replication_oracle
+          MYPYPATH=apps/api uv run --project apps/api python -m mypy --explicit-package-bases tools/viral_replication tools/viral_replication_oracle
           echo "Result: all three bounded synthetic gates passed." >> "$GITHUB_STEP_SUMMARY"
       - name: "Momcozy synthetic — Layer 1: contracts and static checks"
         timeout-minutes: 3
