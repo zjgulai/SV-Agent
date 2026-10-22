@@ -1,8 +1,8 @@
 # SV-Agent Implementation Tickets
 
-Status: Batch 1, SV-101 through SV-103, bounded SV-104A/B, SV-105 and SV-201 through SV-204 are complete and validated locally; SV-005 is accepted; Git, remote CI, deployment and production status must be verified independently
+Status: Batch 1, SV-101 through SV-103, bounded SV-104A/B, SV-105 and SV-201 through SV-205 are complete and validated locally; SV-005 is accepted; Git, remote CI, deployment and production status must be verified independently
 Architecture authority: `docs/product/sv-agent-native-agent-spec.md`
-Runtime implementation includes the domain kernel, internal persistence/read seams, pure planning/evaluation, one public read-only Task Inbox, a browser-local New Task brief, read-only Mission Control and the read-only Evidence and Artifact workspace; public writes, durable plan execution and authorization remain inactive.
+Runtime implementation includes the domain kernel, internal persistence/read seams, pure planning/evaluation, one public read-only Task Inbox, a browser-local New Task brief, read-only Mission Control, Evidence and Artifact, and Approval and Replay workspaces; public writes, durable plan execution and authorization remain inactive.
 
 ## Delivery rules
 
@@ -464,13 +464,48 @@ deployment, publication or production acceptance.
 
 Priority: P1
 Depends on: SV-204
+Status: completed and validated locally on 2026-10-21
 
 Acceptance:
 
 - Approval cards show target version, effects, non-effects, evidence, limitations, and stale conditions.
 - Decisions are `approve`, `reject`, `request_evidence`, or `stop`.
 - Replay orders Plan revisions, ToolRuns, artifacts, approvals, and decisions.
-- Raw UUIDs, digests, and JSON are hidden by default but available in audit details.
+- Raw UUIDs, digests, actor refs, rationale, and JSON are not rendered in the browser workspace. Audit details expose only the safe event type, event sequence, and Task/Run revisions.
+
+Implemented result:
+
+- `GET /api/v1/sv-agent/tasks/{task_id}/replay` captures one per-Task replay snapshot fingerprint
+  (maximum visible sequence plus visible event count), anchors
+  ApprovalRequests, matching DecisionEvents and the shared factual replay to that boundary, then
+  rechecks both the boundary and current Task/Run heads before returning. Approval decision state
+  and current/stale scope state remain independent.
+- DecisionEvents resolve a request only when event type, request ID/version/digest, Task/Run scope,
+  human actor kind, closed decision vocabulary and closed payload all match. Replay Plan, ToolRun,
+  Artifact and Approval handles are re-bound to their exact stored records; digest/schema/integrity
+  drift fails closed with stable RFC 9457 error codes.
+- Approval target currentness is limited to canonical `ArtifactType` records and requires exact
+  artifact ID/version/digest plus Task/Run scope. Stale/superseded records and older versions are
+  shown as stale. External ScriptVersion/StoryboardVersion targets fail closed until an authoritative
+  resolver exists. Because the precondition aggregate payload is not persisted in this phase,
+  `precondition_digest` is not recomputed; declared `stale_if` conditions remain visible limitations.
+- The public projection uses allow-listed, bounded statement fields and performs no write, state
+  advance, Tool/provider call, render or publication. It returns no raw payload, digest, actor ref,
+  Approval/Artifact identifier, rationale, filesystem path, credential, JSON-shaped string or model
+  reasoning. The same visible-text guard applies to Task subject; only the existing route-bound
+  Task/Run identity remains in the HTTP shell contract.
+- `/sv-agent/tasks/:taskId/approval-replay` renders current, decided and stale approval cards plus an
+  event-sequence-ordered factual timeline. It provides navigation back to Mission Control and
+  Evidence, but no approve/reject/request-evidence/stop control and no browser-local authority.
+
+Validation: application and HTTP integration tests cover no-Run output, a decided current request,
+closed decision vocabulary, exact request binding, ordered cross-stream replay, zero database writes,
+404/500/503 Problem Details and safe output keys. Browser tests cover approval state, effects,
+non-effects, evidence, limitations, stale conditions, ordered replay, collapsed safe audit metadata,
+GET-only behavior, absence of decision controls, and absence of visible raw IDs and digests. The complete SV-Agent and Web
+regression gates, Ruff, Mypy, lint, typecheck and production build pass locally. This does not prove a
+HumanApproval writer, authenticated human authority, durable orchestration, deployment, publication,
+commercial approval or production acceptance.
 
 ## Epic 3 - Controlled writes and recovery
 
@@ -551,15 +586,16 @@ SV-005. ADR 0007 was accepted on 2026-10-21. The approval authorizes the bounded
 
 SV-101 through SV-105, then SV-201 through SV-205, initially with read-only tools.
 
-Current checkpoint: SV-101 through SV-103, SV-104A/B, SV-105 and SV-201 through SV-204 are complete and
+Current checkpoint: SV-101 through SV-103, SV-104A/B, SV-105 and SV-201 through SV-205 are complete and
 validated locally. The current evidence proves a closed internal read-tool registry, factual
 ToolRun journal, deterministic typed plan compiler, pure prerequisite evaluator, pure independent
 next-gate reviewer and a PostgreSQL-authoritative public read-only Task Inbox with a separate
 browser-draft authority plane plus a complete local New Task brief that can be resumed from the
 Inbox. It also proves a bounded read-only Mission Control with exact current-frontier checks,
 unknown-state semantics and an in-memory command preview, plus a fail-closed Evidence and Artifact
-workspace that keeps Product Truth, Performance, Experiment and Asset evidence separate. It does
-not claim PostgreSQL Task
+workspace that keeps Product Truth, Performance, Experiment and Asset evidence separate. It also
+proves a bounded Approval and Replay projection with version-bound request cards, exact
+DecisionEvent resolution and one shared, ordered factual timeline. It does not claim PostgreSQL Task
 creation, durable RunPlan persistence, state
 advancement, command-receipt resume, HumanApproval writer, public write surface, deployment,
 render, publication, rights, commercial approval, or production acceptance.

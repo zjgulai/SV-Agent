@@ -108,18 +108,20 @@ rtk uv run --project apps/api ruff format --check apps/api/app/domain/sv_agent a
 rtk uv run --project apps/api --all-extras python -m mypy apps/api/app/domain/sv_agent apps/api/app/adapters/db/sv_agent_models.py apps/api/app/adapters/db/sv_agent_repository.py
 ```
 
-The two committed multi-connection tests cannot run inside the rollback fixture. Create a
-new disposable database, migrate it, run only that file, then drop it:
+The three committed multi-connection tests cannot run inside the rollback fixture. Create a
+new disposable database, migrate it, run only those files, then drop it:
 
 ```bash
 rtk docker compose -f infra/docker-compose.yml exec -T postgres createdb -U reverse_engineer_mode rem_sv102_concurrency_check
 rtk env REM_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_sv102_concurrency_check uv run --project apps/api python -m alembic -c apps/api/alembic.ini upgrade head
-rtk env SV_CONCURRENCY_TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_sv102_concurrency_check uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_task_concurrency.py -q
+rtk env SV_CONCURRENCY_TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_sv102_concurrency_check uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_task_concurrency.py apps/api/tests/integration/sv_agent/test_approval_replay_concurrency.py -q
 rtk docker compose -f infra/docker-compose.yml exec -T postgres dropdb -U reverse_engineer_mode rem_sv102_concurrency_check
 ```
 
-A green SV-102 result proves the local additive schema, Task CAS/idempotency, immutable
-guards and read-only factual replay. It does not prove an authorized actor, Run/ToolRun or
+A green concurrency result proves the local additive schema, Task CAS/idempotency, immutable
+guards, read-only factual replay, and rejection of a lower sequence that commits after a visible
+higher sequence by comparing the append-only replay snapshot's maximum sequence and visible event
+count. It does not prove an authorized actor, Run/ToolRun or
 Artifact writer, HumanApproval service, public API, planner, provider execution, deployment,
 rights, commercial approval or production acceptance.
 
@@ -272,7 +274,7 @@ graph, evidence-plane, HTTP and browser boundary checks:
 
 ```bash
 rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py -q
-rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent apps/api/tests/integration/sv_agent apps/api/tests/integration/api/test_sv_agent_tasks.py -q
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent apps/api/tests/integration/sv_agent apps/api/tests/integration/api/test_sv_agent_tasks.py --ignore=apps/api/tests/integration/sv_agent/test_task_concurrency.py --ignore=apps/api/tests/integration/sv_agent/test_approval_replay_concurrency.py -q
 rtk uv run --project apps/api python -m pytest tools/viral_replication/tests/test_artifact_contracts.py -q
 rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/evidence_workspace.py apps/api/app/application/sv_agent/mission_control.py apps/api/app/application/sv_agent/task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
 rtk uv run --project apps/api ruff check apps/api/app/domain/sv_agent/artifact_contracts.py apps/api/app/application/sv_agent/evidence_workspace.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_evidence_artifact_workspace.py apps/api/tests/integration/api/test_sv_agent_tasks.py tools/viral_replication/artifact_contracts.py
@@ -296,6 +298,41 @@ details are expandable, raw refs are collapsed, four evidence planes do not beco
 recovery remains GET-only. The gate does not prove a D2 evidence
 package binding, private Momcozy library state, a typed immutable Control/Variant pair,
 HumanApproval, deployment, rights, commercial approval or production acceptance.
+
+## SV-Agent Approval and Replay workspace gates
+
+SV-205 adds one bounded PostgreSQL projection and a GET-only fifth screen. Run the approval-card,
+cross-stream replay, HTTP safety and browser boundary checks:
+
+```bash
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/integration/sv_agent/test_approval_replay.py apps/api/tests/integration/api/test_sv_agent_tasks.py -q
+rtk env TEST_DATABASE_URL=postgresql+asyncpg://reverse_engineer_mode:local-development-only@localhost:55432/rem_test uv run --project apps/api python -m pytest apps/api/tests/unit/domain/sv_agent apps/api/tests/integration/sv_agent apps/api/tests/integration/api/test_sv_agent_tasks.py -q
+rtk uv run --project apps/api python -m mypy apps/api/app/domain/sv_agent apps/api/app/application/sv_agent/approval_replay.py apps/api/app/application/sv_agent/evidence_workspace.py apps/api/app/application/sv_agent/mission_control.py apps/api/app/application/sv_agent/task_inbox.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py
+rtk uv run --project apps/api ruff check apps/api/app/application/sv_agent/approval_replay.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_approval_replay.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk uv run --project apps/api ruff format --check apps/api/app/application/sv_agent/approval_replay.py apps/api/app/api/routes/sv_agent.py apps/api/app/api/schemas/sv_agent.py apps/api/tests/integration/sv_agent/test_approval_replay.py apps/api/tests/integration/api/test_sv_agent_tasks.py
+rtk npm --prefix apps/web test -- --run src/routes/__tests__/approval-replay.test.tsx src/routes/__tests__/mission-control.test.tsx src/routes/__tests__/evidence-artifacts.test.tsx
+rtk npm --prefix apps/web test -- --run
+rtk npm --prefix apps/web run lint
+rtk npm --prefix apps/web run typecheck
+rtk npm --prefix apps/web run build
+```
+
+A green result proves that ApprovalRequests remain version-bound, decisions use the closed
+`approve|reject|request_evidence|stop` vocabulary, full request/Task/Run bindings are checked, and
+Plan, ToolRun, Artifact, Approval and Decision facts retain the authoritative event-sequence order.
+It also proves that visible data is pinned to one rechecked per-Task replay snapshot fingerprint
+(maximum visible sequence plus visible event count), canonical
+Artifact targets have exact identity/version/digest and scope bindings, stale/superseded or older
+versions cannot appear current, and unknown external target types fail closed. It does not prove an
+external Script/Storyboard target resolver or recomputation of a precondition aggregate whose source
+payload is not persisted in this phase. A separate fresh-database concurrency gate above proves
+that an out-of-order lower-sequence commit invalidates the projection.
+The HTTP check proves no business rows change and 404/500/503 failures use stable Problem Details.
+Browser checks prove the page offers no decision control, sends only GET, does not use browser
+storage, and does not render raw payloads, digests, UUIDs, actor refs or rationale; expandable audit data is
+limited to safe event type, sequence and Task/Run revisions. This gate does not prove a trusted human
+actor, HumanApproval writer, durable orchestration, deployment, publication, commercial approval or
+production acceptance.
 
 `TEST_DATABASE_URL` must identify a disposable database, never the development or deployment database. Append-only ledger tests intentionally cannot clean rows by deleting them; use the fixture transaction rollback for routine tests and a one-off database for any multi-connection concurrency test.
 

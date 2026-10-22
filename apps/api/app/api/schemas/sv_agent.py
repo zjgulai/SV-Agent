@@ -4,6 +4,11 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
+from app.application.sv_agent.approval_replay import (
+    ApprovalDecisionState,
+    ApprovalScopeState,
+    ReplayTimelineKind,
+)
 from app.application.sv_agent.evidence_workspace import (
     EvidencePlaneKind,
     WorkspaceAvailability,
@@ -22,6 +27,7 @@ from app.domain.sv_agent.entities import (
     TargetPlatform,
 )
 from app.domain.sv_agent.runtime_records import (
+    ApprovalDecision,
     ApprovalGateKind,
     ArtifactStatus,
     ArtifactType,
@@ -320,4 +326,90 @@ class EvidenceArtifactWorkspaceOutput(BaseModel):
     graph: EvidenceArtifactGraphOutput
     evidence_planes: list[EvidencePlaneOutput]
     comparison: EvidenceComparisonOutput
+    explicit_non_effects: list[str]
+
+
+class ApprovalReplayTaskOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    task_id: UUID
+    task_revision: int
+    subject: str
+
+
+class ApprovalReplayRunOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    run_id: UUID
+    run_revision: int
+    state: RunState
+
+
+class ApprovalReplaySummaryOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    pending: int
+    decided: int
+    stale: int
+
+
+class ApprovalAuditOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    task_revision: int
+    run_revision: int
+
+
+class ApprovalCardOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    request_version: int
+    gate_kind: ApprovalGateKind
+    target_artifact_type: ArtifactType
+    target_version: int
+    decision_state: ApprovalDecisionState
+    scope_state: ApprovalScopeState
+    predicted_effects: list[str]
+    explicit_non_effects: list[str]
+    evidence: list[str]
+    limitations: list[str]
+    stale_conditions: list[str]
+    decision: ApprovalDecision | None
+    decided_at: datetime | None
+    audit: ApprovalAuditOutput
+
+
+class ReplayTimelineEntryOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    event_sequence: int
+    kind: ReplayTimelineKind
+    event_type: str
+    summary: str
+    task_revision: int
+    run_revision: int | None
+
+
+class ReplayTimelineOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    snapshot_through_sequence: int
+    next_after_sequence: int | None
+    truncated: bool
+    entries: list[ReplayTimelineEntryOutput]
+
+
+class ApprovalReplayOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: Literal["sv-approval-replay/v1"]
+    authority: Literal["postgresql"]
+    task: ApprovalReplayTaskOutput
+    run: ApprovalReplayRunOutput | None
+    summary: ApprovalReplaySummaryOutput
+    decision_vocabulary: list[ApprovalDecision]
+    decision_available: Literal[False]
+    approvals: list[ApprovalCardOutput]
+    approvals_truncated: bool
+    timeline: ReplayTimelineOutput
     explicit_non_effects: list[str]

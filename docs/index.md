@@ -16,7 +16,7 @@
 - [Viral replication execution](product/viral-replication-execution.md)：方案 A 的 workflow packs、skill 责任矩阵、ticket 和当前执行台账。
 - [Viral replication graph consistency](product/viral-replication-graph-consistency.md)：VR-GRAPH-001 的旧 graph、文件集、ignore 和执行入口一致性审计。
 - [SV-Agent Native Agent specification](product/sv-agent-native-agent-spec.md)：爆款复刻 Native Agent 的产品边界、模块、artifact chain、状态机、工具与审批契约。
-- [SV-Agent implementation tickets](product/sv-agent-implementation-tickets.md)：SV-Agent 分阶段依赖、验收标准、批准门与当前 SV-104A/B、SV-105、SV-201 至 SV-204 本地实现状态。
+- [SV-Agent implementation tickets](product/sv-agent-implementation-tickets.md)：SV-Agent 分阶段依赖、验收标准、批准门与当前 SV-104A/B、SV-105、SV-201 至 SV-205 本地实现状态。
 - [SV-Agent UI/UX Taste audit](product/sv-agent-ui-ux-taste-audit.md)：基于真实浏览器三档视口与 Taste App Screen 规则的现状审计、Framed Sheet 方向、优先级和分批验收标准。
 - [Roadmap](product/roadmap.md)：已实现能力、当前 gap、批准门和推荐顺序。
 - [Development and testing](development/testing.md)：本地、CI、证据链和图谱验证方式。
@@ -27,7 +27,7 @@
 - [Context map](../CONTEXT-MAP.md)：四个领域上下文及其关系。
 - [ADRs](adr/)：难以逆转且存在真实取舍的系统决策。
 - [Public synthetic CI / private asset validation boundary](adr/0006-separate-public-synthetic-ci-from-private-asset-validation.md)：真实素材不进入公开 runner 的长期安全决策。
-- [SV-Agent Task runtime and authorization decision](adr/0007-sv-agent-task-runtime-and-authorization.md)：已接受的 Task/Run、Human Approval、actor、迁移、回滚与恢复边界；SV-101 领域内核、SV-102 本地持久化/事实回放、SV-103 内部只读工具审计、SV-104A/B 纯规划/评估契约、SV-105 纯独立审查、SV-201 只读 Task Inbox、SV-202 浏览器本地 New Task brief、SV-203 只读 Mission Control 与 SV-204 只读 Evidence and Artifact workspace 已实现，持久化执行、公开写入与授权运行时仍关闭。
+- [SV-Agent Task runtime and authorization decision](adr/0007-sv-agent-task-runtime-and-authorization.md)：已接受的 Task/Run、Human Approval、actor、迁移、回滚与恢复边界；SV-101 领域内核、SV-102 本地持久化/事实回放、SV-103 内部只读工具审计、SV-104A/B 纯规划/评估契约、SV-105 纯独立审查、SV-201 只读 Task Inbox、SV-202 浏览器本地 New Task brief、SV-203 只读 Mission Control、SV-204 只读 Evidence and Artifact workspace 与 SV-205 只读 Approval and Replay workspace 已实现，持久化执行、公开写入与授权运行时仍关闭。
 - [Implemented decisions](decisions/)：P0/P1/P2 已实施合同与回归边界，保留原日期。
 
 ## Research and evidence

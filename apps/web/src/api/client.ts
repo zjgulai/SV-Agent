@@ -344,6 +344,91 @@ export interface EvidenceArtifactsProjection {
   explicit_non_effects: string[];
 }
 
+export type ApprovalDecision =
+  | "approve"
+  | "reject"
+  | "request_evidence"
+  | "stop";
+export type ApprovalDecisionState = "pending" | "decided";
+export type ApprovalScopeState = "current" | "stale";
+export type ApprovalGateKind =
+  | "fact"
+  | "replication_contract"
+  | "storyboard"
+  | "reference_rights"
+  | "child_safety"
+  | "media_integrity"
+  | "source_use"
+  | "originality"
+  | "legal"
+  | "commercial"
+  | "platform"
+  | "deployment"
+  | "production";
+export type ReplayTimelineKind =
+  | "task_event"
+  | "plan_revision"
+  | "artifact_revision"
+  | "approval_request"
+  | "tool_run"
+  | "decision";
+
+export interface ApprovalReplayProjection {
+  schema_version: "sv-approval-replay/v1";
+  authority: "postgresql";
+  task: {
+    task_id: string;
+    task_revision: number;
+    subject: string;
+  };
+  run: {
+    run_id: string;
+    run_revision: number;
+    state: MissionControlRunState;
+  } | null;
+  summary: {
+    pending: number;
+    decided: number;
+    stale: number;
+  };
+  decision_vocabulary: ApprovalDecision[];
+  decision_available: false;
+  approvals: Array<{
+    request_version: number;
+    gate_kind: ApprovalGateKind;
+    target_artifact_type: EvidenceArtifactType;
+    target_version: number;
+    decision_state: ApprovalDecisionState;
+    scope_state: ApprovalScopeState;
+    predicted_effects: string[];
+    explicit_non_effects: string[];
+    evidence: string[];
+    limitations: string[];
+    stale_conditions: string[];
+    decision: ApprovalDecision | null;
+    decided_at: string | null;
+    audit: {
+      task_revision: number;
+      run_revision: number;
+    };
+  }>;
+  approvals_truncated: boolean;
+  timeline: {
+    snapshot_through_sequence: number;
+    next_after_sequence: number | null;
+    truncated: boolean;
+    entries: Array<{
+      event_sequence: number;
+      kind: ReplayTimelineKind;
+      event_type: string;
+      summary: string;
+      task_revision: number;
+      run_revision: number | null;
+    }>;
+  };
+  explicit_non_effects: string[];
+}
+
 export class ApiProblem extends Error {
   constructor(public readonly problem: ProblemDetails) {
     super(problem.detail);
@@ -727,6 +812,10 @@ export const api = {
   getSvAgentEvidenceArtifacts: (taskId: string) =>
     request<EvidenceArtifactsProjection>(
       `/api/v1/sv-agent/tasks/${encodeURIComponent(taskId)}/artifacts`,
+    ),
+  getSvAgentApprovalReplay: (taskId: string) =>
+    request<ApprovalReplayProjection>(
+      `/api/v1/sv-agent/tasks/${encodeURIComponent(taskId)}/replay`,
     ),
   listProducts: () => request<Product[]>("/api/v1/products"),
   getProduct: (id: string) => request<Product>(`/api/v1/products/${id}`),

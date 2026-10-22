@@ -11,7 +11,7 @@
 ## Local invariants
 
 - 这里是 read-only Native Shell 的 feature state/styles，不是业务事实源。PostgreSQL projection 与 browser-local draft 必须持续分栏、分语义显示。
-- Task Inbox、Mission Control 与 Evidence 只消费 GET projection；New Task 只保存本标签页的本地 brief，不创建或修改 PostgreSQL Task/Run/Approval。
+- Task Inbox、Mission Control、Evidence 与 Approval & Replay 只消费 GET projection；New Task 只保存本标签页的本地 brief，不创建或修改 PostgreSQL Task/Run/Approval。
 - `sessionStorage` envelope 必须 versioned、bounded、closed-parse 且 fail-soft。Storage denial/corruption 只能降级本地草稿，不能遮蔽 authoritative projection 或制造成功保存提示。
 - Storage key、schema version、field contract 和 v1/v2 compatibility 是用户数据合同；修改时必须带显式迁移/兼容策略与 targeted tests。
 - Rights、child safety 与 Human Approval 保持 unresolved human gates；UI preview、Agent recommendation 和 persisted fact 都不能代替人工决定。
@@ -21,7 +21,7 @@
 ## Validation
 
 ```bash
-rtk npm --prefix apps/web test -- --run src/routes/__tests__/task-inbox.test.tsx src/routes/__tests__/new-task.test.tsx src/routes/__tests__/mission-control.test.tsx src/routes/__tests__/evidence-artifacts.test.tsx
+rtk npm --prefix apps/web test -- --run src/routes/__tests__/task-inbox.test.tsx src/routes/__tests__/new-task.test.tsx src/routes/__tests__/mission-control.test.tsx src/routes/__tests__/evidence-artifacts.test.tsx src/routes/__tests__/approval-replay.test.tsx
 rtk npm --prefix apps/web run lint
 rtk npm --prefix apps/web run typecheck
 rtk npm --prefix apps/web run build

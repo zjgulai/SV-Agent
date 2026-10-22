@@ -288,6 +288,7 @@ async def test_replay_merges_all_event_streams_and_keeps_a_stable_snapshot(
     ]
     assert first_page.next_after_sequence == tool_event.event_sequence
     assert first_page.snapshot_through_sequence == decision_event.event_sequence
+    assert first_page.snapshot_event_count == 3
 
     revised = task.revise(
         replace(task.brief, subject="Momcozy parent-and-baby brand voice"),
@@ -310,6 +311,7 @@ async def test_replay_merges_all_event_streams_and_keeps_a_stable_snapshot(
         )
     )
     assert [entry.stream for entry in second_page.entries] == [EventStream.DECISION]
+    assert second_page.snapshot_event_count == 3
     assert second_page.next_after_sequence is None
     fresh = await repository.read_replay(ReplayQuery(task_id=task.id))
     assert [entry.event_type for entry in fresh.entries] == [
@@ -318,6 +320,7 @@ async def test_replay_merges_all_event_streams_and_keeps_a_stable_snapshot(
         DecisionEventType.HUMAN_DECISION_RECORDED,
         TaskEventType.TASK_REVISED,
     ]
+    assert fresh.snapshot_event_count == 4
 
 
 @pytest.mark.parametrize(

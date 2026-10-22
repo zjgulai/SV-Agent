@@ -259,11 +259,16 @@ class ReplayPage:
     task_id: UUID
     entries: tuple[ReplayEntry, ...]
     snapshot_through_sequence: int
+    snapshot_event_count: int
     next_after_sequence: int | None
     integrity: str = "verified"
 
     def __post_init__(self) -> None:
-        if self.snapshot_through_sequence < 0 or self.integrity != "verified":
+        if (
+            self.snapshot_through_sequence < 0
+            or self.snapshot_event_count < 0
+            or self.integrity != "verified"
+        ):
             raise JournalIntegrityError("replay_page_invalid")
         if any(entry.task_id != self.task_id for entry in self.entries):
             raise JournalIntegrityError("replay_task_scope_mismatch")

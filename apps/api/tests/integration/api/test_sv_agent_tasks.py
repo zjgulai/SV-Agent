@@ -18,6 +18,8 @@ from app.adapters.db.sv_agent_models import (
     SvTaskEventRecord,
     SvTaskRecord,
     SvTaskRevisionRecord,
+    SvToolJobLinkRecord,
+    SvToolRunEventRecord,
     SvToolRunRecord,
 )
 from app.adapters.db.sv_agent_repository import SvAgentRepository
@@ -30,7 +32,11 @@ from app.domain.sv_agent.entities import (
     Task,
     TaskBrief,
 )
-from app.domain.sv_agent.errors import JournalIntegrityError
+from app.domain.sv_agent.errors import (
+    EventDigestMismatch,
+    EventSchemaUnsupported,
+    JournalIntegrityError,
+)
 from app.domain.sv_agent.runtime_records import ActorKind, ActorStamp
 
 _SV_RUNTIME_TABLES = (
@@ -43,6 +49,8 @@ _SV_RUNTIME_TABLES = (
     SvApprovalRequestRecord,
     SvDecisionEventRecord,
     SvToolRunRecord,
+    SvToolRunEventRecord,
+    SvToolJobLinkRecord,
     SvCommandReceiptRecord,
     SvTaskEventRecord,
 )
@@ -355,6 +363,147 @@ async def test_evidence_artifact_route_returns_stable_problem_details(
 
     response = await client.get(
         "/api/v1/sv-agent/tasks/24000000-0000-0000-0000-000000000096/artifacts"
+    )
+
+    assert response.status_code == status
+    assert response.headers["content-type"] == "application/problem+json"
+    assert response.json()["code"] == code
+
+
+async def test_approval_replay_route_returns_a_read_only_closed_projection(
+    client: AsyncClient,
+    db_session: AsyncSession,
+) -> None:
+    task = Task.new(
+        TaskBrief.create(
+            goal_track=GoalTrack.BRAND_VOICE_SOCIAL_RESONANCE,
+            decision_question="Which Momcozy baby story should be reviewed next?",
+            subject="Momcozy baby reaction story",
+            platform=TargetPlatform.TIKTOK,
+            market="US",
+            language="en-US",
+            performance_window=PerformanceWindow(
+                start=date(2026, 10, 1),
+                end=date(2026, 10, 20),
+                timezone="America/Los_Angeles",
+            ),
+            stop_condition="Stop before provider execution or publication.",
+            initial_rights_state=RightsState.ANALYSIS_ONLY,
+        ),
+        id=UUID("24000000-0000-0000-0000-000000000004"),
+        created_at=datetime(2026, 10, 21, 9, 0, tzinfo=UTC),
+    )
+    await SvAgentRepository(db_session).create_task(
+        task,
+        idempotency_key="create-approval-replay-task",
+        initiated_by=ActorStamp(kind=ActorKind.HUMAN, ref="local-reviewer"),
+        executed_by=ActorStamp(kind=ActorKind.AGENT, ref="sv-agent"),
+    )
+    before = await _runtime_row_counts(db_session)
+
+    response = await client.get(f"/api/v1/sv-agent/tasks/{task.id}/replay")
+
+    after = await _runtime_row_counts(db_session)
+    assert response.status_code == 200
+    assert after == before
+    body = response.json()
+    assert set(body) == {
+        "schema_version",
+        "authority",
+        "task",
+        "run",
+        "summary",
+        "decision_vocabulary",
+        "decision_available",
+        "approvals",
+        "approvals_truncated",
+        "timeline",
+        "explicit_non_effects",
+    }
+    assert body["schema_version"] == "sv-approval-replay/v1"
+    assert body["authority"] == "postgresql"
+    assert body["task"] == {
+        "task_id": str(task.id),
+        "task_revision": 1,
+        "subject": "Momcozy baby reaction story",
+    }
+    assert body["run"] is None
+    assert body["summary"] == {"pending": 0, "decided": 0, "stale": 0}
+    assert body["decision_vocabulary"] == [
+        "approve",
+        "reject",
+        "request_evidence",
+        "stop",
+    ]
+    assert body["decision_available"] is False
+    assert body["approvals"] == []
+    assert body["approvals_truncated"] is False
+    assert [entry["kind"] for entry in body["timeline"]["entries"]] == ["task_event"]
+    assert body["timeline"]["truncated"] is False
+    assert body["explicit_non_effects"] == [
+        "does_not_write_postgresql",
+        "does_not_decide_approvals",
+        "does_not_advance_task_or_run",
+        "does_not_call_providers",
+        "does_not_render_or_publish",
+    ]
+    forbidden_keys = {
+        "payload",
+        "digest",
+        "request_digest",
+        "artifact_id",
+        "approval_request_id",
+        "actor",
+        "rationale",
+        "private_reasoning",
+        "actions",
+    }
+    assert forbidden_keys.isdisjoint(_nested_keys(body))
+
+
+async def test_approval_replay_route_returns_stable_task_not_found_problem(
+    client: AsyncClient,
+) -> None:
+    response = await client.get(
+        "/api/v1/sv-agent/tasks/24000000-0000-0000-0000-000000000095/replay"
+    )
+
+    assert response.status_code == 404
+    assert response.headers["content-type"] == "application/problem+json"
+    assert response.json()["code"] == "TASK_NOT_FOUND"
+
+
+@pytest.mark.parametrize(
+    ("error", "status", "code"),
+    (
+        (
+            EventSchemaUnsupported("unsupported replay schema"),
+            500,
+            "EVENT_SCHEMA_UNSUPPORTED",
+        ),
+        (EventDigestMismatch("invalid replay digest"), 500, "EVENT_DIGEST_MISMATCH"),
+        (JournalIntegrityError("invalid replay binding"), 500, "JOURNAL_INTEGRITY_ERROR"),
+        (SQLAlchemyError("database offline"), 503, "DATABASE_UNAVAILABLE"),
+    ),
+)
+async def test_approval_replay_route_returns_stable_problem_details(
+    client: AsyncClient,
+    monkeypatch: pytest.MonkeyPatch,
+    error: Exception,
+    status: int,
+    code: str,
+) -> None:
+    async def fail_inspection(_workspace: object, _task_id: UUID) -> None:
+        raise error
+
+    monkeypatch.setattr(
+        sv_agent_route.ApprovalReplayWorkspace,
+        "inspect",
+        fail_inspection,
+    )
+
+    response = await client.get(
+        "/api/v1/sv-agent/tasks/24000000-0000-0000-0000-000000000094/replay"
     )
 
     assert response.status_code == status

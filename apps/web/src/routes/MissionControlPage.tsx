@@ -406,6 +406,12 @@ export function MissionControlPage() {
               >
                 查看证据与产物
               </Link>
+              <Link
+                className="button button-secondary mission-evidence-link"
+                to={`/sv-agent/tasks/${encodeURIComponent(data.task.task_id)}/approval-replay`}
+              >
+                查看批准与回放
+              </Link>
             </section>
 
             <section aria-labelledby="current-artifact-heading">

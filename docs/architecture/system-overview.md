@@ -33,10 +33,22 @@ ProductSource → immutable ProductSnapshot → ProductFact ledger
 The deployment is a modular monolith. Domain models do not depend on FastAPI or SQLAlchemy. API routes convert typed HTTP schemas to application commands. Repositories flush but do not implicitly commit; transaction boundaries live in use cases/routes/workers.
 
 SV-Agent application use cases are localized under `apps/api/app/application/sv_agent/`.
-Orchestration and the three read-only projections are explicit submodules; closed read-tool contracts,
+Orchestration and the four read-only projections are explicit submodules; closed read-tool contracts,
 execution and registry support live under `sv_agent/read_tools/`. Both package initializers remain
 side-effect free, so callers import the named submodule Interface instead of depending on an umbrella
 façade. Domain, ports, PostgreSQL adapters and HTTP modules remain separate seams.
+
+The fourth projection, Approval and Replay, reads version-bound ApprovalRequests, exact matching
+DecisionEvents and the shared Task/ToolRun/Decision sequence through
+`GET /api/v1/sv-agent/tasks/{task_id}/replay`. It keeps decision state separate from stale scope,
+anchors all visible records to one per-Task replay snapshot fingerprint (maximum visible sequence
+plus visible event count), rechecks that fingerprint and the
+current Task/Run heads after projection, and exposes only bounded public statements plus safe
+sequence/revision metadata beyond the existing route-bound Task/Run identity. Approval target
+currentness is closed to canonical `SvArtifactRecord` types with an exact identity/version/digest
+and scope binding; an external Script/Storyboard approval target fails closed until it has an
+authoritative resolver. It cannot decide an approval, write business state, dispatch a Tool,
+call a provider, render or publish.
 
 ## Capability planes
 
@@ -182,10 +194,20 @@ The following are current implementation facts:
   connected. The React route `/sv-agent/tasks/:taskId/evidence` is GET-only, keeps missing states
   distinct and withholds Control/Variant navigation because the canonical artifacts do not yet
   provide typed immutable ScriptVersion roles.
+- SV-Agent SV-205 is implemented locally as a bounded read-only Approval and Replay workspace.
+  `GET /api/v1/sv-agent/tasks/{task_id}/replay` combines exact ApprovalRequest/DecisionEvent
+  resolution with the shared Task/ToolRun/Decision event sequence, rebinds Plan, Artifact and
+  Approval event handles to their immutable records, and rechecks the Task/Run head after the
+  projection. Pending/decided and current/stale remain separate dimensions. Only allow-listed,
+  bounded approval statements and safe audit metadata are returned; raw payloads, digests, actor
+  refs, rationale and Approval/Artifact private identifiers are withheld. The existing route-bound
+  Task/Run identity remains in the shell contract. The React route
+  `/sv-agent/tasks/:taskId/approval-replay` shows version-bound cards and ordered factual replay but
+  provides no decision control, mutation, Tool/provider call, render or publication action.
 
 The following remain future design gates, not implemented capabilities:
 
-- SV-Agent durable Run/RunPlan orchestrator, command-receipt resume for tool invocation, verified actor and authorization adapter, Run/Artifact/runtime-lineage/reviewer writers, HumanApproval service, Approval/Replay and Policy workspace projections, and every public write route. The pure SV-104A/B planner, pure SV-105 reviewer, internal read ToolRun journal, read-only SV-201 Inbox, local-only SV-202 brief, read-only SV-203 Mission Control and read-only SV-204 Evidence and Artifact workspace do not make those capabilities active.
+- SV-Agent durable Run/RunPlan orchestrator, command-receipt resume for tool invocation, verified actor and authorization adapter, Run/Artifact/runtime-lineage/reviewer writers, HumanApproval service, Policy workspace projection, and every public write route. The pure SV-104A/B planner, pure SV-105 reviewer, internal read ToolRun journal, read-only SV-201 Inbox, local-only SV-202 brief, read-only SV-203 Mission Control, read-only SV-204 Evidence and Artifact workspace and read-only SV-205 Approval and Replay workspace do not make those capabilities active.
 - Immutable `ProviderRun` attempt/cost records separated from script artifacts.
 - Structured render lexemes and attribute constraints for semantic visual exclusion.
 - Keyframe assets, quote state, RenderJob, video generation and publishing.

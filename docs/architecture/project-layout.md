@@ -43,7 +43,7 @@ SV-Agent/
 
 - API application implementation 已收拢到 `apps/api/app/application/sv_agent/`，调用方从明确 submodule 导入。
 - Web browser-local state 在 `apps/web/src/features/sv-agent/state/`，feature styles 在 `apps/web/src/features/sv-agent/styles/`。
-- 四个 page implementation 仍保留在 `apps/web/src/routes/`；只有共享层稳定并建立删除 ticket 后才继续移动。
+- 五个 page implementation 仍保留在 `apps/web/src/routes/`；只有共享层稳定并建立删除 ticket 后才继续移动。
 - Domain、migration、Momcozy asset tools 与 Web feature 各有短 scoped `AGENTS.md`，它们只增加局部规则。
 
 ## Agent 进入路径

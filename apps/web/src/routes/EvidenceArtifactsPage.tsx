@@ -283,6 +283,9 @@ export function EvidenceArtifactsPage() {
             <strong>PostgreSQL 权威投影</strong>
             <span>Task revision {data.task.task_revision}</span>
             <span>{data.run ? `Run revision ${data.run.run_revision}` : "尚未创建 Run"}</span>
+            <Link to={`/sv-agent/tasks/${encodeURIComponent(taskId)}/approval-replay`}>
+              查看批准与回放
+            </Link>
           </div>
         </header>
 

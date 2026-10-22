@@ -8,6 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.adapters.db.session import get_db_session
 from app.api.problems import ApiProblem
 from app.api.schemas.sv_agent import (
+    ApprovalAuditOutput,
+    ApprovalCardOutput,
+    ApprovalReplayOutput,
+    ApprovalReplayRunOutput,
+    ApprovalReplaySummaryOutput,
+    ApprovalReplayTaskOutput,
     EvidenceArtifactEdgeOutput,
     EvidenceArtifactGraphOutput,
     EvidenceArtifactNodeOutput,
@@ -32,13 +38,21 @@ from app.api.schemas.sv_agent import (
     MissionTaskOutput,
     MissionToolRunOutput,
     PerformanceWindowOutput,
+    ReplayTimelineEntryOutput,
+    ReplayTimelineOutput,
     TaskInboxItemOutput,
     TaskInboxOutput,
 )
+from app.application.sv_agent.approval_replay import ApprovalReplayWorkspace
 from app.application.sv_agent.evidence_workspace import EvidenceArtifactWorkspace
 from app.application.sv_agent.mission_control import MissionControl
 from app.application.sv_agent.task_inbox import TaskInbox
-from app.domain.sv_agent.errors import JournalIntegrityError, TaskNotFound
+from app.domain.sv_agent.errors import (
+    EventDigestMismatch,
+    EventSchemaUnsupported,
+    JournalIntegrityError,
+    TaskNotFound,
+)
 
 router = APIRouter(prefix="/api/v1/sv-agent", tags=["sv-agent"])
 SessionDependency = Annotated[AsyncSession, Depends(get_db_session)]
@@ -228,6 +242,121 @@ async def get_task_evidence_artifacts(
             control_version_ref=projection.comparison.control_version_ref,
             variant_version_ref=projection.comparison.variant_version_ref,
             limitations=list(projection.comparison.limitations),
+        ),
+        explicit_non_effects=list(projection.explicit_non_effects),
+    )
+
+
+@router.get("/tasks/{task_id}/replay")
+async def get_task_approval_replay(
+    task_id: UUID,
+    session: SessionDependency,
+) -> ApprovalReplayOutput:
+    try:
+        projection = await ApprovalReplayWorkspace(session).inspect(task_id)
+    except TaskNotFound as exc:
+        raise ApiProblem(
+            status=404,
+            code="TASK_NOT_FOUND",
+            title="Task not found",
+            detail="The requested Task does not exist in the authoritative Task store.",
+        ) from exc
+    except EventSchemaUnsupported as exc:
+        raise ApiProblem(
+            status=500,
+            code="EVENT_SCHEMA_UNSUPPORTED",
+            title="Task replay event schema unsupported",
+            detail="The factual replay contains an event type that this runtime cannot project.",
+        ) from exc
+    except EventDigestMismatch as exc:
+        raise ApiProblem(
+            status=500,
+            code="EVENT_DIGEST_MISMATCH",
+            title="Task replay event digest mismatch",
+            detail="The factual replay contains an event whose stored digest is invalid.",
+        ) from exc
+    except JournalIntegrityError as exc:
+        raise ApiProblem(
+            status=500,
+            code="JOURNAL_INTEGRITY_ERROR",
+            title="Task journal integrity error",
+            detail=(
+                "The Approval and Replay workspace cannot be projected from the "
+                "authoritative runtime journal."
+            ),
+        ) from exc
+    except SQLAlchemyError as exc:
+        raise ApiProblem(
+            status=503,
+            code="DATABASE_UNAVAILABLE",
+            title="Task database unavailable",
+            detail="The authoritative Task store is unavailable.",
+        ) from exc
+
+    task = projection.task
+    run = projection.run
+    return ApprovalReplayOutput(
+        schema_version="sv-approval-replay/v1",
+        authority="postgresql",
+        task=ApprovalReplayTaskOutput(
+            task_id=task.task_id,
+            task_revision=task.task_revision,
+            subject=task.subject,
+        ),
+        run=(
+            ApprovalReplayRunOutput(
+                run_id=run.run_id,
+                run_revision=run.run_revision,
+                state=run.state,
+            )
+            if run is not None
+            else None
+        ),
+        summary=ApprovalReplaySummaryOutput(
+            pending=projection.summary.pending,
+            decided=projection.summary.decided,
+            stale=projection.summary.stale,
+        ),
+        decision_vocabulary=list(projection.decision_vocabulary),
+        decision_available=False,
+        approvals=[
+            ApprovalCardOutput(
+                request_version=request.request_version,
+                gate_kind=request.gate_kind,
+                target_artifact_type=request.target_artifact_type,
+                target_version=request.target_version,
+                decision_state=request.decision_state,
+                scope_state=request.scope_state,
+                predicted_effects=list(request.predicted_effects),
+                explicit_non_effects=list(request.explicit_non_effects),
+                evidence=list(request.evidence),
+                limitations=list(request.limitations),
+                stale_conditions=list(request.stale_conditions),
+                decision=request.decision,
+                decided_at=request.decided_at,
+                audit=ApprovalAuditOutput(
+                    task_revision=request.audit.task_revision,
+                    run_revision=request.audit.run_revision,
+                ),
+            )
+            for request in projection.approvals
+        ],
+        approvals_truncated=projection.approvals_truncated,
+        timeline=ReplayTimelineOutput(
+            snapshot_through_sequence=projection.timeline.snapshot_through_sequence,
+            next_after_sequence=projection.timeline.next_after_sequence,
+            truncated=projection.timeline.truncated,
+            entries=[
+                ReplayTimelineEntryOutput(
+                    event_sequence=entry.event_sequence,
+                    kind=entry.kind,
+                    event_type=entry.event_type,
+                    summary=entry.summary,
+                    task_revision=entry.task_revision,
+                    run_revision=entry.run_revision,
+                )
+                for entry in projection.timeline.entries
+            ],
         ),
         explicit_non_effects=list(projection.explicit_non_effects),
     )

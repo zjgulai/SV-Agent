@@ -4,6 +4,7 @@ import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { NewProductPage } from "./routes/NewProductPage";
 import { NewTaskPage } from "./routes/NewTaskPage";
 import { CompareVersionsPage } from "./routes/CompareVersionsPage";
+import { ApprovalReplayPage } from "./routes/ApprovalReplayPage";
 import { GenerateScriptPage } from "./routes/GenerateScriptPage";
 import { EvidenceArtifactsPage } from "./routes/EvidenceArtifactsPage";
 import { JobPage } from "./routes/JobPage";
@@ -39,6 +40,7 @@ export function AppRoutes() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/sv-agent/tasks" element={<TaskInboxPage />} />
           <Route path="/sv-agent/tasks/new" element={<NewTaskPage />} />
+          <Route path="/sv-agent/tasks/:taskId/approval-replay" element={<ApprovalReplayPage />} />
           <Route path="/sv-agent/tasks/:taskId/evidence" element={<EvidenceArtifactsPage />} />
           <Route path="/sv-agent/tasks/:taskId" element={<MissionControlPage />} />
           <Route path="/products/new" element={<NewProductPage />} />

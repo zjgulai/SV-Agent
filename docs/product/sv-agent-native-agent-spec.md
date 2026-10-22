@@ -1,14 +1,14 @@
 # SV-Agent Native Agent Specification
 
-Status: active implementation contract; SV-101 through SV-103, bounded SV-104A/B, SV-105 and SV-201 through SV-204 complete locally
+Status: active implementation contract; SV-101 through SV-103, bounded SV-104A/B, SV-105 and SV-201 through SV-205 complete locally
 UX decision: A - Task Mission Control is selected
 Batch 1 kernel status: implemented and validated in the repository baseline
 Runtime status: domain kernel, Task persistence/CAS, factual replay, closed read tools,
 digest-bound RunPlan compilation, pure prerequisite evaluation and pure independent next-gate
-review, a public read-only Task Inbox, a browser-local New Task brief, a read-only Mission
-Control and a read-only Evidence and Artifact workspace are implemented; durable RunPlan/reviewer writes,
+review, a public read-only Task Inbox, a browser-local New Task brief, and read-only Mission
+Control, Evidence and Artifact, and Approval and Replay workspaces are implemented; durable RunPlan/reviewer writes,
 execution orchestration and authorization runtime are not implemented
-SV-005 design gate: accepted on 2026-10-21 in `docs/adr/0007-sv-agent-task-runtime-and-authorization.md`; SV-101 through SV-105 and SV-201 through SV-204 are implemented locally
+SV-005 design gate: accepted on 2026-10-21 in `docs/adr/0007-sv-agent-task-runtime-and-authorization.md`; SV-101 through SV-105 and SV-201 through SV-205 are implemented locally
 Primary brand workspace: Momcozy
 Companion backlog: `docs/product/sv-agent-implementation-tickets.md`
 
@@ -426,8 +426,19 @@ bounded read-only `GET /api/v1/sv-agent/tasks/{task_id}/artifacts` projection an
 semantics and graph integrity across the active Run's revisions, separates Product Truth,
 Performance, Experiment and
 Asset missing semantics, and refuses Control/Variant binding until typed immutable ScriptVersion
-roles exist. Approval/Replay plus the remaining runtime capabilities still prevent this phase from
-reaching its exit gate.
+roles exist. SV-205 adds the bounded read-only
+`GET /api/v1/sv-agent/tasks/{task_id}/replay` projection and
+`/sv-agent/tasks/:taskId/approval-replay` workspace. It separates decision state from stale scope,
+anchors its projection to one rechecked per-Task replay snapshot fingerprint (maximum visible
+sequence plus visible event count), validates exact DecisionEvent
+and journal bindings, and orders Plan, ToolRun, Artifact, Approval and Decision facts by the shared
+event sequence. Canonical Artifact targets require an exact identity/version/digest and Task/Run
+scope binding; external Script/Storyboard targets fail closed until an authoritative resolver exists.
+Raw payloads, digests, actor refs, rationale and
+Approval/Artifact private identifiers stay outside the browser projection; the existing route-bound
+Task/Run identity remains in the shell contract, while visible audit disclosure is limited to event
+type, sequence and Task/Run revisions. The five-screen read-only shell now reaches this phase's exit gate;
+durable writes, trusted human authority and orchestration remain Phase 2 work.
 
 ### Phase 3 - Controlled writes
 

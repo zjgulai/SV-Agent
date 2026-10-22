@@ -61,12 +61,12 @@ Git 仓库身份已经是 `SV-Agent`，但本地 checkout 文件夹名尚未与�
 | 产品与架构合同 | `docs/product/sv-agent-*.md`、`docs/architecture/`、`docs/adr/0007-*` | Native Agent spec、实施 tickets、运行和授权决策 |
 | 领域语言 | `CONTEXT-MAP.md`、`docs/contexts/viral-replication/` | 五个上下文及 Viral Replication 语言 |
 | Domain | `apps/api/app/domain/sv_agent/` | Task/Run、planning、reviewing、ToolRun、canonical artifact contracts |
-| Application | `apps/api/app/application/sv_agent/` | orchestration、read tools、Task Inbox、Mission Control、Evidence Workspace；package initializer 不导入 implementation |
+| Application | `apps/api/app/application/sv_agent/` | orchestration、read tools、Task Inbox、Mission Control、Evidence Workspace、Approval Replay；package initializer 不导入 implementation |
 | HTTP interface | `apps/api/app/api/routes/sv_agent.py`、`apps/api/app/api/schemas/sv_agent.py` | 目前只有只读 SV-Agent HTTP projection 和 browser-local brief 配套契约 |
 | PostgreSQL adapter | `apps/api/app/adapters/db/sv_agent_*.py` | models、repository、ToolRun journal adapter |
 | Port | `apps/api/app/ports/sv_agent_tool_journal.py` | 已有 ToolRun journal seam；不要为目录美观制造没有第二 adapter 的 port |
 | Migration | `migrations/versions/0012_sv_agent_persistence.py` | 13 个 additive `sv_*` 表及不可变/当前头约束的历史事实 |
-| Web product | `apps/web/src/routes/*Task*Page.tsx`、`MissionControlPage.tsx`、`EvidenceArtifactsPage.tsx` | Task Inbox、New Task、Mission Control、Evidence & Artifacts 页面 |
+| Web product | `apps/web/src/routes/*Task*Page.tsx`、`MissionControlPage.tsx`、`EvidenceArtifactsPage.tsx`、`ApprovalReplayPage.tsx` | Task Inbox、New Task、Mission Control、Evidence & Artifacts、Approval & Replay 页面 |
 | Web feature support | `apps/web/src/features/sv-agent/state/`、`styles/` | browser-local draft state 与 feature styles；page implementation 仍在 `routes/` |
 | Skills | `.agents/skills/viral-*`、`.agents/skills/factframe-*` | 单一能力 instructions；不是运行时代码 |
 | Workflow packs | `.agents/workflows/viral-replication/` | 七类执行路线、shared contracts、fixtures、forward tests |
@@ -144,7 +144,7 @@ apps/web/src/
 ├── features/sv-agent/
 │   ├── api/                       # typed client projections, no global re-export forest
 │   ├── components/                # shared Agent-only visual primitives
-│   ├── pages/                     # four current SV-Agent pages
+│   ├── pages/                     # five current SV-Agent pages
 │   ├── state/                     # bounded browser-local drafts only
 │   └── styles/                    # page/feature styles and tokens
 └── routes/                        # router adapters; migration后只保留路由装配

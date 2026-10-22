@@ -277,10 +277,26 @@ class SvAgentRepository:
     async def read_replay(self, query: ReplayQuery) -> ReplayPage:
         events = _replay_union(query.task_id).subquery()
         if query.through_sequence is None:
-            snapshot = await self.session.scalar(select(func.max(events.c.event_sequence)))
-            through_sequence = int(snapshot or 0)
+            snapshot = (
+                await self.session.execute(
+                    select(
+                        func.max(events.c.event_sequence),
+                        func.count(events.c.event_sequence),
+                    )
+                )
+            ).one()
+            through_sequence = int(snapshot[0] or 0)
+            snapshot_event_count = int(snapshot[1] or 0)
         else:
             through_sequence = query.through_sequence
+            snapshot_event_count = int(
+                await self.session.scalar(
+                    select(func.count(events.c.event_sequence)).where(
+                        events.c.event_sequence <= through_sequence
+                    )
+                )
+                or 0
+            )
 
         statement = (
             select(events)
@@ -298,6 +314,7 @@ class SvAgentRepository:
             task_id=query.task_id,
             entries=entries,
             snapshot_through_sequence=through_sequence,
+            snapshot_event_count=snapshot_event_count,
             next_after_sequence=next_after_sequence,
         )
 
